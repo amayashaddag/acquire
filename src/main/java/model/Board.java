@@ -16,7 +16,7 @@ public class Board {
     private Map<Corporation, Integer> corporationSizes;
     private Map<Corporation, Integer> remainingStocks;
     private List<Point> remainingCells;
-    
+
     private Random random;
 
     public Board() {
@@ -32,7 +32,9 @@ public class Board {
     }
 
     /**
-     * This function is only used to intialize the variable remainingStocks in constructor
+     * This function is only used to intialize the variable remainingStocks in
+     * constructor
+     * 
      * @return returns initial stocks associated to each corporation
      */
     private Map<Corporation, Integer> initialStocks() {
@@ -43,9 +45,9 @@ public class Board {
         return startingStocks;
     }
 
-
     /**
      * This function is only used to initialize the cells set in the constructor
+     * 
      * @return returns all the cells of the board in a list
      */
     private List<Point> initialCells() {
@@ -62,12 +64,12 @@ public class Board {
     /**
      * 
      * @param amount is the amount of cells we want to check
-     * @return whether the number of remaining cells is greater or equals the amount given
+     * @return whether the number of remaining cells is greater or equals the amount
+     *         given
      */
     public boolean enoughRemainingCells(int amount) {
         return amount <= this.remainingCells.size();
     }
-
 
     /**
      * 
@@ -100,7 +102,7 @@ public class Board {
 
     /**
      * 
-     * @param cell 
+     * @param cell
      * @return returns all the adjacent cells to cell
      */
     private List<Point> adjacentCells(Point cell) {
@@ -118,5 +120,7 @@ public class Board {
 
         return adjacentCells;
     }
+
+    
 
 }

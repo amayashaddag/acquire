@@ -11,8 +11,11 @@ public enum Corporation {
     TOWER,
     AMERICAN;
 
-    // Fonction pour initialiser toutes les corporations
-    public static Set<Corporation> setAllCorporations() {
+    /**
+     * 
+     * @return a set containing all corporationss
+     */
+    public static Set<Corporation> allCorporations() {
         return EnumSet.allOf(Corporation.class);
     }
 }
