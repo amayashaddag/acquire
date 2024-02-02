@@ -21,6 +21,11 @@ public class Board {
 
     public Board() {
         this.grid = new Cell[BOARD_WIDTH][BOARD_HEIGHT];
+        for (int i = 0; i < BOARD_WIDTH; i++) {
+            for (int j = 0; j < BOARD_HEIGHT; j++) {
+                this.grid[i][j] = new Cell();
+            }
+        }
         this.remainingStocks = initialStocks();
         this.remainingCells = initialCells();
         this.random = new Random();
@@ -95,8 +100,8 @@ public class Board {
 
     /**
      * 
-     * @param cell
-     * @return all the adjacent cells to the given cell
+     * @param cell 
+     * @return returns all the adjacent cells to cell
      */
     private List<Point> adjacentCells(Point cell) {
         List<Point> adjacentCells = new LinkedList<>();
