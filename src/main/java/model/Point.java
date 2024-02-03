@@ -21,4 +21,16 @@ public class Point {
     public boolean isInBounds(int maxX, int maxY) {
         return x >= 0 && x < maxX && y >= 0 && y < maxY;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (super.equals(o)) {
+            return true;
+        }
+        if (!(o instanceof Point)) {
+            return false;
+        }
+        Point p = (Point) o;
+        return this.x == p.x && this.y == p.y;
+    }
 }

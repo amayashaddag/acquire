@@ -36,6 +36,7 @@ public class Board {
      * constructor
      * 
      * @return returns initial stocks associated to each corporation
+     * @see Board
      */
     private Map<Corporation, Integer> initialStocks() {
         Map<Corporation, Integer> startingStocks = new HashMap<>();
@@ -49,6 +50,7 @@ public class Board {
      * This function is only used to initialize the cells set in the constructor
      * 
      * @return returns all the cells of the board in a list
+     * @see Board
      */
     private List<Point> initialCells() {
         List<Point> cells = new LinkedList<>();
@@ -73,6 +75,18 @@ public class Board {
 
     /**
      * 
+     * @param corporation
+     * @param amount      the amount of stocks of a corporation we want to check
+     * @return returns wether the number of remaining stocks of a given corporation
+     *         is sufficient according to the given amount
+     */
+    public boolean enoughRemainingStocks(Corporation corporation, int amount) {
+        int amountOfCorporationStocks = remainingStocks.get(corporation);
+        return amountOfCorporationStocks >= amount;
+    }
+
+    /**
+     * 
      * @return a random cell from the remaining cells list
      */
     public Point getFromRemainingCells() {
@@ -92,6 +106,27 @@ public class Board {
     }
 
     /**
+     * Sets the corporation size to the given amount
+     * 
+     * @param corporation
+     * @param size
+     */
+    public void setCorporationSize(Corporation corporation, int size) {
+        corporationSizes.put(corporation, size);
+    }
+
+    /**
+     * Removes one stock from a given corporation
+     * 
+     * @param corporation
+     */
+    public void removeFromRemainingStocks(Corporation corporation) {
+        int numberOfStocks = remainingStocks.get(corporation);
+        numberOfStocks--;
+        remainingStocks.put(corporation, numberOfStocks);
+    }
+
+    /**
      * 
      * @param corporation
      * @return whether the given corporation is safe or not
@@ -101,9 +136,12 @@ public class Board {
     }
 
     /**
+     * This function is only used in the function that calculates the size of
+     * a corporation
      * 
      * @param cell
      * @return returns all the adjacent cells to cell
+     * @see #auxCalculateCorporationSize(Corporation, Point, List)
      */
     private List<Point> adjacentCells(Point cell) {
         List<Point> adjacentCells = new LinkedList<>();
@@ -121,6 +159,77 @@ public class Board {
         return adjacentCells;
     }
 
-    
+    /**
+     * This is an auxiliary function used to calculate the size of a corporation on board
+     * The algorithm used in this function is based on DFS graph algorithm (Depth First Search)
+     * 
+     * @param corporation represents the given corporation we want to calculate size for
+     * @param currentPoint represents the point we arrived to during the depth search
+     * @param visitedCells stocks all the visited cells in previous iterations
+     * @return the size of a corporation from a point and its adjacents
+     * @see #calculateCorporationSize(Corporation, Point)
+     */
+    private int auxCalculateCorporationSize(Corporation corporation, Point currentPoint, List<Point> visitedCells) {
+        visitedCells.add(currentPoint);
+        List<Point> adjacentCells = adjacentCells(currentPoint);
+        int numberOfCells = 1;
+
+        for (Point adj : adjacentCells) {
+            if (grid[adj.getX()][adj.getY()].getCorporation() == corporation && (!visitedCells.contains(adj))) {
+                numberOfCells += auxCalculateCorporationSize(corporation, adj, visitedCells);
+            }
+        }
+
+        return numberOfCells;
+    }
+
+
+    /**
+     * This is the main function that calculates the size of a corporation on board
+     * The purpose of this function is for example, to update the stocken information
+     * related to the size of the given corporation
+     * 
+     * @param corporation
+     * @param startingPoint represents the starting point from where the corporation size will
+     * be calculated
+     * @return the size of a corporation on board according to the board
+     */
+    public int calculateCorporationSize(Corporation corporation, Point startingPoint) {
+        List<Point> visitedCells = new LinkedList<>();
+        return auxCalculateCorporationSize(corporation, startingPoint, visitedCells);
+    }
+
+    /**
+     * 
+     * @param corporation
+     * @return returns current stock price of given corporation
+     */
+    public int getStockPrice(Corporation corporation) {
+        int corporationSize = getCorporationSize(corporation);
+        int stockPrice = ReferenceChart.getStockPrice(corporation, corporationSize);
+        return stockPrice;
+    }
+
+    /**
+     * 
+     * @param corporation
+     * @return returns majority sharehold for given corporation
+     */
+    public int getMajoritySharehold(Corporation corporation) {
+        int corporationSize = getCorporationSize(corporation);
+        int stockPrice = ReferenceChart.getMajoritySharehold(corporation, corporationSize);
+        return stockPrice;
+    }
+
+    /**
+     * 
+     * @param corporation
+     * @return returns minority sharehold for given corporation
+     */
+    public int getMinoritySharehold(Corporation corporation) {
+        int corporationSize = getCorporationSize(corporation);
+        int stockPrice = ReferenceChart.getMinoritySharehold(corporation, corporationSize);
+        return stockPrice;
+    }
 
 }
