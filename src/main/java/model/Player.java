@@ -10,7 +10,8 @@ public class Player {
     private HashMap<Corporation,Integer> earnedStocks;
     private Point[] deck;
      
-    /*
+    /**
+     * 
      * getter for player's earnedStock
      * 
      * @return player's Stocks (HashMap<Corporation,Integer>)
@@ -18,7 +19,8 @@ public class Player {
     public HashMap<Corporation,Integer> getEarnedStocks(){
         return this.earnedStocks;
     }
-    /*
+    /**
+     * 
      * getter for player's deck
      * 
      * @return player's deck (Point[])
@@ -26,14 +28,15 @@ public class Player {
     public Point[] getDeck(){
         return this.deck;
     }
-    /*change player's deck with the deck in argument
+    /**
+     * change player's deck with the deck in argument
      * 
      * @param new deck of the player type: Point[]
      */
     public void setDeck(Point[] newDeck){
         this.deck = newDeck;
     }
-    /*
+    /**
      * Test if the player has enough cash
      * 
      * @param amount of money needed for next operation
@@ -42,7 +45,7 @@ public class Player {
     public boolean hasEnoughCash(int amount){
         return this.cash >= amount;
     }
-    /*
+    /**
      * add to player's money the amount in argument
      * 
      * @param amount of money to add to player's cash
@@ -50,7 +53,7 @@ public class Player {
     public void addToCash(int amount){
         this.cash+=amount;
     }
-    /*
+    /**
      * withdraw player's money the amount in argument
      * 
      * @param amount of money to withdraw to player's cash
@@ -58,7 +61,7 @@ public class Player {
     public void removeFromCash(int amount){
             this.cash-=amount;
     }
-    /*
+    /**
      * Test if the player has enough stocks for next operations
      * 
      * @param1 the corporation in which we want to check how much stocks we have
@@ -68,7 +71,7 @@ public class Player {
     public boolean hasEnoughStocks(Corporation corp,int amount){
         return earnedStocks.get(corp) >= amount;
     }
-    /* add to player's corporation gave in argument a number of stocks gave in argument to 
+    /** add to player's corporation gave in argument a number of stocks gave in argument to 
      * 
      * @param1 corporation in which add stocks
      * @param2 number of stocks to add
@@ -76,7 +79,7 @@ public class Player {
     public void addToEarnedStocks(Corporation corp,int amount){
         this.earnedStocks.put(corp, amount);
     }
-    /*remove to player's corporation gave in argument a number of stocks gave in argument to 
+    /**remove to player's corporation gave in argument a number of stocks gave in argument to 
      * 
      * @param1 corporation in which remove stocks
      * @param2 number of stocks to remove
@@ -84,7 +87,7 @@ public class Player {
     public void removeToEarnedStocks(Corporation corp,int amount){
         this.cash-=amount;
     }
-    /*
+    /**
      * get the Point of player's deck at index gave in argument
      * 
      * @param position of the point to get in tghe deck
