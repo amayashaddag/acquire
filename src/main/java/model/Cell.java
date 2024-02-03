@@ -5,7 +5,7 @@ public class Cell {
     private CellState cellState;
     private Corporation currentCorporation;
 
-    public enum CellState {
+    private enum CellState {
         EMPTY,
         OWNED,
         DEAD
