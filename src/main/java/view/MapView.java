@@ -6,6 +6,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.Image;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
@@ -33,26 +35,20 @@ public class MapView extends JPanel implements MouseWheelListener {
 
         this.width = width;
         this.height = height;
+        this.at = new AffineTransform();
     }
 
     int width;
     int height;
-    float zoom = 1;
+    AffineTransform at;
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D) g;        
 
-        g2d.drawImage(background, 0, 0, width, height, this);
-
-        // AffineTransform at = new AffineTransform(1, 0.5, 1, -0.5, 1, 1); // FIXME : changement de repère
-        // try {g2d.setTransform(at.createInverse());} catch(Exception e) {}
-
-        AffineTransform at = new AffineTransform();
-        at.translate(width / 10., height / 10.);
-        at.scale(0.8 * zoom, 0.8 * zoom);
         g2d.setTransform(at);
+        g2d.drawImage(background, 0, 0, width, height, this);
 
         // int cellHeight = height / SIZE;  Pour le cadrillage de la map mais on attend la controleur
         // int cellWidth = width / SIZE;
@@ -72,7 +68,25 @@ public class MapView extends JPanel implements MouseWheelListener {
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        zoom = Math.min(1/2, zoom + e.getWheelRotation());
+        double scale = e.getWheelRotation() < 0 ? 1.5 : 0.5;
+        Point2D p = new Point2D.Float(e.getX(), e.getY());
+        Point2D q = new Point2D.Float();
+    
+        try {
+            AffineTransform inverseAt = at.createInverse();
+            inverseAt.transform(p, q);
+    
+            at.translate(q.getX(), q.getY());
+            at.scale(scale, scale);
+            at.translate(-q.getX(), -q.getY());
+        } catch (NoninvertibleTransformException excp) {
+            GameFrame.showError(excp, () -> {});
+        }
+
+        if (at.getScaleX() < 1 || at.getScaleY() < 1) {
+            at.setToIdentity();
+        }
+    
         repaint();
     }
 }
