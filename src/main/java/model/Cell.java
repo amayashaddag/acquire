@@ -36,4 +36,13 @@ public class Cell {
         this.cellState = CellState.OWNED;
         this.currentCorporation = corporation;
     }
+
+    public String toString() {
+        switch (cellState) {
+            case EMPTY: return ".";
+            case DEAD : return "*";
+            case OWNED : return currentCorporation.toString();
+            default : return "";
+        }
+    }
 }

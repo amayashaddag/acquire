@@ -20,9 +20,9 @@ public class Board {
     private Random random;
 
     public Board() {
-        this.grid = new Cell[BOARD_WIDTH][BOARD_HEIGHT];
-        for (int i = 0; i < BOARD_WIDTH; i++) {
-            for (int j = 0; j < BOARD_HEIGHT; j++) {
+        this.grid = new Cell[BOARD_HEIGHT][BOARD_WIDTH];
+        for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
                 this.grid[i][j] = new Cell();
             }
         }
@@ -46,6 +46,7 @@ public class Board {
         return startingStocks;
     }
 
+
     /**
      * This function is only used to initialize the cells set in the constructor
      * 
@@ -54,9 +55,9 @@ public class Board {
      */
     private List<Point> initialCells() {
         List<Point> cells = new LinkedList<>();
-        for (int i = 0; i < BOARD_WIDTH; i++) {
-            for (int j = 0; j < BOARD_HEIGHT; j++) {
-                Point cell = new Point(i, j);
+        for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
+                Point cell = new Point(j, i);
                 cells.add(cell);
             }
         }
@@ -71,6 +72,16 @@ public class Board {
      */
     public boolean enoughRemainingCells(int amount) {
         return amount <= this.remainingCells.size();
+    }
+
+    /**
+     * 
+     * @param x
+     * @param y
+     * @return the cell object at position (x, y)
+     */
+    public Cell getCell(int x, int y) {
+        return this.grid[y][x];
     }
 
     /**
@@ -115,6 +126,14 @@ public class Board {
         corporationSizes.put(corporation, size);
     }
 
+    public void addCorporationCell(Corporation corporation, Point position) {
+        Cell cell = this.grid[position.getY()][position.getX()];
+        int currentCorporationSize = getCorporationSize(corporation);
+
+        cell.setCorporation(corporation);
+        setCorporationSize(corporation, currentCorporationSize + 1);
+    }
+
     /**
      * Removes one stock from a given corporation
      * 
@@ -148,8 +167,8 @@ public class Board {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i != 0 || j != 0) {
-                    Point adjacent = new Point(i + cell.getX(), j + cell.getY());
-                    if (adjacent.isInBounds(BOARD_WIDTH, BOARD_HEIGHT)) {
+                    Point adjacent = new Point(j + cell.getX(), i + cell.getY());
+                    if (adjacent.isInBounds(BOARD_HEIGHT, BOARD_WIDTH)) {
                         adjacentCells.add(adjacent);
                     }
                 }
@@ -175,7 +194,7 @@ public class Board {
         int numberOfCells = 1;
 
         for (Point adj : adjacentCells) {
-            if (grid[adj.getX()][adj.getY()].getCorporation() == corporation && (!visitedCells.contains(adj))) {
+            if (grid[adj.getY()][adj.getX()].getCorporation() == corporation && (!visitedCells.contains(adj))) {
                 numberOfCells += auxCalculateCorporationSize(corporation, adj, visitedCells);
             }
         }
@@ -195,6 +214,10 @@ public class Board {
      * @return the size of a corporation on board according to the board
      */
     public int calculateCorporationSize(Corporation corporation, Point startingPoint) {
+        Cell startingCell = this.grid[startingPoint.getY()][startingPoint.getX()];
+        if (startingCell.getCorporation() != corporation) {
+            return 0;
+        }
         List<Point> visitedCells = new LinkedList<>();
         return auxCalculateCorporationSize(corporation, startingPoint, visitedCells);
     }
@@ -230,6 +253,20 @@ public class Board {
         int corporationSize = getCorporationSize(corporation);
         int stockPrice = ReferenceChart.getMinoritySharehold(corporation, corporationSize);
         return stockPrice;
+    }
+
+    @Override
+    public String toString() {
+        String board = "";
+
+        for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
+                board += this.grid[i][j].toString() + " ";
+            }
+            board += "\n";
+        }
+        
+        return board;
     }
 
 }
