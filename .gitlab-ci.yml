@@ -19,9 +19,9 @@ test:
   stage: test
   script:
     - mkdir -p build
-    - find src/test -name "*.java" > sources.txt
-    - javac -d build -cp "lib/*" @sources.txt
+    - javac -d build -cp "lib/*" src/test/java/.*/.*
     - java -cp "lib/*:build" org.junit.platform.console.ConsoleLauncher --scan-classpath
+
 
 # Job de déploiement
 deploy:
