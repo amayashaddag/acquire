@@ -10,7 +10,7 @@ test_single_file:
   stage: test
   script:
     - mkdir -p build
-    - javac -d build -cp "lib/*" src/test/java/control/GameControllerTest.java
+    - javac -d build -cp "lib/*" src\test\java\control\GameControllerTest.java
     - java -cp "lib/*:build" org.junit.platform.console.ConsoleLauncher --scan-classpath
 
 # Job de déploiement
