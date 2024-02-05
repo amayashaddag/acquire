@@ -12,14 +12,15 @@ compile:
   stage: build
   script:
     - mkdir -p build
-    - javac -d build src/main/java/control/GameController.java
-    # Job de test pour un seul fichier
-test : 
+    - javac -d build src/main/java/control/GameController.javar
+# Job de test pour un seul fichier
+test:
   stage: test
   script:
     - mkdir -p build
     - javac -d build -cp "lib/*" src/test/java/control/GameControllerTest.java
     - java -cp "lib/*:build" org.junit.platform.console.ConsoleLauncher --scan-classpath
+
 
 
 # Job de déploiement
