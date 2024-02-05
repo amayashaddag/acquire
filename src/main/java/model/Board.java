@@ -126,6 +126,12 @@ public class Board {
         corporationSizes.put(corporation, size);
     }
 
+    /**
+     * Does the job of adding one cell of a corporation to the board
+     * 
+     * @param corporation 
+     * @param position describes the position of the corporation on the board
+     */
     public void addCorporationCell(Corporation corporation, Point position) {
         Cell cell = this.grid[position.getY()][position.getX()];
         int currentCorporationSize = getCorporationSize(corporation);
@@ -168,7 +174,7 @@ public class Board {
             for (int j = -1; j <= 1; j++) {
                 if (i != 0 || j != 0) {
                     Point adjacent = new Point(j + cell.getX(), i + cell.getY());
-                    if (adjacent.isInBounds(BOARD_HEIGHT, BOARD_WIDTH)) {
+                    if (adjacent.isInBounds(BOARD_WIDTH, BOARD_HEIGHT)) {
                         adjacentCells.add(adjacent);
                     }
                 }
