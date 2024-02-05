@@ -1,11 +1,11 @@
 package model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class TestBoard {
-    @Test
+public class CorporationTest {
+        @Test
     public void TestMethod() {
         assertTrue(true);
     }

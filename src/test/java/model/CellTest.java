@@ -1,11 +1,11 @@
-package control;
+package model;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class TestGameController {
-     @Test
+public class CellTest {
+    @Test
     public void TestMethod() {
         assertTrue(true);
     }
