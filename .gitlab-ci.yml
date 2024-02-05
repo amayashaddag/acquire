@@ -18,7 +18,9 @@ compile:
 test:
   stage: test
   script:
-    - echo "Pas de tests définis pour le moment"
+    - mkdir -p build
+    - javac -d build -cp "lib/*" "src/test/.*/.*"
+    - java -cp "lib/*:build" org.junit.platform.console.ConsoleLauncher --scan-classpath
 
 # Job de déploiement
 deploy:

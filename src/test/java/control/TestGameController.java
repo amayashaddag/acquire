@@ -1,6 +1,12 @@
 package control;
 
-public class TestGameController {
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    // Ajoutez d'autres méthodes de test si nécessaire
+import org.junit.jupiter.api.Test;
+
+public class TestGameController {
+     @Test
+    public void TestMethod() {
+        assertTrue(true);
+    }
 }
