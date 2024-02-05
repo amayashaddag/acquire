@@ -1,28 +1,13 @@
-# Spécifiez l'image Docker à utiliser comme base pour les jobs :
-# Dans notre cas on utilise la dernière version
-image: openjdk:latest
+JAVA_MAIN=src/main/java
+OUT=build
+MAIN=control.GameController
 
-# Définition des étapes du pipeline
-stages:
-  - build
-  - test
-  - deploy
+compile :
+	@javac -d $(OUT) $(JAVA_MAIN)/control/GameController.java  
 
-# Job de compilation : 
-compile:
-  stage: build
-  script:
-    - mkdir -p build
-    - javac -d build src/main/java/control/GameController.java
+run :
+	@java -cp $(OUT) $(MAIN)
 
-# Job de test
-test:
-  stage: test
-  script:
-    - echo "Pas encore de test pour le moment"
+all : compile run
 
-# Job de déploiement (exemple : déploiement sur un serveur après les tests réussis)
-deploy:
-  stage: deploy
-  script:
-    - echo "Pas encore de déploiement pour le moment"
+default : all
