@@ -1,21 +1,29 @@
+# Spécifiez l'image Docker à utiliser comme base pour les jobs
+image: openjdk:latest
+
+# Définition des étapes du pipeline
+stages:
+  - build
+  - test
+  - deploy
+
 # Job de compilation
 compile:
   stage: build
   script:
     - mkdir -p build
     - javac -d build src/main/java/control/GameController.java
-
-# Job de test pour un seul fichier
-test_single_file:
+    # Job de test pour un seul fichier
+test : 
   stage: test
   script:
     - mkdir -p build
     - javac -d build -cp "lib/*" src/test/java/control/GameControllerTest.java
     - java -cp "lib/*:build" org.junit.platform.console.ConsoleLauncher --scan-classpath
 
+
 # Job de déploiement
 deploy:
   stage: deploy
   script:
     - echo "Déploiement du code ici"
-
