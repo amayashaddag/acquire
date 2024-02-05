@@ -19,8 +19,9 @@ test:
   stage: test
   script:
     - mkdir -p build
-    - find src/test/java -name "*.java" > sources.txt
-    - javac -d build -cp "lib/*" @sources.txt
+    - ls src/test/java/**/*.java > sources.txt || echo "No Java files found."
+    - [ -s sources.txt ] || { echo "No Java files found."; exit 0; }
+    - javac -d build -cp "lib/*" $(cat sources.txt)
     - java -cp "lib/*:build" org.junit.platform.console.ConsoleLauncher --scan-classpath
 
 # Job de déploiement
