@@ -40,7 +40,7 @@ public class Board {
      */
     private Map<Corporation, Integer> initialStocks() {
         Map<Corporation, Integer> startingStocks = new HashMap<>();
-        for (Corporation corporation : Corporation.allCorporations()) {
+        for (Corporation corporation : Corporation.values()) {
             startingStocks.put(corporation, INITIAL_STOCKS_PER_COMPANY);
         }
         return startingStocks;

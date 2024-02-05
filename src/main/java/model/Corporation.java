@@ -1,6 +1,4 @@
 package model;
-import java.util.EnumSet;
-import java.util.Set;
 
 public enum Corporation {
     WORLDWIDE,
@@ -10,14 +8,6 @@ public enum Corporation {
     CONTINENTAL,
     TOWER,
     AMERICAN;
-
-    /**
-     * 
-     * @return a set containing all corporationss
-     */
-    public static Set<Corporation> allCorporations() {
-        return EnumSet.allOf(Corporation.class);
-    }
 
     @Override
     public String toString() {
