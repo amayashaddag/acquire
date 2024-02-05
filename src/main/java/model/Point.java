@@ -18,8 +18,8 @@ public class Point {
         return y;
     }
 
-    public boolean isInBounds(int maxX, int maxY) {
-        return x >= 0 && x < maxX && y >= 0 && y < maxY;
+    public boolean isInBounds(int supX, int supY) {
+        return x >= 0 && x < supX && y >= 0 && y < supY;
     }
 
     @Override
