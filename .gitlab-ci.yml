@@ -12,7 +12,7 @@ compile:
   stage: build
   script:
     - mkdir -p build
-    - javac -d build src/main/java/control/GameController.javar
+    - javac -d build src/main/java/control/GameController.java
 # Job de test pour un seul fichier
 test:
   stage: test
