@@ -11,14 +11,21 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.Image;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
+import java.awt.Cursor;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.MouseInfo;
 
 import javax.swing.JPanel;
+
+import model.Point;
 
 
 /**
  * The panel which has the map
  */
-public class MapView extends JPanel implements MouseWheelListener {
+public class MapView extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener {
     
     final int SIZE = 12;
     final Image background;
@@ -88,5 +95,25 @@ public class MapView extends JPanel implements MouseWheelListener {
         }
     
         repaint();
+    }
+
+    
+    /* -------------- MouseListener --------------- */
+    public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1)
+            setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+    }
+    public void mouseReleased(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1)
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
+    public void mouseClicked(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {}
+
+    /* -------------- MouseMotionListener --------------- */
+    public void mouseMoved(MouseEvent e) {}
+    public void mouseDragged(MouseEvent e) {
+        //FIXME : pour deplacer la map
     }
 }

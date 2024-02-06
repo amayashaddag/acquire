@@ -18,7 +18,7 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 
 
 /**
- * This is the class View 
+ * This is the class Frame for the view of the game
  */
 public class GameFrame extends JFrame {
     final int DEFAULT_WIDTH = 1200;
@@ -47,8 +47,12 @@ public class GameFrame extends JFrame {
         setResizable(false);
 
         menu = getInitialMenu();
-        MapView map = new MapView(null, this.getWidth(), this.getHeight());
-        this.addMouseWheelListener(map);
+        menu.applay(this);
+
+        MapView map = new MapView(null, this.getWidth(), this.getHeight()); // FIXME : must be in a method
+        addMouseWheelListener(map);
+        addMouseListener(map);
+        addMouseMotionListener(map);
         setComponent(map); // TODO : en attente du controleur pour [][]
     }
 
@@ -61,7 +65,6 @@ public class GameFrame extends JFrame {
         menu.addItem("Action", "act1", "act2", "...");
         menu.addItem("Chat", "...");
         menu.addItem("Option", "Reinitialize map view","Full Screen", "Normal Screen", "Exit");
-        menu.applay(this);
 
         menu.addEvent(new MenuEvent() {
             @Override
@@ -77,7 +80,7 @@ public class GameFrame extends JFrame {
                         device.setFullScreenWindow(null);
                     }
                     else {
-                        JOptionPane.showMessageDialog(null, menu.getMenuNameAt(index, subIndex));
+                        JOptionPane.showMessageDialog(null, "not availible yet");
                     }
                 }
             }
