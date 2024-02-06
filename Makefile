@@ -1,14 +1,14 @@
 JAVA=src/main/java
 OUT=build
-MAIN=control.GameController
-LIB:=
+MAIN=Debug
+LIB=lib
 
 default : all
 
 compile :
-	javac -d $(OUT) $(JAVA)/control/GameController.java  
+	javac -d $(OUT) $(JAVA)/view/$(MAIN).java  
 
 run :
-	java -cp $(OUT):$(LIB) $(MAIN)
+	java -cp $(OUT):$(LIB) view.$(MAIN)
 
 all : compile run
