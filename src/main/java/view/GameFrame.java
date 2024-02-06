@@ -19,6 +19,9 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 
 /**
  * This is the class Frame for the view of the game
+ * 
+ * @author Arthur Deck
+ * @version 0.1
  */
 public class GameFrame extends JFrame {
     final int DEFAULT_WIDTH = 1200;
@@ -65,7 +68,6 @@ public class GameFrame extends JFrame {
         menu.addItem("Action", "act1", "act2", "...");
         menu.addItem("Chat", "...");
         menu.addItem("Option", "Reinitialize map view","Full Screen", "Normal Screen", "Exit");
-
         menu.addEvent(new MenuEvent() {
             @Override
             public void selected(int index, int subIndex, boolean menuItem) {

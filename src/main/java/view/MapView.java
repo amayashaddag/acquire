@@ -24,6 +24,9 @@ import model.Point;
 
 /**
  * The panel which has the map
+ * 
+ * @author Arthur Deck
+ * @version 0.1
  */
 public class MapView extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener {
     
