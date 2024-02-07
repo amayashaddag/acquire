@@ -1,4 +1,4 @@
-package view;
+package view.game;
 
 public class InterfaceMessages {
     

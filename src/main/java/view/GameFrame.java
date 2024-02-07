@@ -7,12 +7,10 @@ import javax.swing.JOptionPane;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Component;
 
 import control.GameController;
-import javaswingdev.GradientDropdownMenu;
-import javaswingdev.MenuEvent;
 import model.Player;
+import view.game.MapView;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 
@@ -26,9 +24,8 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 public class GameFrame extends JFrame {
     final int DEFAULT_WIDTH = 1200;
     final int DEFAULT_HEIGHT = 900;
-    final GradientDropdownMenu menu;
 
-    final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
+    public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 
     /**
      * For inizialise the view
@@ -49,56 +46,23 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-        menu = getInitialMenu();
-        menu.applay(this);
-
-        MapView map = new MapView(null, this.getWidth(), this.getHeight()); // FIXME : must be in a method
-        addMouseWheelListener(map);
-        addMouseListener(map);
-        addMouseMotionListener(map);
-        setComponent(map); // TODO : en attente du controleur pour [][]
+        setForm(new MapView());     // FIXME : form au lancement
     }
 
     Player player;
     GameController controller;
 
-    private GradientDropdownMenu getInitialMenu() {
-        GradientDropdownMenu menu = new GradientDropdownMenu();
-        menu.addItem("Information", "Player Information","Global statement");
-        menu.addItem("Action", "act1", "act2", "...");
-        menu.addItem("Chat", "...");
-        menu.addItem("Option", "Reinitialize map view","Full Screen", "Normal Screen", "Exit");
-        menu.addEvent(new MenuEvent() {
-            @Override
-            public void selected(int index, int subIndex, boolean menuItem) {
-                if (menuItem) {
-                    if (menu.getMenuNameAt(index, subIndex) == "Exit") {
-                        System.exit(0);
-                    } else if (menu.getMenuNameAt(index, subIndex) == "Reinitialize map view") {
-                        // FIXME : implement in a general method
-                    } else if (menu.getMenuNameAt(index, subIndex) == "Full Screen") {
-                        device.setFullScreenWindow(GameFrame.this); // FIXME : undecorated !!!
-                    } else if (menu.getMenuNameAt(index, subIndex) == "Normal Screen") {
-                        device.setFullScreenWindow(null);
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(null, "not availible yet");
-                    }
-                }
-            }
-        });
-
-        return menu;
-    }
-
     /**
-     * This method MUST be use for set a PAGE (example : option page, game page, chat page ...)
-     * @param comp : the page's component you want to set
+     * <p> Set a form on the current frame 
+     * (example : option page, game page, chat page ...) </p>
+     * 
+     * @param comp : the empty constructor of the form's 
+     * component you want to set
+     * @apiNote example : setForm(new MapView())
      */
-    private void setComponent(Component comp) {
+    public void setForm(Form form) {
         this.getContentPane().removeAll();
-        this.getContentPane().add(comp);
-        menu.applay(this);
+        form.setOn(this);
         this.repaint();
         this.revalidate();
     }
@@ -107,12 +71,13 @@ public class GameFrame extends JFrame {
      * A graphical display of errors / exceptions
      * @param e : the exception you want display
      * @param task : the task you want execute (example :  System.exit(1))
+     * @apiNote example : GameFrame.showError(new Exception(), () -> System.exit(1))
      */
     public static void showError(Exception e, Runnable task) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        JOptionPane.showMessageDialog(null, sw.toString(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, sw.toString(), "Error", JOptionPane.ERROR_MESSAGE);
         task.run();
     }
 }

@@ -1,6 +1,7 @@
-package view;
+package view.game;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -15,11 +16,13 @@ import java.awt.Cursor;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.MouseInfo;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 
-import javax.swing.JPanel;
-
-import model.Point;
+import javaswingdev.GradientDropdownMenu;
+import javaswingdev.MenuEvent;
+import view.Form;
+import view.GameFrame;
 
 
 /**
@@ -27,14 +30,19 @@ import model.Point;
  * 
  * @author Arthur Deck
  * @version 0.1
+ * @see view.Form
  */
-public class MapView extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener {
+public class MapView extends Form implements MouseWheelListener, MouseListener, MouseMotionListener {
     
     final int SIZE = 12;
     final Image background;
 
+    public MapView() {
+        super();
+        background = null;
+    }
+
     /**
-     * 
      * @param map : the current's game map
      */
     protected MapView(Object[][] map, int width, int height) {
@@ -98,6 +106,53 @@ public class MapView extends JPanel implements MouseWheelListener, MouseListener
         }
     
         repaint();
+    }
+
+
+    /*------------------ Form ------------------- */
+
+    private GradientDropdownMenu getGameMenu() {
+        GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
+        GradientDropdownMenu menu = new GradientDropdownMenu();
+        menu.addItem("Information", "Player Information","Global statement");
+        menu.addItem("Action", "act1", "act2", "...");
+        menu.addItem("Chat", "...");
+        menu.addItem("Option", "Reinitialize map view","Full Screen", "Normal Screen", "Exit");
+        menu.addEvent(new MenuEvent() {
+            @Override
+            public void selected(int index, int subIndex, boolean menuItem) {
+                if (menuItem) {
+                    if (menu.getMenuNameAt(index, subIndex) == "Exit") {
+                        System.exit(0);
+                    } else if (menu.getMenuNameAt(index, subIndex) == "Reinitialize map view") {
+                        // FIXME : implement in a general method
+                    } else if (menu.getMenuNameAt(index, subIndex) == "Full Screen") {
+                        // FIXME : undecorated !!!
+                    } else if (menu.getMenuNameAt(index, subIndex) == "Normal Screen") {
+                        device.setFullScreenWindow(null);
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(null, "not availible yet");
+                    }
+                }
+            }
+        });
+
+        return menu;
+    }
+
+    /**
+     * {@link view.Form#setOn()}
+     */
+    public void setOn(GameFrame g) {
+        MapView map = new MapView(null, g.getWidth(), g.getHeight());   // FIXME map != null
+        g.addMouseWheelListener(map);
+        g.addMouseListener(map);
+        g.addMouseMotionListener(map);
+        g.getContentPane().add(map); // TODO : en attente du controleur pour [][]
+
+        GradientDropdownMenu menu = getGameMenu();
+        menu.applay(g);
     }
 
     
