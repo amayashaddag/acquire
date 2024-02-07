@@ -19,7 +19,7 @@ test:
   script:
     - mkdir -p build
     - ls lib/  # Affiche le contenu du répertoire "lib/" pour vérifier la présence de JUnit
-    - javac -d build -cp "lib/*" src/test/java/*/*
+    - javac -d build -cp "lib/*" src/test/java/*/* src/main/java/*/*
     - ls build/  # Affiche le contenu du répertoire "build/" pour vérifier les fichiers générés
     - java -cp "lib/*:build" org.junit.platform.console.ConsoleLauncher --scan-classpath
 
