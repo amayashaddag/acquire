@@ -84,7 +84,7 @@ public class Player {
      * @param1 corporation in which remove stocks
      * @param2 number of stocks to remove
      */
-    public void removeToEarnedStocks(Corporation corp,int amount){
+    public void removeFromEarnedStocks(Corporation corp,int amount){
         this.cash-=amount;
     }
     /**

@@ -80,8 +80,26 @@ public class Board {
      * @param y
      * @return the cell object at position (x, y)
      */
+    public Cell getCell(Point cellPosition) {
+        return this.grid[cellPosition.getY()][cellPosition.getX()];
+    }
+
+    /**
+     * Surcharged method of {@link #getCell(Point)}
+     */
     public Cell getCell(int x, int y) {
         return this.grid[y][x];
+    }
+
+    public Point[] generatePlayerDeck() {
+        Point[] deck = new Point[DECK_SIZE];
+        
+        for (int i = 0; i < DECK_SIZE; i++) {
+            Point cellPosition = getFromRemainingCells();
+            deck[i] = cellPosition;
+        }
+        
+        return deck;
     }
 
     /**
@@ -141,13 +159,25 @@ public class Board {
     }
 
     /**
-     * Removes one stock from a given corporation
+     * Removes an number of stocks from a given corporation
      * 
      * @param corporation
      */
-    public void removeFromRemainingStocks(Corporation corporation) {
+    public void removeFromRemainingStocks(Corporation corporation, int amount) {
         int numberOfStocks = remainingStocks.get(corporation);
-        numberOfStocks--;
+        numberOfStocks -= amount;
+        remainingStocks.put(corporation, numberOfStocks);
+    }
+
+    /**
+     * Adds a number of stocks to a given corporation
+     * 
+     * @param corporation
+     * @param amount
+     */
+    public void addToRemainingStocks(Corporation corporation, int amount) {
+        int numberOfStocks = remainingStocks.get(corporation);
+        numberOfStocks += amount;
         remainingStocks.put(corporation, numberOfStocks);
     }
 
@@ -161,14 +191,13 @@ public class Board {
     }
 
     /**
-     * This function is only used in the function that calculates the size of
-     * a corporation
+     * This function returns the list of the adjacent cells to a given cell
      * 
      * @param cell
      * @return returns all the adjacent cells to cell
      * @see #auxCalculateCorporationSize(Corporation, Point, List)
      */
-    private List<Point> adjacentCells(Point cell) {
+    public List<Point> adjacentCells(Point cell) {
         List<Point> adjacentCells = new LinkedList<>();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
