@@ -6,7 +6,8 @@ import model.Board;
 import model.Cell;
 import model.Corporation;
 import model.Player;
-import model.Point;
+import tools.Pair;
+import tools.Point;
 import view.GameView;
 
 public class GameController {
@@ -90,7 +91,7 @@ public class GameController {
      * the conditions that a merge should satisfy
      * 
      */
-    public boolean possibleMerge(Point cellPosition) {
+    public Pair<Point> possibleMerge(Point cellPosition) {
         List<Point> adjacentCells = board.adjacentCells(cellPosition);
         int size = adjacentCells.size();
 
@@ -121,11 +122,20 @@ public class GameController {
                     continue;
                 }
 
-                return true;
+                return new Pair<>(adjacentCellPosition, otherAdjacentCellPosition);
 
             }
         }
 
-        return false;
+        return new Pair<>(null, null);
+    }
+
+
+    public void mergeCorporations(Point firsPosition, Point secondPosition) {
+
+    }
+
+    public void placeCell(Point cellPosition) {
+        Cell cell = board.getCell(cellPosition.getX(), cellPosition.getY());
     }
 }

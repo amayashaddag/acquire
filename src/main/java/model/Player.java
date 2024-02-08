@@ -5,6 +5,8 @@ import java.util.HashMap;
  * @version 1.0
  */
 
+import tools.Point;
+
 public class Player {
     private int cash;
     private HashMap<Corporation,Integer> earnedStocks;

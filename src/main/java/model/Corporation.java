@@ -7,7 +7,8 @@ public enum Corporation {
     IMPERIAL,
     CONTINENTAL,
     TOWER,
-    AMERICAN;
+    AMERICAN,
+    NONE;
 
     @Override
     public String toString() {

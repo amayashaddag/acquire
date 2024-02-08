@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Random;
 
+import tools.Point;
+
 public class Board {
     public final static int BOARD_WIDTH = 12, BOARD_HEIGHT = 9;
     public final static int INITIAL_STOCKS_PER_COMPANY = 25;
