@@ -203,7 +203,7 @@ public class Board {
         List<Point> adjacentCells = new LinkedList<>();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                if (i != 0 || j != 0) {
+                if (i != 0 ^ j != 0) {
                     Point adjacent = new Point(j + cell.getX(), i + cell.getY());
                     if (adjacent.isInBounds(BOARD_WIDTH, BOARD_HEIGHT)) {
                         adjacentCells.add(adjacent);

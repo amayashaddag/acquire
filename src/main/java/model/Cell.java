@@ -7,6 +7,7 @@ public class Cell {
 
     private enum CellState {
         EMPTY,
+        OCCUPIED,
         OWNED,
         DEAD
     }
@@ -28,6 +29,10 @@ public class Cell {
         return cellState == CellState.OWNED;
     }
 
+    public boolean isOccupied() {
+        return cellState == CellState.OCCUPIED;
+    }
+
     public Corporation getCorporation() {
         return currentCorporation;
     }
@@ -35,6 +40,10 @@ public class Cell {
     public void setCorporation(Corporation corporation) {
         this.cellState = CellState.OWNED;
         this.currentCorporation = corporation;
+    }
+
+    public void setAsOccupied() {
+        this.cellState = CellState.OCCUPIED;
     }
 
     public String toString() {
