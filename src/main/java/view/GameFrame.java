@@ -8,11 +8,13 @@ import javax.swing.JOptionPane;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
+import com.formdev.flatlaf.*;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import control.GameController;
 import model.Player;
 import view.game.MapView;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
+import view.login.LoginView;
 
 
 /**
@@ -22,8 +24,8 @@ import com.formdev.flatlaf.FlatDarculaLaf;
  * @version 0.1
  */
 public class GameFrame extends JFrame {
-    final int DEFAULT_WIDTH = 1200;
-    final int DEFAULT_HEIGHT = 900;
+    public static final int DEFAULT_WIDTH = 1200;
+    public static final int DEFAULT_HEIGHT = 900;
 
     public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 
@@ -33,9 +35,12 @@ public class GameFrame extends JFrame {
      * @param player : the player will seen this View
      * @param controller : current game superviser
      */
+    Player player;
+    GameController controller;
     public GameFrame(Player player, GameController controller) {
         super();
-        FlatDarculaLaf.setup();
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        FlatMacDarkLaf.setup();
 
         this.player = player;
         this.controller = controller;
@@ -46,17 +51,16 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-        setForm(new MapView());     // FIXME : form au lancement
+        setForm(new LoginView());     // FIXME : form au lancement
     }
 
-    Player player;
-    GameController controller;
+
 
     /**
      * <p> Set a form on the current frame 
      * (example : option page, game page, chat page ...) </p>
      * 
-     * @param comp : the empty constructor of the form's 
+     * @param form : the empty constructor of the form's
      * component you want to set
      * @apiNote example : setForm(new MapView())
      */
