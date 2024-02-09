@@ -18,9 +18,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Robot;
+import java.awt.AWTException;
 
 import javaswingdev.GradientDropdownMenu;
 import javaswingdev.MenuEvent;
+import model.Point;
 import view.Form;
 import view.GameFrame;
 
@@ -84,30 +87,6 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
         g2d.dispose();
     }
 
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
-        double scale = e.getWheelRotation() < 0 ? 1.5 : 0.5;
-        Point2D p = new Point2D.Float(e.getX(), e.getY());
-        Point2D q = new Point2D.Float();
-    
-        try {
-            AffineTransform inverseAt = at.createInverse();
-            inverseAt.transform(p, q);
-    
-            at.translate(q.getX(), q.getY());
-            at.scale(scale, scale);
-            at.translate(-q.getX(), -q.getY());
-        } catch (NoninvertibleTransformException excp) {
-            GameFrame.showError(excp, () -> {});
-        }
-
-        if (at.getScaleX() < 1 || at.getScaleY() < 1) {
-            at.setToIdentity();
-        }
-    
-        repaint();
-    }
-
 
     /*------------------ Form ------------------- */
 
@@ -157,12 +136,16 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
 
     
     /* -------------- MouseListener --------------- */
+    private Point2D lastClickedPos;
     public void mousePressed(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1)
+        if (e.getButton() == MouseEvent.BUTTON1) {
             setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            lastClickedPos = new Point2D.Float(e.getX(), e.getY()); 
+        }
     }
     public void mouseReleased(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON1)
+        lastClickedPos = new Point2D.Float();
+        if (e.getButton() == MouseEvent.BUTTON1) 
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
     public void mouseClicked(MouseEvent e) {}
@@ -172,6 +155,45 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
     /* -------------- MouseMotionListener --------------- */
     public void mouseMoved(MouseEvent e) {}
     public void mouseDragged(MouseEvent e) {
-        //FIXME : pour deplacer la map
+        if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
+            try {
+                Point2D p = new Point2D.Double(e.getX() - lastClickedPos.getX(), e.getY() - lastClickedPos.getY());
+                Point2D q = new Point2D.Double();
+                
+                AffineTransform inverseAt = at.createInverse();
+                inverseAt.transform(p, q);
+
+                at.translate(q.getX(), q.getY());
+            } catch (NoninvertibleTransformException excp) {
+                GameFrame.showError(excp, () -> {});
+            }
+            
+            repaint();
+        }
+    }
+
+    /* -------------- MouseWheelListener --------------- */
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        double scale = e.getWheelRotation() < 0 ? 1.5 : 0.5;
+        Point2D p = new Point2D.Float(e.getX(), e.getY());
+        Point2D q = new Point2D.Float();
+    
+        try {
+            AffineTransform inverseAt = at.createInverse();
+            inverseAt.transform(p, q);
+    
+            at.translate(q.getX(), q.getY());
+            at.scale(scale, scale);
+            at.translate(-q.getX(), -q.getY());
+        } catch (NoninvertibleTransformException excp) {
+            GameFrame.showError(excp, () -> {});
+        }
+
+        if (at.getScaleX() < 1 || at.getScaleY() < 1) {
+            at.setToIdentity();
+        }
+    
+        repaint();
     }
 }
