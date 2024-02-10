@@ -24,6 +24,18 @@ public class GameController {
         this.currentPlayers = currentPlayers;
     }
 
+    public GameView getGameView() {
+        return gameView;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public int getPlayerTurnIndex() {
+        return playerTurnIndex;
+    }
+
     /**
      * This function is used at the beginning of the game (where it is already
      * supposed that there is enough board cells for everyone) to initialize players
@@ -84,7 +96,8 @@ public class GameController {
     }
 
     /**
-     * Returns the adjacent owned cell positions to a given cell position in order to
+     * Returns the adjacent owned cell positions to a given cell position in order
+     * to
      * determine the action to perform on the cell
      * 
      * @param cellPosition
@@ -92,19 +105,26 @@ public class GameController {
      */
     public List<Point> adjacentOwnedCells(Point cellPosition) {
         List<Point> adjacentCells = board.adjacentCells(cellPosition);
+        List<Point> cellsToRemove = new LinkedList<>();
 
         for (Point p : adjacentCells) {
             Cell adjacentCell = board.getCell(p);
             if (!adjacentCell.isOwned()) {
-                adjacentCells.remove(p);
+                cellsToRemove.add(p);
             }
         }
-
+        adjacentCells.removeAll(cellsToRemove);
         return adjacentCells;
     }
 
-
-    private List<Point> stalinSort(List<Point> adjacentOwnedCells) {
+    /**
+     * This function is a removing sort algorithm which removes all the positions of cells that 
+     * belong to non-maximal-size corporations between them
+     * 
+     * @param adjacentOwnedCells
+     * @return
+     */
+    private List<Point> filterMaximalSizeCorporations(List<Point> adjacentOwnedCells) {
         int maxCorporationSize = 0;
         List<Point> maxCorporations = new LinkedList<>();
 
@@ -131,31 +151,43 @@ public class GameController {
         return maxCorporations;
     }
 
-
     /**
+     * This function is called when a merge is possible and processes it
+     * It checks whether there is a unique maximum size company and merges all the
+     * adjacent
+     * companies to it, if there is not, it asks the player to choose one maximum
+     * size company
      * 
-     * @param cellsToMerge
-     * @param cellPosition
+     * @param cellsToMerge represents the set of adjacent cells to merge
+     * @param cellPosition represents the position of the cell where the merge
+     *                     started
+     * @see #placeCell(Point)
      */
     public void mergeCorporations(List<Point> cellsToMerge, Point cellPosition) {
-        List<Point> maxCorporations = stalinSort(cellsToMerge);
-        Cell currentCell = board.getCell(cellPosition);
+        List<Point> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
+        Point chosenCellPosition;
+        Cell chosenCell, currentCell = board.getCell(cellPosition);
+        Corporation chosenCellCorporation;
 
         if (maxCorporations.size() == 1) {
-            Point maxCorporationPosition = maxCorporations.get(0);
-            Cell maxCell = board.getCell(maxCorporationPosition);
-            Corporation maxCorporation = maxCell.getCorporation();
+            chosenCellPosition = maxCorporations.get(0);
 
-            currentCell.setCorporation(maxCorporation);
-            // TODO : Transformer toutes les autres owned cells en maxCorporation
-            return;
+        } else {
+            // TODO : call the game view to request player to choose one major holder
+
+            /* Temporary intialization */
+            chosenCellPosition = maxCorporations.get(0);
         }
 
-        // TODO : appeler l'interface pour récupérer la corporation choisie
-        /* Temporary intialization */
-        Corporation chosenCorporation = Corporation.NONE; 
-        currentCell.setCorporation(chosenCorporation);
-        // TODO : transformer les autres owned cells en chosenCorporation
+        chosenCell = board.getCell(chosenCellPosition);
+        chosenCellCorporation = chosenCell.getCorporation();
+
+        board.replaceCellCorporation(currentCell, chosenCellCorporation);
+        for (Point adj : cellsToMerge) {
+            if (!adj.equals(chosenCellPosition)) {
+                board.replaceCorporationFrom(chosenCellCorporation, adj);
+            }
+        }
     }
 
     /**
@@ -177,11 +209,11 @@ public class GameController {
             Point adjacentPosition = adjacentOwnedCells.get(0);
             Cell adjacentCell = board.getCell(adjacentPosition);
             Corporation adjacentCorporation = adjacentCell.getCorporation();
-            currentCell.setCorporation(adjacentCorporation);
+
+            board.replaceCellCorporation(currentCell, adjacentCorporation);
             return;
         }
 
         mergeCorporations(adjacentOwnedCells, cellPosition);
     }
 }
-

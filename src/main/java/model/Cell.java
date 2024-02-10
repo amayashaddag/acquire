@@ -50,6 +50,7 @@ public class Cell {
         switch (cellState) {
             case EMPTY: return ".";
             case DEAD : return "*";
+            case OCCUPIED : return "+";
             case OWNED : return currentCorporation.toString();
             default : return "";
         }

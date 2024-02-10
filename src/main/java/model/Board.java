@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import tools.Point;
 
@@ -28,9 +30,15 @@ public class Board {
                 this.grid[i][j] = new Cell();
             }
         }
+        this.corporationSizes = initialSizes();
         this.remainingStocks = initialStocks();
         this.remainingCells = initialCells();
         this.random = new Random();
+    }
+
+    // TODO : A supprimer ensuite
+    public Map<Corporation, Integer> getCorporationSizes() {
+        return corporationSizes;
     }
 
     /**
@@ -64,6 +72,17 @@ public class Board {
             }
         }
         return cells;
+    }
+
+    private Map<Corporation, Integer> initialSizes() {
+        Map<Corporation, Integer> initialSizes = new HashMap<>();
+        Integer initialSize = 0;
+
+        for (Corporation corporation : Corporation.values()) {
+            initialSizes.put(corporation, initialSize);
+        }
+
+        return initialSizes;
     }
 
     /**
@@ -152,12 +171,19 @@ public class Board {
      * @param corporation 
      * @param position describes the position of the corporation on the board
      */
-    public void addCorporationCell(Corporation corporation, Point position) {
-        Cell cell = this.grid[position.getY()][position.getX()];
-        int currentCorporationSize = getCorporationSize(corporation);
+    public void replaceCellCorporation(Cell cell, Corporation newCorporation) {
+        Corporation oldCorporation = cell.getCorporation();
 
-        cell.setCorporation(corporation);
-        setCorporationSize(corporation, currentCorporationSize + 1);
+        int oldCorporationSize;
+        int newCorporationSize = getCorporationSize(newCorporation);
+
+        if (cell.isOwned()) {
+            oldCorporationSize = getCorporationSize(oldCorporation);
+            setCorporationSize(oldCorporation, oldCorporationSize - 1);
+        }
+
+        setCorporationSize(newCorporation, newCorporationSize + 1);
+        cell.setCorporation(newCorporation);
     }
 
     /**
@@ -197,7 +223,8 @@ public class Board {
      * 
      * @param cell
      * @return returns all the adjacent cells to cell
-     * @see #auxCalculateCorporationSize(Corporation, Point, List)
+     * @see #mappingDFS(Corporation, Point, List)
+     * @see #foldingDFS(Corporation, Point, List, BiFunction, Object)
      */
     public List<Point> adjacentCells(Point cell) {
         List<Point> adjacentCells = new LinkedList<>();
@@ -216,47 +243,81 @@ public class Board {
     }
 
     /**
-     * This is an auxiliary function used to calculate the size of a corporation on board
-     * The algorithm used in this function is based on DFS graph algorithm (Depth First Search)
+     * This function is a dfs graph algorithm that maps all the cells of the board that are belonging
+     * to a given company with the given function
      * 
-     * @param corporation represents the given corporation we want to calculate size for
-     * @param currentPoint represents the point we arrived to during the depth search
-     * @param visitedCells stocks all the visited cells in previous iterations
-     * @return the size of a corporation from a point and its adjacents
-     * @see #calculateCorporationSize(Corporation, Point)
+     * @param corporation corporation to test if the cells belong to it
+     * @param currentPoint the current point in the algorithm iteration
+     * @param visitedCells contains the set of already visited cells (to not revisit them)
+     * @param op the operation that maps the cells
      */
-    private int auxCalculateCorporationSize(Corporation corporation, Point currentPoint, List<Point> visitedCells) {
+    public void mappingDFS(Corporation corporation, Point currentPoint, List<Point> visitedCells, Function<Cell, Void> op) {
         visitedCells.add(currentPoint);
+        Cell currentCell = getCell(currentPoint);
+        op.apply(currentCell);
+
         List<Point> adjacentCells = adjacentCells(currentPoint);
-        int numberOfCells = 1;
 
         for (Point adj : adjacentCells) {
-            if (grid[adj.getY()][adj.getX()].getCorporation() == corporation && (!visitedCells.contains(adj))) {
-                numberOfCells += auxCalculateCorporationSize(corporation, adj, visitedCells);
+            Cell cell = getCell(adj);
+
+            if (cell.getCorporation() == corporation && !(visitedCells.contains(adj))) {
+                mappingDFS(corporation, adj, visitedCells, op);
+            }
+        }
+    }
+
+    /**
+     * This function is a folding dfs graph algorithm that folds all the reachable cells that belong
+     * to a given corporation with a given function f and return the result
+     * 
+     * @param <U> generic returning type parameter
+     * @param corporation corporation to test the cells on
+     * @param currentPoint current point in each visiting iteration
+     * @param visitedCells contains all the already-visited cells to not revisit them
+     * @param op the operation to fold the cells on, if we consider this function as :
+     * f : U x U -> U, the ending of the algorithm returns f(f(f(f(...,...),...),...),...)
+     * @param initialValue the initial value of base case
+     * @return a U type data that matches to the definition of the folding function
+     * 
+     */
+    public <U> U foldingDFS(Corporation corporation, Point currentPoint, List<Point> visitedCells, BiFunction<U, U, U> op, U initialValue) {
+        visitedCells.add(currentPoint);
+        List<Point> adjacentCells = adjacentCells(currentPoint);
+        U value = initialValue;
+
+        for (Point adj : adjacentCells) {
+            Cell cell = getCell(currentPoint);
+            if (cell.getCorporation() == corporation && !(visitedCells.contains(adj))) {
+                value = op.apply(value, foldingDFS(corporation, adj, visitedCells, op, initialValue));
             }
         }
 
-        return numberOfCells;
+        return value;
     }
 
-
     /**
-     * This is the main function that calculates the size of a corporation on board
-     * The purpose of this function is for example, to update the stocken information
-     * related to the size of the given corporation
+     * This function sets all the reachable cells that belong to the same corporation starting
+     * from a given point to a given corporation
      * 
-     * @param corporation
-     * @param startingPoint represents the starting point from where the corporation size will
-     * be calculated
-     * @return the size of a corporation on board according to the board
+     * @param corporation the given corporation to transform cells into
+     * @param startingPoint the point where the setting will start from
+     * @see #mappingDFS(Corporation, Point, List, Function)
      */
-    public int calculateCorporationSize(Corporation corporation, Point startingPoint) {
-        Cell startingCell = this.grid[startingPoint.getY()][startingPoint.getX()];
-        if (startingCell.getCorporation() != corporation) {
-            return 0;
+    public void replaceCorporationFrom(Corporation corporation, Point startingPoint) {
+        Cell currentCell = getCell(startingPoint);
+
+        if (!currentCell.isOwned()) {
+            return;
         }
+
+        Corporation currentCorporation = currentCell.getCorporation();
+
         List<Point> visitedCells = new LinkedList<>();
-        return auxCalculateCorporationSize(corporation, startingPoint, visitedCells);
+        mappingDFS(currentCorporation, startingPoint, visitedCells, (Cell cell) -> {
+            replaceCellCorporation(cell, corporation);
+            return null;
+        });
     }
 
     /**
