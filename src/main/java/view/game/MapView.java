@@ -3,7 +3,6 @@ package view.game;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -18,12 +17,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Robot;
-import java.awt.AWTException;
 
 import javaswingdev.GradientDropdownMenu;
 import javaswingdev.MenuEvent;
-import model.Point;
 import view.Form;
 import view.GameFrame;
 
@@ -41,7 +37,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
     final Image background;
 
     public MapView() {
-        super();
+        super(); // FIXME : changer celà lorsqu'on aura le controleur
         background = null;
     }
 
@@ -54,13 +50,10 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
         ImageIcon ico = new ImageIcon("src/main/ressources/background.jpg");
         background = ico.getImage();
 
-        this.width = width;
-        this.height = height;
+        setSize(width, height);
         this.at = new AffineTransform();
     }
 
-    int width;
-    int height;
     AffineTransform at;
 
     @Override
@@ -69,7 +62,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
         Graphics2D g2d = (Graphics2D) g;        
 
         g2d.setTransform(at);
-        g2d.drawImage(background, 0, 0, width, height, this);
+        g2d.drawImage(background, 0, 0, getWidth(), getHeight(), this);
 
         // int cellHeight = height / SIZE;  Pour le cadrillage de la map mais on attend la controleur
         // int cellWidth = width / SIZE;
@@ -159,7 +152,10 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
     public void mouseExited(MouseEvent e) {}
 
     /* -------------- MouseMotionListener --------------- */
-    public void mouseMoved(MouseEvent e) {}
+    public void mouseMoved(MouseEvent e) {
+        
+        //System.out.println("dim : " + getWidth() * at.getScaleX()); // FIXME : debug !
+    }
     public void mouseDragged(MouseEvent e) {
         if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
             try {
@@ -169,13 +165,28 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
                 AffineTransform inverseAt = at.createInverse();
                 inverseAt.transform(p, q);
 
-                at.translate(q.getX() - lastClickedPos.getX(), q.getY() - lastClickedPos.getY());
+                at.translate(q.getX() - lastClickedPos.getX(), q.getY() - lastClickedPos.getY()); 
+                //System.out.println(at.getTranslateX() + " " + at.getTranslateY() ); // FIXME : debug !
+                wrapTranslation();
             } catch (NoninvertibleTransformException excp) {
                 GameFrame.showError(excp, () -> {});
             }
             
             repaint();
         }
+    }
+
+    private void wrapTranslation() {
+        double matrix[] = new double[6];
+        at.getMatrix(matrix);
+
+        if (at.getTranslateX() > 0) matrix[4] = 0;
+        if (at.getTranslateY() > 50) matrix[5] = 0;    // FIXME : 50 hauteur menu
+        // if (at.getTranslateX() < getWidth() * at.getScaleX()) matrix[4] = getWidth()+ getWidth()/at.getScaleX();
+        // if (at.getTranslateY() < getHeight() * at.getScaleY()) matrix[5] = 0;
+
+        System.out.println(matrix[4] + "  " + matrix[5]);
+        at = new AffineTransform(matrix);
     }
 
     /* -------------- MouseWheelListener --------------- */
@@ -197,7 +208,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
         }
 
         if (at.getScaleX() < 1 || at.getScaleY() < 1) {
-            at.setToIdentity();
+            at.setToScale(1, 1);
         }
     
         repaint();
