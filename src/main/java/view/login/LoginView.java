@@ -12,14 +12,17 @@ import view.GameFrame;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class LoginView extends Form {
+    GameFrame frameContainer;
     @Override
     public void setOn(GameFrame g) {
         this.setSize(GameFrame.DEFAULT_WIDTH, GameFrame.DEFAULT_HEIGHT);
         g.setContentPane(this);
     }
-    public LoginView() {
+    public LoginView(GameFrame frame) {
+        frameContainer = frame;
         Form loginComponentContainer = new Form() {
             @Override
             public void setOn(GameFrame g) {
@@ -38,10 +41,12 @@ public class LoginView extends Form {
 
         FlatButton loginButton = new FlatButton();
         loginButton.setText(InterfaceLoginMessages.LOGIN_BUTTON_TEXT);
-        loginButton.setPreferredSize(new Dimension(150,150));
+
 
         FlatButton signInButton = new FlatButton();
         signInButton.setText(InterfaceLoginMessages.SIGN_IN_BUTTON_TEXT);
+        signInButton.addActionListener(ActionListener->{frameContainer.setForm(new SignInView());});
+
 
         FlatTextArea idArea = new FlatTextArea();
         idArea.setText(InterfaceLoginMessages.ID_TEXT_AREA);

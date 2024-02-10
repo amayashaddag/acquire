@@ -15,6 +15,7 @@ import model.Player;
 import view.game.MapView;
 
 import view.login.LoginView;
+import view.login.SignInView;
 
 
 /**
@@ -51,7 +52,7 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-        setForm(new LoginView());     // FIXME : form au lancement
+        setForm(new LoginView(this));     // FIXME : form au lancement
     }
 
 
