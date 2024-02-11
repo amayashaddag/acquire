@@ -11,16 +11,12 @@ stages:
 compile:
   stage: build
   script:
-    - make compile
+    - javac -cp "lib/*" -d build/ src/main/java/*/* src/test/java/*/*
 # Job de test pour un seul fichier
 test:
   stage: test
   script:
-    - make test
-
-
-
-
+    - java -cp "lib/*:build" org.junit.platform.console.ConsoleLauncher --scan-class-path
 # Job de déploiement
 deploy:
   stage: deploy
