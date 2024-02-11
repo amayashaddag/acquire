@@ -5,12 +5,15 @@ MAIN=app.App
 LIB=lib
 
 clean :
+	@echo "⏳ Cleaning binary files..."
 	@rm -rf $(OUT)/*
-
+	@echo "✅ Cleaned successfully..."
 compile :
+	@echo "⏳ Compiling project..."
 	@javac -cp "$(LIB)/*" -d $(OUT) $(JAVA_MAIN)/*/* $(JAVA_TEST)/*/*
-
+	@echo "✅ Compiled successfully"
 run :
+	@echo "⏳ Running project..."
 	@java -cp "$(OUT):$(LIB)/*" $(MAIN)
 
 test :

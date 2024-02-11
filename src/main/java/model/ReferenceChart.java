@@ -1,8 +1,5 @@
 package model;
 
-import java.util.List;
-import java.util.ArrayList;
-
 public class ReferenceChart {
     public static final int FIRST_CATEGORY_STARTING_STOCK_PRICE = 200;
     public static final int SECOND_CATEGORY_STARTING_STOCK_PRICE = 300;
@@ -12,16 +9,22 @@ public class ReferenceChart {
     public static final int FIRST_CATEGORY_STARTING_MAJORITY_SHAREHOLD = 2000;
     public static final int SECOND_CATEGORY_STARTING_MAJORITY_SHAREHOLD = 3000;
     public static final int THIRD_CATEGORY_STARTING_MAJORITY_SHAREHOLD = 4000;
-    public static final int MAJORITY_SHAREHOLD_INCREASING_STEP = 100;
+    public static final int MAJORITY_SHAREHOLD_INCREASING_STEP = 1000;
 
     public static final int FIRST_CATEGORY_STARTING_MINORITY_SHAREHOLD = 1000;
     public static final int SECOND_CATEGORY_STARTING_MINORITY_SHAREHOLD = 1500;
     public static final int THIRD_CATEGORY_STARTING_MINORITY_SHAREHOLD = 2000;
     public static final int MINORITY_SHAREHOLD_INCREASING_STEP = 500;
 
-    private static final List<Corporation> firstCategoryCorporations = new ArrayList<>();
-    private static final List<Corporation> secondCategoryCorporations = new ArrayList<>();
-    private static final List<Corporation> thirdCategoryCorporations = new ArrayList<>();
+    private static final Corporation[] firstCategoryCorporations = {
+        Corporation.WORLDWIDE, 
+        Corporation.SACKSON
+    };
+    private static final Corporation[] secondCategoryCorporations = {
+        Corporation.FESTIVAL,
+        Corporation.IMPERIAL,
+        Corporation.AMERICAN
+    };
 
     @FunctionalInterface
     private static interface SizePredicate {
@@ -43,18 +46,6 @@ public class ReferenceChart {
         (size) -> size >= 41
     };
 
-    {
-        firstCategoryCorporations.add(Corporation.WORLDWIDE);
-        firstCategoryCorporations.add(Corporation.SACKSON);
-
-        secondCategoryCorporations.add(Corporation.FESTIVAL);
-        secondCategoryCorporations.add(Corporation.IMPERIAL);
-        secondCategoryCorporations.add(Corporation.AMERICAN);
-
-        thirdCategoryCorporations.add(Corporation.CONTINENTAL);
-        thirdCategoryCorporations.add(Corporation.TOWER);
-    }
-
     /**
      * This function is used to calculate the stock price and the shareholds of given companies
      * 
@@ -75,6 +66,16 @@ public class ReferenceChart {
         return 0;
     }
 
+    private static boolean contains(Corporation[] corporations, Corporation corporation) {
+        for (Corporation c : corporations) {
+            if (c == corporation) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * 
      * @param corporation
@@ -84,10 +85,10 @@ public class ReferenceChart {
      */
     public static int getStockPrice(Corporation corporation, int size) {
         int rankingSize = getCorporationSizeRanking(size), startingPrice;
-
-        if (firstCategoryCorporations.contains(corporation)) {
+        
+        if (contains(firstCategoryCorporations, corporation)) {
             startingPrice = FIRST_CATEGORY_STARTING_STOCK_PRICE;
-        } else if (secondCategoryCorporations.contains(corporation)) {
+        } else if (contains(secondCategoryCorporations, corporation)) {
             startingPrice = SECOND_CATEGORY_STARTING_STOCK_PRICE;
         } else {
             startingPrice = THIRD_CATEGORY_STARTING_STOCK_PRICE;
@@ -106,9 +107,9 @@ public class ReferenceChart {
     public static int getMajoritySharehold(Corporation corporation, int size) {
         int rankingSize = getCorporationSizeRanking(size), startingPrice;
 
-        if (firstCategoryCorporations.contains(corporation)) {
+        if (contains(firstCategoryCorporations, corporation)) {
             startingPrice = FIRST_CATEGORY_STARTING_MAJORITY_SHAREHOLD;
-        } else if (secondCategoryCorporations.contains(corporation)) {
+        } else if (contains(secondCategoryCorporations, corporation)) {
             startingPrice = SECOND_CATEGORY_STARTING_MAJORITY_SHAREHOLD;
         } else {
             startingPrice = THIRD_CATEGORY_STARTING_MAJORITY_SHAREHOLD;
@@ -126,9 +127,9 @@ public class ReferenceChart {
     public static int getMinoritySharehold(Corporation corporation, int size) {
         int rankingSize = getCorporationSizeRanking(size), startingPrice;
 
-        if (firstCategoryCorporations.contains(corporation)) {
+        if (contains(firstCategoryCorporations, corporation)) {
             startingPrice = FIRST_CATEGORY_STARTING_MINORITY_SHAREHOLD;
-        } else if (secondCategoryCorporations.contains(corporation)) {
+        } else if (contains(secondCategoryCorporations, corporation)) {
             startingPrice = SECOND_CATEGORY_STARTING_MINORITY_SHAREHOLD;
         } else {
             startingPrice = THIRD_CATEGORY_STARTING_MINORITY_SHAREHOLD;
