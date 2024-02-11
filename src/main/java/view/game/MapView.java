@@ -17,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Color;
 
 import javaswingdev.GradientDropdownMenu;
 import javaswingdev.MenuEvent;
@@ -47,7 +48,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
     protected MapView(Object[][] map, int width, int height) {
         super();
 
-        ImageIcon ico = new ImageIcon("src/main/ressources/background.jpg");
+        ImageIcon ico = new ImageIcon("src/main/"+ GameString.RESSOURCES_PATH + GameString.IMAGES_PATH + "background.jpg");
         background = ico.getImage();
 
         setSize(width, height);
@@ -60,13 +61,21 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;        
-
+        
         g2d.setTransform(at);
         g2d.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+  
+        int cellWidth = getWidth() / SIZE;
+        int cellHeight = getHeight() / SIZE;
 
-        // int cellHeight = height / SIZE;  Pour le cadrillage de la map mais on attend la controleur
-        // int cellWidth = width / SIZE;
 
+        // FIXME : première méthode : plus propre mais nécéssite de vraies images
+        // AffineTransform bt = new AffineTransform(at); 
+        // bt.translate(getWidth()/2, 0);
+        // bt.scale(1, 0.5);
+        // bt.rotate(Math.toRadians(45));
+        
+        // g2d.setTransform(bt);
         // g2d.setColor(Color.BLACK);
 
         // for (int row = 0; row < SIZE; row++) {
@@ -76,6 +85,24 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
         //         g2d.drawRect(x, y, cellWidth, cellHeight);
         //     }
         // }
+
+        // g2d.dispose();
+
+        // FIXME : deuxième méthode adapté à l'image Grass
+        ImageIcon grassIco = new ImageIcon("src/main/"+GameString.RESSOURCES_PATH + GameString.IMAGES_PATH + "grass.png");
+        Image grassImg = grassIco.getImage();
+
+        int x = 0;
+        int y = 0;
+        for (int row = 0; row < SIZE; row++) {
+            x = -row * cellWidth/2 + getWidth()/2 - cellWidth; 
+            y = row * cellHeight/2; // FIXME 20 for menu bar
+            for (int col = 0; col < SIZE; col++) { 
+                x += cellWidth/2; 
+                y += cellHeight/2;
+                g2d.drawImage(grassImg, x, y, cellWidth, cellHeight, this);
+            }
+        }
 
         g2d.dispose();
     }
@@ -123,7 +150,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
         g.addMouseMotionListener(map);
         g.getContentPane().add(map); // TODO : en attente du controleur pour [][]
 
-        GradientDropdownMenu menu = getGameMenu();
+        GradientDropdownMenu menu = getGameMenu(); // FIXME : pour test
         menu.applay(g);
     }
 
@@ -152,10 +179,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
     public void mouseExited(MouseEvent e) {}
 
     /* -------------- MouseMotionListener --------------- */
-    public void mouseMoved(MouseEvent e) {
-        
-        //System.out.println("dim : " + getWidth() * at.getScaleX()); // FIXME : debug !
-    }
+    public void mouseMoved(MouseEvent e) {}
     public void mouseDragged(MouseEvent e) {
         if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
             try {
@@ -166,8 +190,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
                 inverseAt.transform(p, q);
 
                 at.translate(q.getX() - lastClickedPos.getX(), q.getY() - lastClickedPos.getY()); 
-                //System.out.println(at.getTranslateX() + " " + at.getTranslateY() ); // FIXME : debug !
-                wrapTranslation();
+                wrapTranslation(); 
             } catch (NoninvertibleTransformException excp) {
                 GameFrame.showError(excp, () -> {});
             }
@@ -182,10 +205,8 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
 
         if (at.getTranslateX() > 0) matrix[4] = 0;
         if (at.getTranslateY() > 50) matrix[5] = 0;    // FIXME : 50 hauteur menu
-        // if (at.getTranslateX() < getWidth() * at.getScaleX()) matrix[4] = getWidth()+ getWidth()/at.getScaleX();
-        // if (at.getTranslateY() < getHeight() * at.getScaleY()) matrix[5] = 0;
+        // FIXME : dépacement droite bas
 
-        System.out.println(matrix[4] + "  " + matrix[5]);
         at = new AffineTransform(matrix);
     }
 
@@ -207,7 +228,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
             GameFrame.showError(excp, () -> {});
         }
 
-        if (at.getScaleX() < 1 || at.getScaleY() < 1) {
+        if (at.getScaleX() < 1 || at.getScaleY() < 1) { // FIXME : min dezoom
             at.setToScale(1, 1);
         }
     
