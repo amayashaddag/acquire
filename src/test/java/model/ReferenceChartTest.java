@@ -46,6 +46,6 @@ public class ReferenceChartTest {
 
         assertEquals(ReferenceChart.getMinoritySharehold(Corporation.CONTINENTAL, 2), 2000);
         assertEquals(ReferenceChart.getMinoritySharehold(Corporation.TOWER, 3), 2500);
-        assertEquals(ReferenceChart.getMajoritySharehold(Corporation.TOWER, 42), 6000);
+        assertEquals(ReferenceChart.getMinoritySharehold(Corporation.TOWER, 42), 6000);
     }
 }
