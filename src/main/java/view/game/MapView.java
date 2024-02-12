@@ -68,27 +68,6 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
         int cellWidth = getWidth() / SIZE;
         int cellHeight = getHeight() / SIZE;
 
-
-        // FIXME : première méthode : plus propre mais nécéssite de vraies images
-        // AffineTransform bt = new AffineTransform(at); 
-        // bt.translate(getWidth()/2, 0);
-        // bt.scale(1, 0.5);
-        // bt.rotate(Math.toRadians(45));
-        
-        // g2d.setTransform(bt);
-        // g2d.setColor(Color.BLACK);
-
-        // for (int row = 0; row < SIZE; row++) {
-        //     int y = row * cellHeight;
-        //     for (int col = 0; col < SIZE; col++) {
-        //         int x = col * cellWidth;
-        //         g2d.drawRect(x, y, cellWidth, cellHeight);
-        //     }
-        // }
-
-        // g2d.dispose();
-
-        // FIXME : deuxième méthode adapté à l'image Grass
         ImageIcon grassIco = new ImageIcon("src/main/"+GameString.RESSOURCES_PATH + GameString.IMAGES_PATH + "grass.png");
         Image grassImg = grassIco.getImage();
 
