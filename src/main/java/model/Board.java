@@ -287,7 +287,7 @@ public class Board {
         U value = initialValue;
 
         for (Point adj : adjacentCells) {
-            Cell cell = getCell(currentPoint);
+            Cell cell = getCell(adj);
             if (cell.getCorporation() == corporation && !(visitedCells.contains(adj))) {
                 value = op.apply(value, foldingDFS(corporation, adj, visitedCells, op, initialValue));
             }
