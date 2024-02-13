@@ -21,4 +21,4 @@ test :
 
 all : clean compile test run
 
-default : all
+all : compile run
