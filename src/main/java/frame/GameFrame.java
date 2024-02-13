@@ -1,4 +1,4 @@
-package view;
+package frame;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -9,8 +9,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 import control.GameController;
+import game.GameView;
 import model.Player;
-import view.game.GameView;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 

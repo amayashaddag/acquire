@@ -8,24 +8,24 @@ import model.Cell;
 import model.Corporation;
 import model.Player;
 import tools.Point;
-import view.game.GameView;
+import game.GameView;
 
 public class GameController {
     private Board board;
-    private GameView gameView;
+    private GameView GameView;
     private List<Player> currentPlayers;
 
     private int playerTurnIndex;
     private boolean gameOver;
 
-    public GameController(Board board, GameView gameView, List<Player> currentPlayers) {
+    public GameController(Board board, GameView GameView, List<Player> currentPlayers) {
         this.board = board;
-        this.gameView = gameView;
+        this.GameView = GameView;
         this.currentPlayers = currentPlayers;
     }
 
     public GameView getGameView() {
-        return gameView;
+        return GameView;
     }
 
     public boolean isGameOver() {

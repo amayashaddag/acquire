@@ -1,8 +1,10 @@
-package view.game;
+package game;
 
 import javax.swing.ImageIcon;
 
 import control.GameController;
+import frame.Form;
+import frame.GameFrame;
 import model.Player;
 
 import java.awt.Graphics;
@@ -17,8 +19,6 @@ import java.awt.Cursor;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import view.Form;
-import view.GameFrame;
 
 
 /**
@@ -26,7 +26,7 @@ import view.GameFrame;
  * 
  * @author Arthur Deck
  * @version 0.1
- * @see view.Form
+ * @see frame.Form
  */
 public class GameView extends Form implements MouseWheelListener, MouseListener, MouseMotionListener {
     
@@ -72,7 +72,7 @@ public class GameView extends Form implements MouseWheelListener, MouseListener,
     /*------------------ Form ------------------- */
 
     /**
-     * {@link view.Form#setOn()}
+     * {@link frame.Form#setOn()}
      */
     public void setOn(GameFrame g) {
         this.setSize(g.getWidth(), g.getHeight());   // FIXME map != null

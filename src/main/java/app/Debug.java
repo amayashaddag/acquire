@@ -1,4 +1,6 @@
-package view;
+package app;
+
+import frame.GameFrame;
 
 public class Debug {
     public static void main(String[] args) {
