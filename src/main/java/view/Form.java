@@ -9,16 +9,10 @@ import javax.swing.JPanel;
  * <p> Same as when you're in internet, you have different  
  * pages (form), but only one window.  <p/> 
  * 
- * @implNote <b>!!! ALL FORM'S SUBCLASS MUST HAVE A    
- * CONSTRUCTOR WHITHOUT ARGUMENTS </b>(example : MapView()) 
- * 
  * @author Arthur Deck
  * @version 1
  */
 public abstract class Form extends JPanel {
-    public Form() {
-        super();
-    }
 
     /**
      * 

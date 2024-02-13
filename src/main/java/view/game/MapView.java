@@ -1,7 +1,6 @@
 package view.game;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -15,12 +14,6 @@ import java.awt.Cursor;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Color;
-
-import javaswingdev.GradientDropdownMenu;
-import javaswingdev.MenuEvent;
 import view.Form;
 import view.GameFrame;
 
@@ -89,36 +82,6 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
 
     /*------------------ Form ------------------- */
 
-    private GradientDropdownMenu getGameMenu() {
-        GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
-        GradientDropdownMenu menu = new GradientDropdownMenu();
-        menu.addItem("Information", "Player Information","Global statement");
-        menu.addItem("Action", "act1", "act2", "...");
-        menu.addItem("Chat", "...");
-        menu.addItem("Option", "Reinitialize map view","Full Screen", "Normal Screen", "Exit");
-        menu.addEvent(new MenuEvent() {
-            @Override
-            public void selected(int index, int subIndex, boolean menuItem) {
-                if (menuItem) {
-                    if (menu.getMenuNameAt(index, subIndex) == "Exit") {
-                        System.exit(0);
-                    } else if (menu.getMenuNameAt(index, subIndex) == "Reinitialize map view") {
-                        // FIXME : implement in a general method
-                    } else if (menu.getMenuNameAt(index, subIndex) == "Full Screen") {
-                        // FIXME : undecorated !!!
-                    } else if (menu.getMenuNameAt(index, subIndex) == "Normal Screen") {
-                        device.setFullScreenWindow(null);
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(null, "not availible yet");
-                    }
-                }
-            }
-        });
-
-        return menu;
-    }
-
     /**
      * {@link view.Form#setOn()}
      */
@@ -128,9 +91,6 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
         g.addMouseListener(map);
         g.addMouseMotionListener(map);
         g.getContentPane().add(map); // TODO : en attente du controleur pour [][]
-
-        GradientDropdownMenu menu = getGameMenu(); // FIXME : pour test
-        menu.applay(g);
     }
 
     
@@ -183,7 +143,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
         at.getMatrix(matrix);
 
         if (at.getTranslateX() > 0) matrix[4] = 0;
-        if (at.getTranslateY() > 50) matrix[5] = 0;    // FIXME : 50 hauteur menu
+        if (at.getTranslateY() > 0) matrix[5] = 0; 
         // FIXME : dépacement droite bas
 
         at = new AffineTransform(matrix);
@@ -207,7 +167,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
             GameFrame.showError(excp, () -> {});
         }
 
-        if (at.getScaleX() < 1 || at.getScaleY() < 1) { // FIXME : min dezoom
+        if (at.getScaleX() < 1 || at.getScaleY() < 1) {
             at.setToScale(1, 1);
         }
     
