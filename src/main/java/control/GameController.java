@@ -8,7 +8,7 @@ import model.Cell;
 import model.Corporation;
 import model.Player;
 import tools.Point;
-import view.GameView;
+import view.game.GameView;
 
 public class GameController {
     private Board board;
