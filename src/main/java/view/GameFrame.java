@@ -1,12 +1,10 @@
 package view;
 
+import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 
 import com.formdev.flatlaf.*;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;

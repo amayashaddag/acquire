@@ -10,6 +10,7 @@ import view.GameFrame;
 
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -26,7 +27,8 @@ public class LoginView extends Form {
         Form loginComponentContainer = new Form() {
             @Override
             public void setOn(GameFrame g) {
-                this.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH*2/5,GameFrame.DEFAULT_HEIGHT));
+                this.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH*3/5,GameFrame.DEFAULT_HEIGHT*4/5));
+                //this.setBounds(GameFrame.DEFAULT_WIDTH/2,GameFrame.DEFAULT_HEIGHT/5,GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT*4/5);
                 g.setContentPane(this);
             }
         };
@@ -38,6 +40,7 @@ public class LoginView extends Form {
         };
         JLabel titleLable = new JLabel(InterfaceLoginMessages.LOGIN_BUTTON_TEXT);
         loginComponentContainer.setLayout(new BoxLayout(loginComponentContainer, BoxLayout.Y_AXIS));
+        loginComponentContainer.setBackground(Color.WHITE);
 
         FlatButton loginButton = new FlatButton();
         loginButton.setText(InterfaceLoginMessages.LOGIN_BUTTON_TEXT);
@@ -55,15 +58,24 @@ public class LoginView extends Form {
         passwordArea.setText(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
 
         loginAndSignInButtonContainer.add(loginButton);
+        loginComponentContainer.add(Box.createHorizontalGlue());
         loginAndSignInButtonContainer.add(signInButton);
-        loginComponentContainer.add(Box.createVerticalStrut(150));
+
+
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/10));
         loginComponentContainer.add(titleLable);
-        loginComponentContainer.add(Box.createVerticalStrut(150));
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/10));
         loginComponentContainer.add(idArea);
-        loginComponentContainer.add(Box.createVerticalStrut(150));
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/20));
         loginComponentContainer.add(passwordArea);
-        loginComponentContainer.add(Box.createVerticalStrut(150));
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/10));
         loginComponentContainer.add(loginAndSignInButtonContainer);
-        this.add(loginComponentContainer);
+
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        this.add(loginComponentContainer,gbc);
     }
 }
