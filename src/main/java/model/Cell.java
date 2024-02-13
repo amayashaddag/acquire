@@ -1,5 +1,58 @@
 package model;
 
 public class Cell {
-    
+
+    private CellState cellState;
+    private Corporation currentCorporation;
+
+    private enum CellState {
+        EMPTY,
+        OCCUPIED,
+        OWNED,
+        DEAD
+    }
+
+    public Cell() {
+        this.cellState = CellState.EMPTY;
+        this.currentCorporation = null;
+    }
+
+    public boolean isEmpty() {
+        return cellState == CellState.EMPTY;
+    }
+
+    public boolean isDead() {
+        return cellState == CellState.DEAD;
+    }
+
+    public boolean isOwned() {
+        return cellState == CellState.OWNED;
+    }
+
+    public boolean isOccupied() {
+        return cellState == CellState.OCCUPIED;
+    }
+
+    public Corporation getCorporation() {
+        return currentCorporation;
+    }
+
+    public void setCorporation(Corporation corporation) {
+        this.cellState = CellState.OWNED;
+        this.currentCorporation = corporation;
+    }
+
+    public void setAsOccupied() {
+        this.cellState = CellState.OCCUPIED;
+    }
+
+    public String toString() {
+        switch (cellState) {
+            case EMPTY: return ".";
+            case DEAD : return "*";
+            case OCCUPIED : return "+";
+            case OWNED : return currentCorporation.toString();
+            default : return "";
+        }
+    }
 }
