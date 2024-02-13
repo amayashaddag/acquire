@@ -1,6 +1,11 @@
-package view.game;
+package game;
 
 import javax.swing.ImageIcon;
+
+import control.GameController;
+import frame.Form;
+import frame.GameFrame;
+import model.Player;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,8 +19,6 @@ import java.awt.Cursor;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import view.Form;
-import view.GameFrame;
 
 
 /**
@@ -23,32 +26,21 @@ import view.GameFrame;
  * 
  * @author Arthur Deck
  * @version 0.1
- * @see view.Form
+ * @see frame.Form
  */
-public class MapView extends Form implements MouseWheelListener, MouseListener, MouseMotionListener {
+public class GameView extends Form implements MouseWheelListener, MouseListener, MouseMotionListener {
     
     final int SIZE = 12;
-    final Image background;
-
-    public MapView() {
-        super(); // FIXME : changer celà lorsqu'on aura le controleur
-        background = null;
-    }
-
-    /**
-     * @param map : the current's game map
-     */
-    protected MapView(Object[][] map, int width, int height) {
-        super();
-
-        ImageIcon ico = new ImageIcon("src/main/"+ GameString.RESSOURCES_PATH + GameString.IMAGES_PATH + "background.jpg");
-        background = ico.getImage();
-
-        setSize(width, height);
-        this.at = new AffineTransform();
-    }
-
+    final GameController controller;
+    final Player player;
     AffineTransform at;
+
+    public GameView(GameController controller, Player player) {
+        super();
+        this.at = new AffineTransform();
+        this.controller = controller;
+        this.player = player;
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -56,13 +48,10 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
         Graphics2D g2d = (Graphics2D) g;        
         
         g2d.setTransform(at);
-        g2d.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+        g2d.drawImage(GameRessources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
   
         int cellWidth = getWidth() / SIZE;
         int cellHeight = getHeight() / SIZE;
-
-        ImageIcon grassIco = new ImageIcon("src/main/"+GameString.RESSOURCES_PATH + GameString.IMAGES_PATH + "grass.png");
-        Image grassImg = grassIco.getImage();
 
         int x = 0;
         int y = 0;
@@ -72,7 +61,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
             for (int col = 0; col < SIZE; col++) { 
                 x += cellWidth/2; 
                 y += cellHeight/2;
-                g2d.drawImage(grassImg, x, y, cellWidth, cellHeight, this);
+                g2d.drawImage(GameRessources.Assets.GRASS, x, y, cellWidth, cellHeight, this);
             }
         }
 
@@ -83,14 +72,14 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
     /*------------------ Form ------------------- */
 
     /**
-     * {@link view.Form#setOn()}
+     * {@link frame.Form#setOn()}
      */
     public void setOn(GameFrame g) {
-        MapView map = new MapView(null, g.getWidth(), g.getHeight());   // FIXME map != null
-        g.addMouseWheelListener(map);
-        g.addMouseListener(map);
-        g.addMouseMotionListener(map);
-        g.getContentPane().add(map); // TODO : en attente du controleur pour [][]
+        this.setSize(g.getWidth(), g.getHeight());   // FIXME map != null
+        g.addMouseWheelListener(this);
+        g.addMouseListener(this);
+        g.addMouseMotionListener(this);
+        g.getContentPane().add(this); // TODO : en attente du controleur pour [][]
     }
 
     

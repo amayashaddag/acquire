@@ -1,4 +1,4 @@
-package view;
+package frame;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -9,8 +9,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 import control.GameController;
+import game.GameView;
 import model.Player;
-import view.game.MapView;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 
@@ -33,12 +33,9 @@ public class GameFrame extends JFrame {
      * @param player : the player will seen this View
      * @param controller : current game superviser
      */
-    public GameFrame(Player player, GameController controller) {
+    public GameFrame() {
         super();
         FlatDarculaLaf.setup();
-
-        this.player = player;
-        this.controller = controller;
 
         setTitle("Acquire");
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -46,11 +43,12 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-        setForm(new MapView());     // FIXME : form au lancement
+        setGameView(null, null);
     }
 
-    Player player;
-    GameController controller;
+    public void setGameView(GameController controller, Player player) {
+        this.setForm(new GameView(controller, player));
+    }
 
     /**
      * <p> Set a form on the current frame 
@@ -60,7 +58,7 @@ public class GameFrame extends JFrame {
      * component you want to set
      * @apiNote example : setForm(new MapView())
      */
-    public void setForm(Form form) {
+    private void setForm(Form form) {
         this.getContentPane().removeAll();
         form.setOn(this);
         this.getContentPane().add(form);

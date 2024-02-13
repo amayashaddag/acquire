@@ -1,8 +1,10 @@
-package view;
+package app;
+
+import frame.GameFrame;
 
 public class Debug {
     public static void main(String[] args) {
-        GameFrame g = new GameFrame (null, null);
+        GameFrame g = new GameFrame ();
         g.setVisible(true);
         g.repaint();
     }
