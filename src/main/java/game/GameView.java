@@ -4,18 +4,28 @@ import control.GameController;
 import frame.Form;
 import frame.GameFrame;
 import model.Player;
+import tools.Point;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
+import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.FlowLayout;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
 
 /**
  * The panel which has the map
@@ -26,26 +36,37 @@ import java.awt.event.MouseMotionListener;
  */
 public class GameView extends Form {
 
-    final int SIZE = 12;
+    final int SIZE = 12; // TODO : delete for test
     final GameController controller;
     final Player player;
+    final DeckPanel deckPanel;
+
     AffineTransform at;
 
     public GameView(GameController controller, Player player) {
         super();
+        this.setLayout(new BorderLayout());
+
         this.at = new AffineTransform();
         this.controller = controller;
         this.player = player;
+        this.deckPanel = new DeckPanel();
+        
+        // JPanel jp = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        // jp.setOpaque(false);
+        // this.add(jp, BorderLayout.SOUTH);
+        // jp.add(new DeckPanel(), BorderLayout.SOUTH);
+        this.add(this.deckPanel, BorderLayout.SOUTH);
 
         this.addMouseListener(new GameMouseListener());
         this.addMouseMotionListener(new GameMouseMotionListener());
         this.addMouseWheelListener(new GameMouseWheelListener());
     }
-
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D) g.create();
 
         g2d.setTransform(at);
         g2d.drawImage(GameRessources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
@@ -75,9 +96,41 @@ public class GameView extends Form {
      */
     public void setOn(GameFrame g) {
         this.setSize(g.getWidth(), g.getHeight()); // FIXME map != null
-        g.getContentPane().add(this); // TODO : en attente du controleur pour [][]
+        g.getContentPane().add(this);
     }
 
+    /*------------------ Component ------------------- */
+
+    private class DeckPanel extends JPanel {
+        Point selection = null;
+
+        DeckPanel() {
+            super();
+            this.setLayout(new FlowLayout(FlowLayout.CENTER));
+            this.setOpaque(false);
+
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setOpaque(false);
+            buttonPanel.setLayout(new GridLayout(1,6));
+
+            for (Point p : player.getDeck()) {
+                buttonPanel.add(new DeckButton(p));
+            }
+
+            this.add(buttonPanel);
+            GameView.this.add(this, BorderLayout.SOUTH);
+        }
+
+        private class DeckButton extends JButton {
+            Point p;
+
+            DeckButton(Point p) {
+                super();
+                this.p = p;
+                // TODO : custom
+            } 
+        }
+    }
 
     /*------------------ Listener ------------------- */
 
