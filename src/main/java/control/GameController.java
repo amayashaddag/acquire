@@ -96,28 +96,6 @@ public class GameController {
     }
 
     /**
-     * Returns the adjacent owned cell positions to a given cell position in order
-     * to
-     * determine the action to perform on the cell
-     * 
-     * @param cellPosition
-     * @return
-     */
-    public List<Point> adjacentOwnedCells(Point cellPosition) {
-        List<Point> adjacentCells = board.adjacentCells(cellPosition);
-        List<Point> cellsToRemove = new LinkedList<>();
-
-        for (Point p : adjacentCells) {
-            Cell adjacentCell = board.getCell(p);
-            if (!adjacentCell.isOwned()) {
-                cellsToRemove.add(p);
-            }
-        }
-        adjacentCells.removeAll(cellsToRemove);
-        return adjacentCells;
-    }
-
-    /**
      * This function is a removing sort algorithm which removes all the positions of cells that 
      * belong to non-maximal-size corporations between them
      * 
@@ -200,7 +178,7 @@ public class GameController {
         Cell currentCell = board.getCell(cellPosition.getX(), cellPosition.getY());
         currentCell.setAsOccupied();
 
-        List<Point> adjacentOwnedCells = adjacentOwnedCells(cellPosition);
+        List<Point> adjacentOwnedCells = board.adjacentOwnedCells(cellPosition);
         if (adjacentOwnedCells.size() == 0) {
             return;
         }

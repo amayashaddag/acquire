@@ -367,4 +367,54 @@ public class Board {
         return board;
     }
 
+    /**
+     * Returns the adjacent owned cell positions to a given cell position in order
+     * to
+     * determine the action to perform on the cell
+     * 
+     * @param cellPosition
+     * @return
+     */
+    public List<Point> adjacentOwnedCells(Point cellPosition) {
+        List<Point> adjacentCells = adjacentCells(cellPosition);
+        List<Point> cellsToRemove = new LinkedList<>();
+
+        for (Point p : adjacentCells) {
+            Cell adjacentCell = getCell(p);
+            if (!adjacentCell.isOwned()) {
+                cellsToRemove.add(p);
+            }
+        }
+        adjacentCells.removeAll(cellsToRemove);
+        return adjacentCells;
+    }
+
+
+    /**
+     * Updates the cells of the board to update the dead ones
+     */
+    public void updateDeadCells() {
+        for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
+                Point current = new Point(j, i);
+                Cell currentCell = getCell(current);
+                List<Point> adjacentOwnedCells = adjacentOwnedCells(current);
+
+                int adjacentSafeCorporations = 0;
+                for (Point adj : adjacentOwnedCells) {
+                    Cell adjacentCell = getCell(adj);
+                    Corporation adjacentCorporation = adjacentCell.getCorporation();
+                    if (corporationIsSafe(adjacentCorporation)) {
+                        adjacentSafeCorporations++;
+                    }
+                }
+
+                if (adjacentSafeCorporations > 1) {
+                    currentCell.setAsDead();
+                }
+
+            }
+        }
+    }
+
 }
