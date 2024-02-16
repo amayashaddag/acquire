@@ -8,9 +8,7 @@ import tools.Point;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.GridBagConstraints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.NoninvertibleTransformException;
@@ -22,10 +20,15 @@ import java.awt.FlowLayout;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.Color;
+import java.awt.Component;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.BorderFactory;
+import javax.swing.UIManager;
 
+import com.formdev.flatlaf.ui.FlatBorder;
 
 /**
  * The panel which has the map
@@ -76,7 +79,7 @@ public class GameView extends Form {
 
         int x = 0;
         int y = 0;
-        for (int row = 0; row < SIZE; row++) {
+        for (int row = 0; row < SIZE; row++) {  // TODO : if selection colorer la case
             x = -row * cellWidth / 2 + getWidth() / 2 - cellWidth;
             y = row * cellHeight / 2; // FIXME 20 for menu bar
             for (int col = 0; col < SIZE; col++) {
@@ -103,13 +106,14 @@ public class GameView extends Form {
 
     private class DeckPanel extends JPanel {
         Point selection = null;
+        JPanel buttonPanel;
 
         DeckPanel() {
             super();
             this.setLayout(new FlowLayout(FlowLayout.CENTER));
             this.setOpaque(false);
 
-            JPanel buttonPanel = new JPanel();
+            this.buttonPanel = new JPanel();
             buttonPanel.setOpaque(false);
             buttonPanel.setLayout(new GridLayout(1,6));
 
@@ -121,14 +125,37 @@ public class GameView extends Form {
             GameView.this.add(this, BorderLayout.SOUTH);
         }
 
-        private class DeckButton extends JButton {
+        @Override
+        public void repaint() {
+            this.buttonPanel.removeAll();
+            for (Point p : player.getDeck()) {
+                buttonPanel.add(new DeckButton(p));
+            }
+            super.repaint();
+        }
+
+        private class DeckButton extends JButton implements MouseListener {
             Point p;
 
             DeckButton(Point p) {
                 super();
                 this.p = p;
-                // TODO : custom
+                this.setText(p.toString());
+                this.addActionListener((e) -> System.out.println("Le joueur pose le pion")); // TODO : implement with controleur  
+                this.addMouseListener(this);
             } 
+
+            public void mousePressed(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {}
+            public void mouseClicked(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {
+                DeckPanel.this.selection = this.p;
+                this.setBorder(new ColorableButtonBorder(new Color(2, 200, 46)));
+            }
+            public void mouseExited(MouseEvent e) {
+                DeckPanel.this.selection = null;
+                this.setBorder(UIManager.getBorder("Button.border"));
+            }
         }
     }
 
@@ -157,15 +184,9 @@ public class GameView extends Form {
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
 
-        public void mouseClicked(MouseEvent e) {
-        }
-
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        public void mouseExited(MouseEvent e) {
-        }
-
+        public void mouseClicked(MouseEvent e) {}
+        public void mouseEntered(MouseEvent e) {}
+        public void mouseExited(MouseEvent e) {}
     }
 
     private class GameMouseMotionListener implements MouseMotionListener {
