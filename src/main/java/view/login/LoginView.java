@@ -54,10 +54,12 @@ public class LoginView extends Form {
         signInButton.addActionListener(ActionListener->{frameContainer.setForm(new SignInView());});
 
 
-        FlatTextArea idArea = new FlatTextArea();
+        //FlatTextArea idArea = new FlatTextArea();
+        PlaceHolderTextArea idArea = new PlaceHolderTextArea(InterfaceLoginMessages.ID_TEXT_AREA);
         idArea.setText(InterfaceLoginMessages.ID_TEXT_AREA);
 
-        FlatTextArea passwordArea = new FlatTextArea();
+        //FlatTextArea passwordArea = new FlatTextArea();
+        PlaceHolderTextArea passwordArea = new PlaceHolderTextArea(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
         passwordArea.setText(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
 
         loginAndSignInButtonContainer.add(loginButton);
