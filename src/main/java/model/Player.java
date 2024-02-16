@@ -5,6 +5,8 @@ import java.util.HashMap;
  * @version 1.0
  */
 
+import tools.Point;
+
 public class Player {
     private int cash;
     private HashMap<Corporation,Integer> earnedStocks;
@@ -84,7 +86,7 @@ public class Player {
      * @param1 corporation in which remove stocks
      * @param2 number of stocks to remove
      */
-    public void removeToEarnedStocks(Corporation corp,int amount){
+    public void removeFromEarnedStocks(Corporation corp,int amount){
         this.cash-=amount;
     }
     /**
