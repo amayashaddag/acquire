@@ -4,10 +4,10 @@ import com.formdev.flatlaf.ui.FlatBorder;
 import java.awt.Color;
 import java.awt.Component;
 
-public class ColorableButtonBorder extends FlatBorder {
+public class ColorableBorder extends FlatBorder {
     Color color;
 
-    public ColorableButtonBorder(Color c) {
+    public ColorableBorder(Color c) {
         super();
         this.color = c;
     }

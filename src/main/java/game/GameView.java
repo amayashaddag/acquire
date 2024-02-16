@@ -55,12 +55,7 @@ public class GameView extends Form {
         this.player = player;
         this.deckPanel = new DeckPanel();
         
-        // JPanel jp = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        // jp.setOpaque(false);
-        // this.add(jp, BorderLayout.SOUTH);
-        // jp.add(new DeckPanel(), BorderLayout.SOUTH);
         this.add(this.deckPanel, BorderLayout.SOUTH);
-
         this.addMouseListener(new GameMouseListener());
         this.addMouseMotionListener(new GameMouseMotionListener());
         this.addMouseWheelListener(new GameMouseWheelListener());
@@ -150,7 +145,7 @@ public class GameView extends Form {
             public void mouseClicked(MouseEvent e) {}
             public void mouseEntered(MouseEvent e) {
                 DeckPanel.this.selection = this.p;
-                this.setBorder(new ColorableButtonBorder(new Color(2, 200, 46)));
+                this.setBorder(new ColorableBorder(new Color(2, 200, 46)));
             }
             public void mouseExited(MouseEvent e) {
                 DeckPanel.this.selection = null;

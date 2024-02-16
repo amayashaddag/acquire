@@ -1,7 +1,7 @@
 package app;
 
 import frame.GameFrame;
-import game.ColorableButtonBorder;
+import game.ColorableBorder;
 import tools.Point;
 
 import java.awt.*;
@@ -66,7 +66,7 @@ public class Debug {
 
         public void mouseEntered(MouseEvent e) {
             Borduree zda = new Borduree();
-            this.setBorder(new ColorableButtonBorder(new Color(2, 200, 46)));
+            this.setBorder(new ColorableBorder(new Color(2, 200, 46)));
         }
 
         public void mouseExited(MouseEvent e) {
