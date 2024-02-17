@@ -21,14 +21,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.BorderFactory;
 import javax.swing.UIManager;
 
-import com.formdev.flatlaf.ui.FlatBorder;
 
 /**
  * The panel which has the map
@@ -136,21 +133,27 @@ public class GameView extends Form {
                 super();
                 this.p = p;
                 this.setText(p.toString());
-                this.addActionListener((e) -> System.out.println("Le joueur pose le pion")); // TODO : implement with controleur  
+                this.addActionListener((e) -> {
+                    controller.placeCell(p); // TODO : bizarre la fonction place cell ne prend pas en compte le joueur qui pose ?
+                    // TODO : get current player ?
+                    // TODO : obtenir le nouveau jeton ???
+                });   
                 this.addMouseListener(this);
             } 
 
-            public void mousePressed(MouseEvent e) {}
-            public void mouseReleased(MouseEvent e) {}
-            public void mouseClicked(MouseEvent e) {}
             public void mouseEntered(MouseEvent e) {
                 DeckPanel.this.selection = this.p;
-                this.setBorder(new ColorableBorder(new Color(2, 200, 46)));
+                this.setBorder(new ColorableFlatBorder(new Color(104, 203, 44)));
             }
+
             public void mouseExited(MouseEvent e) {
                 DeckPanel.this.selection = null;
                 this.setBorder(UIManager.getBorder("Button.border"));
             }
+
+            public void mousePressed(MouseEvent arg0) {}
+            public void mouseClicked(MouseEvent arg0) {}
+            public void mouseReleased(MouseEvent arg0) {}
         }
     }
 

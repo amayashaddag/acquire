@@ -4,10 +4,17 @@ import com.formdev.flatlaf.ui.FlatBorder;
 import java.awt.Color;
 import java.awt.Component;
 
-public class ColorableBorder extends FlatBorder {
-    Color color;
+/**
+ * A colored border which keep the FlatLaf style
+ * 
+ * @author Arthur Deck
+ * @version 1
+ * @see com.formdev.flatlaf.ui.FlatBorder
+ */
+public class ColorableFlatBorder extends FlatBorder {
+    Color color; 
 
-    public ColorableBorder(Color c) {
+    public ColorableFlatBorder(Color c) {
         super();
         this.color = c;
     }

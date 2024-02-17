@@ -1,7 +1,9 @@
 package app;
 
 import frame.GameFrame;
-import game.ColorableBorder;
+import game.ColorableFlatBorder;
+import game.PlayerItem;
+import net.miginfocom.swing.MigLayout;
 import tools.Point;
 
 import java.awt.*;
@@ -26,6 +28,7 @@ import java.util.Map;
 
 import javax.swing.plaf.basic.BasicBorders;
 
+
 public class Debug {
     public static void main(String[] args) {
         FlatDarculaLaf.setup();
@@ -38,46 +41,14 @@ public class Debug {
         g.setResizable(false);
 
         JPanel jp = new JPanel();
-        jp.add(new DeckButton(null));
+        MigLayout mig = new MigLayout("al center, filly", "10[]10");
+        jp.setLayout(mig);
+        jp.add(new PlayerItem(mig));
+        jp.add(new PlayerItem(mig));
+        jp.add(new PlayerItem(mig));
+        jp.add(new PlayerItem(mig));
+
         g.add(jp);
-
         g.setVisible(true);
-        g.repaint();
-    }
-
-    public static class DeckButton extends JButton implements MouseListener {
-
-        DeckButton(Point p) {
-            super();
-            this.setText("Click");
-            this.addActionListener((e) -> System.out.println("caca"));
-            this.addMouseListener(this);
-            System.out.println("Border : " + getBorder());
-        }
-
-        public void mousePressed(MouseEvent e) {
-        }
-
-        public void mouseReleased(MouseEvent e) {
-        }
-
-        public void mouseClicked(MouseEvent e) {
-        }
-
-        public void mouseEntered(MouseEvent e) {
-            Borduree zda = new Borduree();
-            this.setBorder(new ColorableBorder(new Color(2, 200, 46)));
-        }
-
-        public void mouseExited(MouseEvent e) {
-            this.setBorder(UIManager.getBorder("Button.border"));
-        }
-    }
-
-    public static class Borduree extends FlatBorder {
-        @Override
-        protected Color getOutlineColor(Component c) {
-            return Color.GREEN;
-        }    
     }
 }
