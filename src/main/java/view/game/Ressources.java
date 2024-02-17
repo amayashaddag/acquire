@@ -1,4 +1,4 @@
-package game;
+package view.game;
 
 import java.awt.Image;
 import javax.swing.ImageIcon;
@@ -7,7 +7,7 @@ import javax.swing.ImageIcon;
  * @author Arthur Deck
  * @version 0.1
  */
-public class GameRessources {
+public class Ressources {
     public static final String MAIN_PATH = "src/main/";
     public static final String RESSOURCES_PATH = "ressources/";
     public static final String IMAGES_PATH ="images/game/";

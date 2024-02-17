@@ -1,4 +1,4 @@
-package game;
+package view.game;
 
 import com.formdev.flatlaf.ui.FlatBorder;
 import java.awt.Color;
