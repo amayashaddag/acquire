@@ -417,4 +417,25 @@ public class Board {
         }
     }
 
+    /**
+     * @param cellPosition
+     * @return Returns wether a player can place a cell in the given position or not
+     */
+    public boolean canPlaceIn(Point cellPosition) {
+        Cell cell = getCell(cellPosition);
+        if (cell.isDead() || cell.isOccupied() || cell.isOwned()) {
+            return false;
+        }
+
+        List<Point> adjacentCells = adjacentCells(cellPosition);
+        for (Point adj : adjacentCells) {
+            Cell adjacentCell = getCell(adj);
+            if (adjacentCell.isOccupied() || adjacentCell.isOwned()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }
