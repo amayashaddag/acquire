@@ -35,6 +35,9 @@ public class GameController {
     public int getPlayerTurnIndex() {
         return playerTurnIndex;
     }
+    public List<Player> getCurrentPlayers() {
+        return currentPlayers;
+    }
 
     /**
      * This function is used at the beginning of the game (where it is already
@@ -216,4 +219,5 @@ public class GameController {
 
         mergeCorporations(adjacentOwnedCells, cellPosition);
     }
+    
 }
