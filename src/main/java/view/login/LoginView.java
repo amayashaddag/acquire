@@ -17,24 +17,38 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class LoginView extends Form {
-    GameFrame frameContainer;
+
+    JLabel titleLabel;
+
+    Form loginComponentContainer;
+    Form loginAndSignInButtonContainer;
+    Form createAccountAndComeBackToLoginContainer;
+
+
     @Override
     public void setOn(GameFrame g) {
         this.setSize(GameFrame.DEFAULT_WIDTH, GameFrame.DEFAULT_HEIGHT);
         g.setContentPane(this);
     }
-    public LoginView(GameFrame frame) {
-        frameContainer = frame;
-        Form loginComponentContainer = new Form() {
+    public LoginView() {
+
+        loginComponentContainer = new Form() {
             @Override
             public void setOn(GameFrame g) {
                 g.setContentPane(this);
             }
         };
-        Form loginAndSignInButtonContainer = new Form() {
+        loginAndSignInButtonContainer = new Form() {
             @Override
             public void setOn(GameFrame g) {
-                this.setSize(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4);
+                this.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4));
+            }
+        };
+
+        createAccountAndComeBackToLoginContainer = new Form() {
+            @Override
+            public void setOn(GameFrame g) {
+                this.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4));
             }
         };
 
@@ -42,8 +56,8 @@ public class LoginView extends Form {
         loginComponentContainer.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/3,GameFrame.DEFAULT_HEIGHT*3/5));
 
 
-        JLabel titleLable = new JLabel(InterfaceLoginMessages.LOGIN_BUTTON_TEXT);
-        titleLable.setAlignmentX(CENTER_ALIGNMENT);
+        titleLabel = new JLabel(InterfaceLoginMessages.LOGIN_BUTTON_TEXT);
+        titleLabel.setAlignmentX(CENTER_ALIGNMENT);
 
         FlatButton loginButton = new FlatButton();
         loginButton.setText(InterfaceLoginMessages.LOGIN_BUTTON_TEXT);
@@ -51,23 +65,33 @@ public class LoginView extends Form {
 
         FlatButton signInButton = new FlatButton();
         signInButton.setText(InterfaceLoginMessages.SIGN_IN_BUTTON_TEXT);
-        signInButton.addActionListener(ActionListener->{frameContainer.setForm(new SignInView());});
+        signInButton.addActionListener(ActionListener->{fromLoginMenuToSignInMenu();});
+
+        FlatButton createAccountButton = new FlatButton();
+        createAccountButton.setText("CREATE ACCOUNT");
+
+        FlatButton comeBackToLoginButton = new FlatButton();
+        comeBackToLoginButton.setText("LOGIN");
+        comeBackToLoginButton.addActionListener((ActionListener) ->{fromSignInMenuToLoginMenu();});
 
 
-        //FlatTextArea idArea = new FlatTextArea();
         PlaceHolderTextArea idArea = new PlaceHolderTextArea(InterfaceLoginMessages.ID_TEXT_AREA);
         idArea.setText(InterfaceLoginMessages.ID_TEXT_AREA);
 
-        //FlatTextArea passwordArea = new FlatTextArea();
+
         PlaceHolderTextArea passwordArea = new PlaceHolderTextArea(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
         passwordArea.setText(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
+
 
         loginAndSignInButtonContainer.add(loginButton);
         loginAndSignInButtonContainer.add(signInButton);
 
+        createAccountAndComeBackToLoginContainer.add(comeBackToLoginButton);
+        createAccountAndComeBackToLoginContainer.add(createAccountButton);
+
 
         loginComponentContainer.add(Box.createHorizontalGlue());
-        loginComponentContainer.add(titleLable);
+        loginComponentContainer.add(titleLabel);
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/8));
         loginComponentContainer.add(idArea);
@@ -83,5 +107,20 @@ public class LoginView extends Form {
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 0, 0);
         this.add(loginComponentContainer,gbc);
+    }
+    public void fromLoginMenuToSignInMenu(){
+        titleLabel.setText("SIGN IN");
+        loginComponentContainer.remove(loginAndSignInButtonContainer);
+        loginComponentContainer.add(createAccountAndComeBackToLoginContainer);
+        loginComponentContainer.revalidate();
+        loginComponentContainer.repaint();
+    }
+
+    public void fromSignInMenuToLoginMenu(){
+        titleLabel.setText("LOGIN");
+        loginComponentContainer.remove(createAccountAndComeBackToLoginContainer);
+        loginComponentContainer.add(loginAndSignInButtonContainer);
+        loginComponentContainer.revalidate();
+        loginComponentContainer.repaint();
     }
 }
