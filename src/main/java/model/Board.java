@@ -144,6 +144,9 @@ public class Board {
         Point cell = remainingCells.remove(index);
         return cell;
     }
+    public Map<Corporation, Integer> getRemainingStocks() {
+        return remainingStocks;
+    }
 
     /**
      *

@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,6 +78,7 @@ public class GameControllerTest {
         }
         return true;
     }
+
     boolean twoDeckAreDiffernt(Point[] deck1, Point[] deck2) {
         for (Point point1 : deck1) {
             for (Point point2 : deck2) {
@@ -93,7 +96,8 @@ public class GameControllerTest {
         boolean deckNull = false;
         for (Player player : game.getCurrentPlayers()) {
             Point[] arthurDeck = player.getDeck();
-            deckNull = (arthurDeck == null) || (arthurDeck.length == 0);
+            deckNull = (arthurDeck == null) || (arthurDeck.length == 0); // FIXME : y a variable qui s'appelle Arthur
+                                                                         // Deck
         }
         assertFalse(deckNull);
     }
@@ -123,5 +127,66 @@ public class GameControllerTest {
         assertTrue(decksAreDifferent);
 
     }
-        
+
+    // TestBuyStocks
+    @Test
+    void testBuy3Stocks() {
+        GameController game = new GameController(boardExample(), null, generateCurrentPlayers());
+        Player player1 = game.getCurrentPlayers().get(0);
+        player1.addToCash(10000); // FIXME : Il est riche
+        int initialCash = player1.getCash();
+        HashMap<Corporation, Integer> initialStocks = player1.getEarnedStocks();
+        Map<Corporation, Integer> intialRemainingStocks = game.getBoard().getRemainingStocks();
+        game.buyStocks(player1, Corporation.FESTIVAL, 4); // Maximum is 3
+
+        assertEquals(intialRemainingStocks, game.getBoard().getRemainingStocks());
+        assertEquals(initialStocks, player1.getEarnedStocks());
+        assertEquals(initialCash, player1.getCash());
+    }
+
+    @Test
+    void testBuyStocksNotEnoughCash() {
+        GameController game = new GameController(boardExample(), null, generateCurrentPlayers());
+        Player player1 = game.getCurrentPlayers().get(0);
+        int initialCash = player1.getCash();
+        HashMap<Corporation, Integer> initialStocks = player1.getEarnedStocks();
+        Map<Corporation, Integer> intialRemainingStocks = game.getBoard().getRemainingStocks();
+        game.buyStocks(player1, Corporation.FESTIVAL, 1); // Maximum is 3
+
+        assertEquals(intialRemainingStocks, game.getBoard().getRemainingStocks());
+        assertEquals(initialStocks, player1.getEarnedStocks());
+        assertEquals(initialCash, player1.getCash());
+    }
+
+    @Test
+    void testGeneralBuyStocks() {
+        GameController game = new GameController(boardExample(), null, generateCurrentPlayers());
+        Player player1 = game.getCurrentPlayers().get(0);
+        player1.addToCash(10000);
+        int initialCash = player1.getCash();
+        HashMap<Corporation, Integer> initialStocks = player1.getEarnedStocks();
+        Map<Corporation, Integer> intialRemainingStocks = game.getBoard().getRemainingStocks();
+        game.buyStocks(player1, Corporation.FESTIVAL, 1); // Maximum is 3
+
+        assertNotEquals(intialRemainingStocks, game.getBoard().getRemainingStocks());
+        assertNotEquals(initialStocks, player1.getEarnedStocks());
+        assertNotEquals(initialCash, player1.getCash());
+    }
+
+    // Test SellStocks() :
+    @Test
+    void testSellStocks() {
+        GameController game = new GameController(boardExample(), null, generateCurrentPlayers());
+        Player player1 = game.getCurrentPlayers().get(0);
+        int initialCash = player1.getCash();
+        HashMap<Corporation, Integer> initialStocks = player1.getEarnedStocks();
+        Map<Corporation, Integer> intialRemainingStocks = game.getBoard().getRemainingStocks();
+        game.sellStocks(player1, Corporation.AMERICAN, 1);
+
+        assertNotEquals(intialRemainingStocks, game.getBoard().getRemainingStocks());
+        assertNotEquals(initialStocks, player1.getEarnedStocks());
+        assertNotEquals(initialCash, player1.getCash());
+    }
+    //
+
 }

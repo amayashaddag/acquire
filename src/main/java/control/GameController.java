@@ -35,8 +35,13 @@ public class GameController {
     public int getPlayerTurnIndex() {
         return playerTurnIndex;
     }
+
     public List<Player> getCurrentPlayers() {
         return currentPlayers;
+    }
+
+    public Board getBoard() {
+        return board;
     }
 
     /**
@@ -121,7 +126,8 @@ public class GameController {
     }
 
     /**
-     * This function is a removing sort algorithm which removes all the positions of cells that 
+     * This function is a removing sort algorithm which removes all the positions of
+     * cells that
      * belong to non-maximal-size corporations between them
      * 
      * @param adjacentOwnedCells
@@ -219,5 +225,5 @@ public class GameController {
 
         mergeCorporations(adjacentOwnedCells, cellPosition);
     }
-    
+
 }

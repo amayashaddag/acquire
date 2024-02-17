@@ -98,4 +98,7 @@ public class Player {
     public Point getCell(int index){
         return this.deck[index];
     }
+    public int getCash() {
+        return cash;
+    }
 }
