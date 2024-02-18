@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 /**
  * The panel which has the map
@@ -51,13 +52,20 @@ public class GameView extends Form {
 
         int x = 0;
         int y = 0;
-        for (int row = 0; row < SIZE; row++) {  // TODO : if selection colorer la case
+        for (int row = 0; row < SIZE; row++) { 
             x = -row * cellWidth / 2 + getWidth() / 2 - cellWidth;
-            y = row * cellHeight / 2; // FIXME 20 for menu bar
+            y = row * cellHeight / 2;
             for (int col = 0; col < SIZE; col++) {
                 x += cellWidth / 2;
                 y += cellHeight / 2;
                 g2d.drawImage(Ressources.Assets.GRASS, x, y, cellWidth, cellHeight, this);
+
+                if (new tools.Point(row, col).equals(jetonsPanel.getSelection())) {
+                    g2d.setColor(new Color(0, 255, 0, 128));
+                    int radiusX = cellWidth/3;
+                    int radiusY = cellHeight/3;
+                    g2d.fillOval(x+radiusX, y+radiusY, radiusX, radiusY);
+                }
             }
         }
 

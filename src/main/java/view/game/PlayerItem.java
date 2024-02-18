@@ -1,47 +1,53 @@
 package view.game;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
+import java.awt.Dimension;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.Timer;
 import javax.swing.JLabel;
 
 import net.miginfocom.swing.MigLayout;
 
+
+/**
+ * <p> A JLabel wich automatly grow
+ * when you pass your mouse on it and
+ * print player's info </p>
+ * <p> It grow for width not for height </p>
+ * 
+ * @author Arthur Deck
+ * @version 1
+ */
 public class PlayerItem extends JLabel {
 
     private Timer timer;
     private boolean show;
 
-    public PlayerItem(MigLayout mig) {
-        super();
+    private final Dimension initialDimension, zoomingDimension;
 
-        setText("cdzafdza");
-        
+    public PlayerItem(MigLayout mig) {
+        this(mig, new Dimension(100, 100), new Dimension(200, 120));
+    }
+
+    public PlayerItem(MigLayout mig, Dimension initial, Dimension zooming) {
+        super();
+        this.initialDimension = initial;
+        this.zoomingDimension = zooming;
+
         timer = new Timer(0, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 if (show) {
                     int width = getWidth();
                     int height = getHeight();
-                    if (height < 220) {
-                        mig.setComponentConstraints(PlayerItem.this, "w " + (width + 1) + ", h " + (height + 1));
+                    if (width < zoomingDimension.width) {
+                        mig.setComponentConstraints(PlayerItem.this, "w " + (width + 1) + ", h " + Math.min(height + 1, zoomingDimension.height));
                         getParent().revalidate();
                     } else {
                         timer.stop();
@@ -49,8 +55,8 @@ public class PlayerItem extends JLabel {
                 } else {
                     int width = getWidth();
                     int height = getHeight();
-                    if (height > 100) {
-                        mig.setComponentConstraints(PlayerItem.this, "w " + (width - 1) + ", h " + (height - 1));
+                    if (width > initialDimension.width) {
+                        mig.setComponentConstraints(PlayerItem.this, "w " + (width - 1) + ", h " + Math.max(height - 1, initialDimension.height));
                         getParent().revalidate();
                     } else {
                         timer.stop();
@@ -77,7 +83,7 @@ public class PlayerItem extends JLabel {
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.RED);
-        g2.fillRect(0, 0, getWidth(), getHeight());
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
         g2.dispose();
     }
 }

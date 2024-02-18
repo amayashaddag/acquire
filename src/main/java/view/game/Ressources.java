@@ -4,6 +4,8 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 
 /**
+ * All images used for game are ir
+ * 
  * @author Arthur Deck
  * @version 0.1
  */

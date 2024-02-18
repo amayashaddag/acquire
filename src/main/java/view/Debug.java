@@ -36,19 +36,18 @@ public class Debug {
         // JPanel jp = new JPanel();
         // MigLayout mig = new MigLayout("al center, filly", "10[]10");
         // jp.setLayout(mig);
-        // jp.add(new PlayerItem(mig), "w 250, h 200");
-        // jp.add(new PlayerItem(mig), "w 250, h 200");
-        // jp.add(new PlayerItem(mig), "w 250, h 200");
-        // jp.add(new PlayerItem(mig), "w 250, h 200");
+        // jp.add(new PlayerItem(mig), "w 100, h 100");
+        // jp.add(new PlayerItem(mig), "w 100, h 100");
+        // jp.add(new PlayerItem(mig), "w 100, h 100");
 
         // JPanel root = new JPanel();
         // root.setLayout(new BorderLayout());
-        // root.add(jp);
+        // root.add(jp, BorderLayout.NORTH);
 
         // g.add(root);
         // g.setVisible(true);
 
-        GameFrame g = new GameFrame();
-        g.setVisible(true);
+        GameFrame f = new GameFrame();
+        f.setVisible(true);
     }
 }

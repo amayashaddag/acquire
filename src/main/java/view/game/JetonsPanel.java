@@ -75,11 +75,13 @@ public class JetonsPanel extends JPanel {
         public void mouseEntered(MouseEvent e) {
             JetonsPanel.this.selection = this.p;
             this.setBorder(new ColorableFlatBorder(new Color(104, 203, 44)));
+            g.repaint();
         }
 
         public void mouseExited(MouseEvent e) {
             JetonsPanel.this.selection = null;
             this.setBorder(UIManager.getBorder("Button.border"));
+            g.repaint();
         }
 
         public void mousePressed(MouseEvent arg0) {}
