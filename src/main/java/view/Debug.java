@@ -3,7 +3,9 @@ package view;
 import net.miginfocom.swing.MigLayout;
 import tools.Point;
 import view.game.ColorableFlatBorder;
-import view.game.PlayerItem;
+import view.game.GameView;
+import view.game.GrowingJLabel;
+import view.game.annotations.AutoSetter;
 
 import java.awt.*;
 import javax.swing.*;
@@ -22,8 +24,11 @@ import java.util.Map;
 
 import javax.swing.plaf.basic.BasicBorders;
 
-
+@AutoSetter
 public class Debug {
+    public Debug(GameView g) {
+        
+    }
     public static void main(String[] args) {
         // FlatDarculaLaf.setup();
 

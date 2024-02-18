@@ -17,25 +17,24 @@ import net.miginfocom.swing.MigLayout;
 
 /**
  * <p> A JLabel wich automatly grow
- * when you pass your mouse on it and
- * print player's info </p>
+ * when you pass your mouse on it</p>
  * <p> It grow for width not for height </p>
  * 
  * @author Arthur Deck
  * @version 1
  */
-public class PlayerItem extends JLabel {
+public class GrowingJLabel extends JLabel {
 
     private Timer timer;
     private boolean show;
 
     private final Dimension initialDimension, zoomingDimension;
 
-    public PlayerItem(MigLayout mig) {
+    public GrowingJLabel(MigLayout mig) {
         this(mig, new Dimension(100, 100), new Dimension(200, 120));
     }
 
-    public PlayerItem(MigLayout mig, Dimension initial, Dimension zooming) {
+    public GrowingJLabel(MigLayout mig, Dimension initial, Dimension zooming) {
         super();
         this.initialDimension = initial;
         this.zoomingDimension = zooming;
@@ -47,7 +46,7 @@ public class PlayerItem extends JLabel {
                     int width = getWidth();
                     int height = getHeight();
                     if (width < zoomingDimension.width) {
-                        mig.setComponentConstraints(PlayerItem.this, "w " + (width + 1) + ", h " + Math.min(height + 1, zoomingDimension.height));
+                        mig.setComponentConstraints(GrowingJLabel.this, "w " + (width + 1) + ", h " + Math.min(height + 1, zoomingDimension.height));
                         getParent().revalidate();
                     } else {
                         timer.stop();
@@ -56,7 +55,7 @@ public class PlayerItem extends JLabel {
                     int width = getWidth();
                     int height = getHeight();
                     if (width > initialDimension.width) {
-                        mig.setComponentConstraints(PlayerItem.this, "w " + (width - 1) + ", h " + Math.max(height - 1, initialDimension.height));
+                        mig.setComponentConstraints(GrowingJLabel.this, "w " + (width - 1) + ", h " + Math.max(height - 1, initialDimension.height));
                         getParent().revalidate();
                     } else {
                         timer.stop();
