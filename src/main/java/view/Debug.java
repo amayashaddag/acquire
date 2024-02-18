@@ -24,11 +24,12 @@ import java.util.Map;
 
 import javax.swing.plaf.basic.BasicBorders;
 
-@AutoSetter
+@AutoSetter(paramType = GameView.class)
 public class Debug {
     public Debug(GameView g) {
-        
+
     }
+
     public static void main(String[] args) {
         // FlatDarculaLaf.setup();
 
