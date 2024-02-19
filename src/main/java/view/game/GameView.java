@@ -25,18 +25,29 @@ public class GameView extends Form {
     final protected Player player;
     final private JetonsPanel jetonsPanel;
     final private MouseManager mouseListener;
+    final private PlayerBoard playerBoard;
 
     AffineTransform at;
 
     public GameView(GameController controller, Player player) {
         super();
         this.setLayout(new BorderLayout());
-
         this.at = new AffineTransform();
+        
         this.controller = controller;
         this.player = player;
+        
         this.jetonsPanel = new JetonsPanel(this);
         this.mouseListener = new MouseManager(this);
+        this.playerBoard = new PlayerBoard(this);
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public GameController getController() {
+        return controller;
     }
     
     @Override

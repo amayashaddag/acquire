@@ -1,8 +1,5 @@
 package view.game;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -16,9 +13,9 @@ import net.miginfocom.swing.MigLayout;
 
 
 /**
- * <p> A JLabel wich automatly grow
+ * <p> A JTable wich automatly grow
  * when you pass your mouse on it</p>
- * <p> It grow for width not for height </p>
+ * <p> It use for print player's informations </p>
  * 
  * @author Arthur Deck
  * @version 1
@@ -28,7 +25,7 @@ public class GrowingJLabel extends JLabel {
     private Timer timer;
     private boolean show;
 
-    private final Dimension initialDimension, zoomingDimension;
+    protected final Dimension initialDimension, zoomingDimension;
 
     public GrowingJLabel(MigLayout mig) {
         this(mig, new Dimension(100, 100), new Dimension(200, 120));
@@ -76,14 +73,6 @@ public class GrowingJLabel extends JLabel {
                 timer.start();
             }
         });
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(Color.RED);
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-        g2.dispose();
     }
 }
 
