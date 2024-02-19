@@ -20,6 +20,10 @@ public class LoginView extends Form {
 
     JLabel titleLabel;
 
+    private boolean isInLogin = true;
+
+    private boolean isInSignIn = false;
+
     Form loginComponentContainer;
     Form loginAndSignInButtonContainer;
     Form createAccountAndComeBackToLoginContainer;
@@ -101,6 +105,7 @@ public class LoginView extends Form {
         loginComponentContainer.add(loginAndSignInButtonContainer);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
 
+
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -109,6 +114,8 @@ public class LoginView extends Form {
         this.add(loginComponentContainer,gbc);
     }
     public void fromLoginMenuToSignInMenu(){
+        this.isInSignIn = true;
+        this.isInLogin = false;
         titleLabel.setText("SIGN IN");
         loginComponentContainer.remove(loginAndSignInButtonContainer);
         loginComponentContainer.add(createAccountAndComeBackToLoginContainer);
@@ -117,10 +124,19 @@ public class LoginView extends Form {
     }
 
     public void fromSignInMenuToLoginMenu(){
+        this.isInLogin = true;
+        this.isInSignIn = false;
         titleLabel.setText("LOGIN");
         loginComponentContainer.remove(createAccountAndComeBackToLoginContainer);
         loginComponentContainer.add(loginAndSignInButtonContainer);
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
+    }
+    public boolean isLoginView(){
+        return this.isInLogin;
+    }
+
+    public boolean isSignInView(){
+        return this.isInSignIn;
     }
 }
