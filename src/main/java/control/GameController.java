@@ -73,8 +73,9 @@ public class GameController {
         return numberOfPlayers;
     }
 
-    public List<Player> getCurrentPlayers() {
-        return currentPlayers;
+    public Player getCurrentPlayer() {
+        Player currentPlayer = currentPlayers.get(playerTurnIndex);
+        return currentPlayer;
     }
 
     public int getPlayerTurnIndex() {
