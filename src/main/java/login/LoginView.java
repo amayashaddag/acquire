@@ -1,20 +1,16 @@
 package login;
 
-import com.formdev.flatlaf.extras.components.FlatButton;
-import com.formdev.flatlaf.extras.components.FlatCheckBox;
-import com.formdev.flatlaf.extras.components.FlatLabel;
-import com.formdev.flatlaf.extras.components.FlatTextArea;
-import com.formdev.flatlaf.ui.FlatDropShadowBorder;
-import com.formdev.flatlaf.ui.FlatFormattedTextFieldUI;
-
 import frame.Form;
 import frame.GameFrame;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.awt.event.ActionListener;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import com.formdev.flatlaf.extras.components.FlatButton;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 public class LoginView extends Form {
 
