@@ -17,6 +17,9 @@ public class Board {
     public final static int DECK_SIZE = 6;
     public final static int SAFETY_SIZE = 11;
 
+    public final static int WINNING_CORPORATION_SIZE = 41;
+    public final static int MAXIMUM_AMOUNT_OF_BUYING_STOCKS = 3;
+
     private Cell[][] grid;
     private Map<Corporation, Integer> corporationSizes;
     private Map<Corporation, Integer> remainingStocks;
@@ -165,9 +168,6 @@ public class Board {
 
     /**
      * Does the job of adding one cell of a corporation to the board
-     * 
-     * @param corporation
-     * @param position    describes the position of the corporation on the board
      */
     public void replaceCellCorporation(Cell cell, Corporation newCorporation) {
         Corporation oldCorporation = cell.getCorporation();
@@ -447,6 +447,44 @@ public class Board {
         }
 
         return unplacedCorporations;
+    }
+
+    public boolean isGameOver() {
+        boolean allCorporationsAreSafe = true;
+
+        for (int corporationSize : corporationSizes.values()) {
+            if (corporationSize < SAFETY_SIZE) {
+                allCorporationsAreSafe = false;
+            }
+
+            if (corporationSize >= WINNING_CORPORATION_SIZE) {
+                return true;
+            }
+        }
+
+        return allCorporationsAreSafe;
+    }
+
+    public Map<Corporation, Integer> possibleBuyingStocks() {
+        Map<Corporation, Integer> possibleBuyingStocks = new HashMap<>();
+
+        for (Corporation corporation : corporationSizes.keySet()) {
+            int corporationSize = corporationSizes.get(corporation);
+
+            if (corporationSize != 0) {
+                int possibleBuyingAmount;
+
+                if (corporationSize >= MAXIMUM_AMOUNT_OF_BUYING_STOCKS) {
+                    possibleBuyingAmount = MAXIMUM_AMOUNT_OF_BUYING_STOCKS;
+                } else {
+                    possibleBuyingAmount = corporationSize;
+                }
+
+                possibleBuyingStocks.put(corporation, possibleBuyingAmount);
+            }
+        }
+
+        return possibleBuyingStocks;
     }
 
 }

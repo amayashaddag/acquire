@@ -1,9 +1,12 @@
 package control;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import javax.swing.Timer;
+import java.util.Map;
 
 import model.Board;
 import model.Cell;
@@ -13,17 +16,18 @@ import tools.Point;
 import game.GameView;
 
 public class GameController {
-    private Board board;
-    private GameView GameView;
-    private List<Player> currentPlayers;
+    private final Board board;
+    private final GameView GameView;
+    private final List<Player> currentPlayers;
     private int playerTurnIndex;
-    private int numberOfPlayers;
+    private final int numberOfPlayers;
     private boolean gameOver;
-    private Timer gameTimer;
-    private Scanner scanner = new Scanner(System.in);
+    private final Timer gameTimer;
+    private final Scanner scanner = new Scanner(System.in);
 
     public final static int FPS = 60;
     public final static int GAME_DELAY = 1000 / FPS;
+    public final static int FOUNDING_STOCK_BONUS = 1;
 
     public GameController(Board board, GameView GameView, List<Player> currentPlayers) {
         this.board = board;
@@ -31,14 +35,48 @@ public class GameController {
         this.currentPlayers = currentPlayers;
         this.numberOfPlayers = currentPlayers.size();
         this.playerTurnIndex = 0;
+        initPlayersDecks();
+        this.gameTimer = new Timer(GAME_DELAY, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                if (gameOver) {
+                    stopGame();
+                    // TODO : Handle end-game procedure
+                    return;
+                }
+                Player currentPlayer = currentPlayers.get(playerTurnIndex);
+
+                playerTurnIndex++;
+                if (playerTurnIndex >= numberOfPlayers) {
+                    playerTurnIndex = 0;
+                }
+
+                playTurn(currentPlayer);
+                updatePlayerDeck(currentPlayer);
+                board.updateDeadCells();
+
+                if (board.isGameOver()) {
+                    gameOver = true;
+                }
+
+            }
+        });
     }
 
     public GameView getGameView() {
         return GameView;
     }
 
-    public boolean isGameOver() {
-        return gameOver;
+    public Board getBoard() {
+        return board;
+    }
+
+    public int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
+    public List<Player> getCurrentPlayers() {
+        return currentPlayers;
     }
 
     public int getPlayerTurnIndex() {
@@ -76,14 +114,7 @@ public class GameController {
         }
     }
 
-    /**
-     * Processes the buying stocks action by testing the possibility then removing
-     * from player's cash
-     * 
-     * @param player
-     * @param corporation the corporation the player wants to buy stocks from
-     * @param amount      the number of stocks the player wants to buy
-     */
+
     public void buyStocks(Player player, Corporation corporation, int amount) {
         if (!board.enoughRemainingStocks(corporation, amount)) {
             // TODO : display message telling that there is not enough remaining stocks
@@ -102,13 +133,7 @@ public class GameController {
         player.removeFromCash(amountToPay);
     }
 
-    /**
-     * This functions sells the player's holden stocks to the bank
-     * 
-     * @param player
-     * @param corporation
-     * @param amount
-     */
+
     public void sellStocks(Player player, Corporation corporation, int amount) {
         if (!player.hasEnoughStocks(corporation, amount)) {
             // TODO : print a don't have enough stocks message
@@ -123,14 +148,7 @@ public class GameController {
         player.addToCash(amountToEarn);
     }
 
-    /**
-     * This function is a removing sort algorithm which removes all the positions of
-     * cells that
-     * belong to non-maximal-size corporations between them
-     * 
-     * @param adjacentOwnedCells
-     * @return
-     */
+
     private List<Point> filterMaximalSizeCorporations(List<Point> adjacentOwnedCells) {
         int maxCorporationSize = 0;
         List<Point> maxCorporations = new LinkedList<>();
@@ -159,7 +177,7 @@ public class GameController {
     }
 
     /**
-     * This function is called when a merge is possible and processes it
+     * This function is called when a merge is possible and processes it.
      * It checks whether there is a unique maximum size company and merges all the
      * adjacent
      * companies to it, if there is not, it asks the player to choose one maximum
@@ -168,7 +186,7 @@ public class GameController {
      * @param cellsToMerge represents the set of adjacent cells to merge
      * @param cellPosition represents the position of the cell where the merge
      *                     started
-     * @see #placeCell(Point)
+     * @see #placeCell(Point, Player)
      */
     public void mergeCorporations(List<Point> cellsToMerge, Point cellPosition) {
         List<Point> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
@@ -178,11 +196,10 @@ public class GameController {
 
         if (maxCorporations.size() == 1) {
             chosenCellPosition = maxCorporations.get(0);
-
         } else {
             // TODO : call the game view to request player to choose one major holder
 
-            /* Temporary intialization */
+            /* Temporary initialization */
             chosenCellPosition = maxCorporations.get(0);
         }
 
@@ -197,13 +214,8 @@ public class GameController {
         }
     }
 
-    /**
-     * This function places a cell in a given position and does the task of merging
-     * or extending any possible hotel chain
-     * 
-     * @param cellPosition
-     */
-    public void placeCell(Point cellPosition) {
+
+    public void placeCell(Point cellPosition, Player currentPlayer) {
         Cell currentCell = board.getCell(cellPosition.getX(), cellPosition.getY());
         currentCell.setAsOccupied();
 
@@ -215,16 +227,19 @@ public class GameController {
                 return;
             }
 
-            // TODO : Ask player to chose a coporation between remaining ones
+            // TODO : Ask player to chose a corporation between remaining ones
             List<Corporation> unplacedCorporations = board.unplacedCorporations();
-            Corporation choseCorporation = unplacedCorporations.get(0);
+            Corporation chosenCorporation = unplacedCorporations.get(0);
 
-            board.replaceCellCorporation(currentCell, choseCorporation);
+            board.replaceCellCorporation(currentCell, chosenCorporation);
             for (Point adj : adjacentOccupiedCells) {
                 Cell adjacentCell = board.getCell(adj);
-                board.replaceCellCorporation(adjacentCell, choseCorporation);
+                board.replaceCellCorporation(adjacentCell, chosenCorporation);
                 return;
             }
+
+            board.removeFromRemainingStocks(chosenCorporation, FOUNDING_STOCK_BONUS);
+            currentPlayer.addToEarnedStocks(chosenCorporation, FOUNDING_STOCK_BONUS);
         }
 
         if (adjacentOwnedCells.size() == 1) {
@@ -242,16 +257,23 @@ public class GameController {
 
     // TODO : Implement graphical version
     public void playTurn(Player player) {
-        System.out.println(board);
-        printDeck(player);
+        // TODO : Handle waiting for an answer from the GUI
 
-        System.out.println("Choose a cell to place : ");
-        int cellIndex = scanner.nextInt();
-        Point cellPosition = player.getCell(cellIndex);
+        /* Temporary initialization */
+        int chosenIndexFromPlayerDeck = 0;
+        Point cellPosition = player.getCell(chosenIndexFromPlayerDeck);
 
-        placeCell(cellPosition);
-        updatePlayerDeck(player);
-        board.updateDeadCells();
+        placeCell(cellPosition, player);
+
+        // TODO : Handle buying stocks if possible
+        /* This map contains couples (corporation, amount) that represent the maximum amount
+         * that the player can buy from that corporation (if the corporation is not figured in the Map, this
+         * means that the player can't buy from it). The maximum amount is 3 according to game rules
+         */
+        Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
+
+        // TODO : selling and trading will be handled later
+
     }
 
     public void startGame() {
@@ -260,36 +282,5 @@ public class GameController {
 
     public void stopGame() {
         gameTimer.stop();
-    }
-
-    // TODO : Delete when graphical version implemented
-    public void printDeck(Player player) {
-        Point[] playerDeck = player.getDeck();
-        for (int i = 0; i < Board.DECK_SIZE; i++) {
-            Point cellPosition = playerDeck[i];
-            if (cellPosition != null) {
-                System.out.print(cellPosition + " ");
-            } else {
-                System.out.print("(.,.) ");
-            }
-        }
-        System.out.println();
-    }
-
-    // TODO : delete and replace by gameTimer when graphical version finished
-    public void gameLoop() {
-
-        initPlayersDecks();
-
-        while (!gameOver) {
-            Player currentPlayer = currentPlayers.get(playerTurnIndex);
-
-            playerTurnIndex++;
-            if (playerTurnIndex >= numberOfPlayers) {
-                playerTurnIndex = 0;
-            }
-
-            playTurn(currentPlayer);
-        }
     }
 }
