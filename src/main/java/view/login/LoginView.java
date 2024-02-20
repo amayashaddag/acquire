@@ -1,5 +1,6 @@
 package view.login;
 
+import assets.Fonts;
 import com.formdev.flatlaf.extras.components.FlatButton;
 import com.formdev.flatlaf.extras.components.FlatCheckBox;
 import com.formdev.flatlaf.extras.components.FlatLabel;
@@ -61,29 +62,36 @@ public class LoginView extends Form {
 
 
         titleLabel = new JLabel(InterfaceLoginMessages.LOGIN_BUTTON_TEXT);
+        titleLabel.setFont(Fonts.TITLE_FONT);
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
 
         FlatButton loginButton = new FlatButton();
+        loginButton.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         loginButton.setText(InterfaceLoginMessages.LOGIN_BUTTON_TEXT);
 
 
         FlatButton signInButton = new FlatButton();
         signInButton.setText(InterfaceLoginMessages.SIGN_IN_BUTTON_TEXT);
+        signInButton.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         signInButton.addActionListener(ActionListener->{fromLoginMenuToSignInMenu();});
 
         FlatButton createAccountButton = new FlatButton();
+        createAccountButton.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         createAccountButton.setText("CREATE ACCOUNT");
 
         FlatButton comeBackToLoginButton = new FlatButton();
         comeBackToLoginButton.setText("LOGIN");
+        comeBackToLoginButton.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         comeBackToLoginButton.addActionListener((ActionListener) ->{fromSignInMenuToLoginMenu();});
 
 
-        PlaceHolderTextArea idArea = new PlaceHolderTextArea(InterfaceLoginMessages.ID_TEXT_AREA);
+        PlaceHolderTextField idArea = new PlaceHolderTextField(InterfaceLoginMessages.ID_TEXT_AREA);
+        idArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
         idArea.setText(InterfaceLoginMessages.ID_TEXT_AREA);
 
 
-        PlaceHolderTextArea passwordArea = new PlaceHolderTextArea(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
+        PlaceHolderTextField passwordArea = new PlaceHolderTextField(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
+        passwordArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
         passwordArea.setText(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
 
 
@@ -97,7 +105,7 @@ public class LoginView extends Form {
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(titleLabel);
         loginComponentContainer.add(Box.createHorizontalGlue());
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/8));
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/6));
         loginComponentContainer.add(idArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
         loginComponentContainer.add(passwordArea);

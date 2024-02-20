@@ -28,7 +28,6 @@ public class Fonts {
         } catch (Exception e) {
             boldFont = new Font(BASIC_FONT_IF_ERROR, Font.BOLD, TITLE_FONT_SIZE);
             regularFont = new Font(BASIC_FONT_IF_ERROR, Font.PLAIN, TITLE_FONT_SIZE);
-            e.printStackTrace();
         }
 
         TITLE_FONT = boldFont.deriveFont(Font.BOLD, TITLE_FONT_SIZE);
