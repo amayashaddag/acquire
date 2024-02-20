@@ -11,6 +11,22 @@ public class Player {
     private int cash;
     private HashMap<Corporation,Integer> earnedStocks;
     private Point[] deck;
+
+    public Player() {
+        cash = 6000;
+        earnedStocks = initEarnedStocks();
+        deck = new Point[Board.DECK_SIZE];
+    }
+
+    public HashMap<Corporation, Integer> initEarnedStocks() {
+        HashMap<Corporation, Integer> initialEarnedStocks = new HashMap<>();
+
+        for (Corporation c : Corporation.values()) {
+            initialEarnedStocks.put(c, 0);
+        }
+
+        return initialEarnedStocks;
+    }
      
     /**
      * 
@@ -96,6 +112,9 @@ public class Player {
      * @return position in the map of deck[index]
      */
     public Point getCell(int index){
-        return this.deck[index];
+        Point cellPosition = this.deck[index];
+        this.deck[index] = null;
+
+        return cellPosition;
     }
 }

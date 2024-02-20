@@ -4,7 +4,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Random;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.function.Function;
 import java.util.function.BiFunction;
 
@@ -19,9 +20,7 @@ public class Board {
     private Cell[][] grid;
     private Map<Corporation, Integer> corporationSizes;
     private Map<Corporation, Integer> remainingStocks;
-    private List<Point> remainingCells;
-
-    private Random random;
+    private Set<Point> remainingCells;
 
     public Board() {
         this.grid = new Cell[BOARD_HEIGHT][BOARD_WIDTH];
@@ -33,7 +32,6 @@ public class Board {
         this.corporationSizes = initialSizes();
         this.remainingStocks = initialStocks();
         this.remainingCells = initialCells();
-        this.random = new Random();
     }
 
     // TODO : A supprimer ensuite
@@ -56,15 +54,14 @@ public class Board {
         return startingStocks;
     }
 
-
     /**
      * This function is only used to initialize the cells set in the constructor
      * 
      * @return returns all the cells of the board in a list
      * @see Board
      */
-    private List<Point> initialCells() {
-        List<Point> cells = new LinkedList<>();
+    private Set<Point> initialCells() {
+        Set<Point> cells = new HashSet<>();
         for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
                 Point cell = new Point(j, i);
@@ -112,17 +109,6 @@ public class Board {
         return this.grid[y][x];
     }
 
-    public Point[] generatePlayerDeck() {
-        Point[] deck = new Point[DECK_SIZE];
-        
-        for (int i = 0; i < DECK_SIZE; i++) {
-            Point cellPosition = getFromRemainingCells();
-            deck[i] = cellPosition;
-        }
-        
-        return deck;
-    }
-
     /**
      * 
      * @param corporation
@@ -140,9 +126,21 @@ public class Board {
      * @return a random cell from the remaining cells list
      */
     public Point getFromRemainingCells() {
-        int index = this.random.nextInt(remainingCells.size());
-        Point cell = remainingCells.remove(index);
-        return cell;
+        Point chosenCell = null;
+
+        for (Point p : remainingCells) {
+            if (canPlaceIn(p)) {
+                chosenCell = p;
+                break;
+            }
+        }
+
+        if (chosenCell != null) {
+            remainingCells.remove(chosenCell);
+        }
+
+        System.out.println(chosenCell);
+        return chosenCell;
     }
 
     /**
@@ -168,8 +166,8 @@ public class Board {
     /**
      * Does the job of adding one cell of a corporation to the board
      * 
-     * @param corporation 
-     * @param position describes the position of the corporation on the board
+     * @param corporation
+     * @param position    describes the position of the corporation on the board
      */
     public void replaceCellCorporation(Cell cell, Corporation newCorporation) {
         Corporation oldCorporation = cell.getCorporation();
@@ -226,14 +224,17 @@ public class Board {
      * @see #mappingDFS(Corporation, Point, List)
      * @see #foldingDFS(Corporation, Point, List, BiFunction, Object)
      */
-    public List<Point> adjacentCells(Point cell) {
+    public List<Point> adjacentCells(Point cell, Function<Cell, Boolean> mapper) {
         List<Point> adjacentCells = new LinkedList<>();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i != 0 ^ j != 0) {
                     Point adjacent = new Point(j + cell.getX(), i + cell.getY());
                     if (adjacent.isInBounds(BOARD_WIDTH, BOARD_HEIGHT)) {
-                        adjacentCells.add(adjacent);
+                        Cell adjacentCell = getCell(adjacent);
+                        if (mapper.apply(adjacentCell)) {
+                            adjacentCells.add(adjacent);
+                        }
                     }
                 }
             }
@@ -243,20 +244,23 @@ public class Board {
     }
 
     /**
-     * This function is a dfs graph algorithm that maps all the cells of the board that are belonging
+     * This function is a dfs graph algorithm that maps all the cells of the board
+     * that are belonging
      * to a given company with the given function
      * 
-     * @param corporation corporation to test if the cells belong to it
+     * @param corporation  corporation to test if the cells belong to it
      * @param currentPoint the current point in the algorithm iteration
-     * @param visitedCells contains the set of already visited cells (to not revisit them)
-     * @param op the operation that maps the cells
+     * @param visitedCells contains the set of already visited cells (to not revisit
+     *                     them)
+     * @param op           the operation that maps the cells
      */
-    public void mappingDFS(Corporation corporation, Point currentPoint, List<Point> visitedCells, Function<Cell, Void> op) {
+    public void mappingDFS(Corporation corporation, Point currentPoint, List<Point> visitedCells,
+            Function<Cell, Void> op) {
         visitedCells.add(currentPoint);
         Cell currentCell = getCell(currentPoint);
         op.apply(currentCell);
 
-        List<Point> adjacentCells = adjacentCells(currentPoint);
+        List<Point> adjacentCells = adjacentCells(currentPoint, (cell) -> true);
 
         for (Point adj : adjacentCells) {
             Cell cell = getCell(adj);
@@ -268,22 +272,27 @@ public class Board {
     }
 
     /**
-     * This function is a folding dfs graph algorithm that folds all the reachable cells that belong
+     * This function is a folding dfs graph algorithm that folds all the reachable
+     * cells that belong
      * to a given corporation with a given function f and return the result
      * 
-     * @param <U> generic returning type parameter
-     * @param corporation corporation to test the cells on
+     * @param <U>          generic returning type parameter
+     * @param corporation  corporation to test the cells on
      * @param currentPoint current point in each visiting iteration
-     * @param visitedCells contains all the already-visited cells to not revisit them
-     * @param op the operation to fold the cells on, if we consider this function as :
-     * f : U x U -> U, the ending of the algorithm returns f(f(f(f(...,...),...),...),...)
+     * @param visitedCells contains all the already-visited cells to not revisit
+     *                     them
+     * @param op           the operation to fold the cells on, if we consider this
+     *                     function as :
+     *                     f : U x U -> U, the ending of the algorithm returns
+     *                     f(f(f(f(...,...),...),...),...)
      * @param initialValue the initial value of base case
      * @return a U type data that matches to the definition of the folding function
      * 
      */
-    public <U> U foldingDFS(Corporation corporation, Point currentPoint, List<Point> visitedCells, BiFunction<U, U, U> op, U initialValue) {
+    public <U> U foldingDFS(Corporation corporation, Point currentPoint, List<Point> visitedCells,
+            BiFunction<U, U, U> op, U initialValue) {
         visitedCells.add(currentPoint);
-        List<Point> adjacentCells = adjacentCells(currentPoint);
+        List<Point> adjacentCells = adjacentCells(currentPoint, (cell) -> true);
         U value = initialValue;
 
         for (Point adj : adjacentCells) {
@@ -297,10 +306,11 @@ public class Board {
     }
 
     /**
-     * This function sets all the reachable cells that belong to the same corporation starting
+     * This function sets all the reachable cells that belong to the same
+     * corporation starting
      * from a given point to a given corporation
      * 
-     * @param corporation the given corporation to transform cells into
+     * @param corporation   the given corporation to transform cells into
      * @param startingPoint the point where the setting will start from
      * @see #mappingDFS(Corporation, Point, List, Function)
      */
@@ -363,7 +373,7 @@ public class Board {
             }
             board += "\n";
         }
-        
+
         return board;
     }
 
@@ -376,19 +386,12 @@ public class Board {
      * @return
      */
     public List<Point> adjacentOwnedCells(Point cellPosition) {
-        List<Point> adjacentCells = adjacentCells(cellPosition);
-        List<Point> cellsToRemove = new LinkedList<>();
-
-        for (Point p : adjacentCells) {
-            Cell adjacentCell = getCell(p);
-            if (!adjacentCell.isOwned()) {
-                cellsToRemove.add(p);
-            }
-        }
-        adjacentCells.removeAll(cellsToRemove);
-        return adjacentCells;
+        return adjacentCells(cellPosition, (cell) -> cell.isOwned());
     }
 
+    public List<Point> adjacentOccupiedCells(Point cellPosition) {
+        return adjacentCells(cellPosition, (cell) -> cell.isOccupied());
+    }
 
     /**
      * Updates the cells of the board to update the dead ones
@@ -423,19 +426,27 @@ public class Board {
      */
     public boolean canPlaceIn(Point cellPosition) {
         Cell cell = getCell(cellPosition);
-        if (cell.isDead() || cell.isOccupied() || cell.isOwned()) {
+
+        if (!cell.isEmpty()) {
             return false;
         }
 
-        List<Point> adjacentCells = adjacentCells(cellPosition);
-        for (Point adj : adjacentCells) {
-            Cell adjacentCell = getCell(adj);
-            if (adjacentCell.isOccupied() || adjacentCell.isOwned()) {
-                return false;
+        List<Corporation> unplacedCorporations = unplacedCorporations();
+        List<Point> adjacentOccupiedCells = adjacentOccupiedCells(cellPosition);
+
+        return !adjacentOccupiedCells.isEmpty()|| !unplacedCorporations.isEmpty();
+    }
+
+    public List<Corporation> unplacedCorporations() {
+        List<Corporation> unplacedCorporations = new LinkedList<>();
+
+        for (Corporation c : corporationSizes.keySet()) {
+            if (corporationSizes.get(c) <= 0) {
+                unplacedCorporations.add(c);
             }
         }
 
-        return true;
+        return unplacedCorporations;
     }
 
 }

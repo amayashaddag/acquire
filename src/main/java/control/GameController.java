@@ -2,6 +2,8 @@ package control;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
+import javax.swing.Timer;
 
 import model.Board;
 import model.Cell;
@@ -14,14 +16,21 @@ public class GameController {
     private Board board;
     private GameView GameView;
     private List<Player> currentPlayers;
-
     private int playerTurnIndex;
+    private int numberOfPlayers;
     private boolean gameOver;
+    private Timer gameTimer;
+    private Scanner scanner = new Scanner(System.in);
+
+    public final static int FPS = 60;
+    public final static int GAME_DELAY = 1000 / FPS;
 
     public GameController(Board board, GameView GameView, List<Player> currentPlayers) {
         this.board = board;
         this.GameView = GameView;
         this.currentPlayers = currentPlayers;
+        this.numberOfPlayers = currentPlayers.size();
+        this.playerTurnIndex = 0;
     }
 
     public GameView getGameView() {
@@ -43,8 +52,27 @@ public class GameController {
      */
     public void initPlayersDecks() {
         for (Player player : currentPlayers) {
-            Point[] deck = board.generatePlayerDeck();
+            Point[] deck = new Point[Board.DECK_SIZE];
+            for (int i = 0; i < Board.DECK_SIZE; i++) {
+                Point randomChosenCell = board.getFromRemainingCells();
+                deck[i] = randomChosenCell;
+            }
+
             player.setDeck(deck);
+        }
+    }
+
+    // TODO : Correct this function
+    public void updatePlayerDeck(Player player) {
+        Point[] playerDeck = player.getDeck();
+
+        for (int i = 0; i < Board.DECK_SIZE; i++) {
+            Point cellPosition = playerDeck[i];
+
+            if (cellPosition == null || !board.canPlaceIn(cellPosition)) {
+                Point randomChosenCell = board.getFromRemainingCells();
+                playerDeck[i] = randomChosenCell;
+            }
         }
     }
 
@@ -96,7 +124,8 @@ public class GameController {
     }
 
     /**
-     * This function is a removing sort algorithm which removes all the positions of cells that 
+     * This function is a removing sort algorithm which removes all the positions of
+     * cells that
      * belong to non-maximal-size corporations between them
      * 
      * @param adjacentOwnedCells
@@ -179,8 +208,23 @@ public class GameController {
         currentCell.setAsOccupied();
 
         List<Point> adjacentOwnedCells = board.adjacentOwnedCells(cellPosition);
-        if (adjacentOwnedCells.size() == 0) {
-            return;
+        if (adjacentOwnedCells.isEmpty()) {
+            
+            List<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(cellPosition);
+            if (adjacentOccupiedCells.isEmpty()) {
+                return;
+            }
+
+            // TODO : Ask player to chose a coporation between remaining ones
+            List<Corporation> unplacedCorporations = board.unplacedCorporations();
+            Corporation choseCorporation = unplacedCorporations.get(0);
+
+            board.replaceCellCorporation(currentCell, choseCorporation);
+            for (Point adj : adjacentOccupiedCells) {
+                Cell adjacentCell = board.getCell(adj);
+                board.replaceCellCorporation(adjacentCell, choseCorporation);
+                return;
+            }
         }
 
         if (adjacentOwnedCells.size() == 1) {
@@ -193,5 +237,59 @@ public class GameController {
         }
 
         mergeCorporations(adjacentOwnedCells, cellPosition);
+
+    }
+
+    // TODO : Implement graphical version
+    public void playTurn(Player player) {
+        System.out.println(board);
+        printDeck(player);
+
+        System.out.println("Choose a cell to place : ");
+        int cellIndex = scanner.nextInt();
+        Point cellPosition = player.getCell(cellIndex);
+
+        placeCell(cellPosition);
+        updatePlayerDeck(player);
+        board.updateDeadCells();
+    }
+
+    public void startGame() {
+        gameTimer.start();
+    }
+
+    public void stopGame() {
+        gameTimer.stop();
+    }
+
+    // TODO : Delete when graphical version implemented
+    public void printDeck(Player player) {
+        Point[] playerDeck = player.getDeck();
+        for (int i = 0; i < Board.DECK_SIZE; i++) {
+            Point cellPosition = playerDeck[i];
+            if (cellPosition != null) {
+                System.out.print(cellPosition + " ");
+            } else {
+                System.out.print("(.,.) ");
+            }
+        }
+        System.out.println();
+    }
+
+    // TODO : delete and replace by gameTimer when graphical version finished
+    public void gameLoop() {
+
+        initPlayersDecks();
+
+        while (!gameOver) {
+            Player currentPlayer = currentPlayers.get(playerTurnIndex);
+
+            playerTurnIndex++;
+            if (playerTurnIndex >= numberOfPlayers) {
+                playerTurnIndex = 0;
+            }
+
+            playTurn(currentPlayer);
+        }
     }
 }
