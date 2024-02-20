@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
 import javax.swing.Timer;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ public class GameController {
     private final int numberOfPlayers;
     private boolean gameOver;
     private final Timer gameTimer;
-    private final Scanner scanner = new Scanner(System.in);
 
     public final static int FPS = 60;
     public final static int GAME_DELAY = 1000 / FPS;
