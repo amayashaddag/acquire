@@ -40,6 +40,10 @@ public class Player {
 
         return initialEarnedStocks;
     }
+
+    public String getPseudo() {
+        return pseudo;
+    }
      
     /**
      * 
