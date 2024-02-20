@@ -1,4 +1,4 @@
-package login;
+package view.login;
 
 public class InterfaceLoginMessages {
     public static String LOGIN_BUTTON_TEXT="LOGIN";

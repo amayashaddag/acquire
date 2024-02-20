@@ -1,8 +1,9 @@
-package game;
+package view.game;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -20,8 +21,8 @@ import java.awt.GraphicsEnvironment;
 
 import javaswingdev.GradientDropdownMenu;
 import javaswingdev.MenuEvent;
-import frame.Form;
-import frame.GameFrame;
+import view.Form;
+import view.GameFrame;
 
 
 /**
@@ -29,7 +30,7 @@ import frame.GameFrame;
  * 
  * @author Arthur Deck
  * @version 0.1
- * @see frame.Form
+ * @see view.Form
  */
 public class MapView extends Form implements MouseWheelListener, MouseListener, MouseMotionListener {
     
@@ -141,7 +142,7 @@ public class MapView extends Form implements MouseWheelListener, MouseListener, 
     }
 
     /**
-     * {@link frame.Form#setOn(GameFrame)}
+     * {@link view.Form#setOn()}
      */
     public void setOn(GameFrame g) {
         MapView map = new MapView(null, g.getWidth(), g.getHeight());   // FIXME map != null

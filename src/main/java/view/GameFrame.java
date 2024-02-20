@@ -1,4 +1,4 @@
-package frame;
+package view;
 
 import java.awt.*;
 import java.io.PrintWriter;
@@ -10,7 +10,7 @@ import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import control.GameController;
 import model.Player;
 
-import login.LoginView;
+import view.login.LoginView;
 
 
 /**

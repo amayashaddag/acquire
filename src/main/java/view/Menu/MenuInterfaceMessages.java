@@ -1,4 +1,4 @@
-package menu;
+package view.Menu;
 
 public class MenuInterfaceMessages {
    public static final String PLAY = "Play";

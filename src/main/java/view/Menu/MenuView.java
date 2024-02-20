@@ -1,7 +1,7 @@
-package menu;
+package view.Menu;
 
-import frame.Form;
-import frame.GameFrame;
+import view.Form;
+import view.GameFrame;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
