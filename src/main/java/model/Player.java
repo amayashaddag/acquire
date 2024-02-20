@@ -1,21 +1,34 @@
 package model;
 
 import java.util.HashMap;
-/* @author Igor Ait Ali Braham
+/** @author Igor Ait Ali Braham
  * @version 1.0
  */
 
 import tools.Point;
 
 public class Player {
+
+    public static enum PlayerType {
+        HUMAN,
+        BOT
+    }
+
     private int cash;
     private HashMap<Corporation,Integer> earnedStocks;
     private Point[] deck;
+    private PlayerType playerType;
+    private String pseudo;
 
-    public Player() {
-        cash = 6000;
-        earnedStocks = initEarnedStocks();
-        deck = new Point[Board.DECK_SIZE];
+    public static final int INITIAL_CASH = 6000;
+    private static int botNumber = 0;
+    private final static String botPseudoPrefix = "Bot";
+
+    private Player(PlayerType playerType, String pseudo) {
+        this.cash = INITIAL_CASH;
+        this.earnedStocks = initEarnedStocks();
+        this.deck = new Point[Board.DECK_SIZE];
+        this.pseudo = pseudo;
     }
 
     public HashMap<Corporation, Integer> initEarnedStocks() {
@@ -49,7 +62,7 @@ public class Player {
     /**
      * change player's deck with the deck in argument
      * 
-     * @param new deck of the player type: Point[]
+     * @param newDeck of the player type: Point[]
      */
     public void setDeck(Point[] newDeck){
         this.deck = newDeck;
@@ -108,7 +121,7 @@ public class Player {
     /**
      * get the Point of player's deck at index gave in argument
      * 
-     * @param position of the point to get in tghe deck
+     * @param index of the point to get in the deck
      * @return position in the map of deck[index]
      */
     public Point getCell(int index){
@@ -116,5 +129,21 @@ public class Player {
         this.deck[index] = null;
 
         return cellPosition;
+    }
+
+    public boolean isHuman() {
+        return playerType == PlayerType.HUMAN;
+    }
+
+    public boolean isBot() {
+        return playerType == PlayerType.BOT;
+    }
+
+    public static Player createHumanPlayer(String pseudo) {
+        return new Player(PlayerType.HUMAN, pseudo);
+    }
+
+    public static Player createBotPlayer() {
+        return new Player(PlayerType.BOT, botPseudoPrefix + (botNumber++));
     }
 }
