@@ -1,4 +1,4 @@
 build/
 out/
-acquire.iml
+*.iml
 .vscode/

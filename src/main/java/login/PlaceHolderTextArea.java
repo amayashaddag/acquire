@@ -1,4 +1,4 @@
-package view.login;
+package login;
 
 import com.formdev.flatlaf.extras.components.FlatTextArea;
 

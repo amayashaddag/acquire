@@ -1,4 +1,4 @@
-package view.game;
+package game;
 
 /**
  * @author Arthur Deck

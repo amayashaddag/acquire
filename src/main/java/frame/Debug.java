@@ -1,6 +1,6 @@
-package view;
+package frame;
 
-import view.Menu.MenuView;
+import menu.MenuView;
 
 public class Debug {
     public static void main(String[] args) {
