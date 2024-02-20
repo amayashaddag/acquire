@@ -22,8 +22,8 @@ import com.formdev.flatlaf.FlatDarculaLaf;
  * @version 0.1
  */
 public class GameFrame extends JFrame {
-    final int DEFAULT_WIDTH = 1200;
-    final int DEFAULT_HEIGHT = 900;
+    public final static int DEFAULT_WIDTH = 1200;
+    public final static int DEFAULT_HEIGHT = 900;
 
     public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 

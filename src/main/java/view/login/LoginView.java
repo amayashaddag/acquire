@@ -6,9 +6,9 @@ import com.formdev.flatlaf.extras.components.FlatLabel;
 import com.formdev.flatlaf.extras.components.FlatTextArea;
 import com.formdev.flatlaf.ui.FlatDropShadowBorder;
 import com.formdev.flatlaf.ui.FlatFormattedTextFieldUI;
-import view.Form;
-import view.GameFrame;
 
+import frame.Form;
+import frame.GameFrame;
 
 import javax.swing.*;
 import javax.swing.border.Border;
