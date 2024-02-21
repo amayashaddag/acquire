@@ -86,10 +86,6 @@ public class GameController {
         return currentPlayers;
     }
 
-    public Board getBoard() {
-        return board;
-    }
-
     /**
      * This function is used at the beginning of the game (where it is already
      * supposed that there is enough board cells for everyone) to initialize players
