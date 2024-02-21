@@ -99,12 +99,12 @@ public class BoardTest {
     public void adjacentCellsTest() {
         Board b = new Board();
 
-        List<Point> adjacentCells1 = b.adjacentCells(new Point(0, 0));
+        List<Point> adjacentCells1 = b.adjacentCells(new Point(0, 0), (cell) -> true);
         List<Point> veritableAdjacentCells1 = new LinkedList<>();
         veritableAdjacentCells1.add(new Point(0, 1));
         veritableAdjacentCells1.add(new Point(1, 0));
 
-        List<Point> adjacentCells2 = b.adjacentCells(new Point(2, 2));
+        List<Point> adjacentCells2 = b.adjacentCells(new Point(2, 2), (cell) -> true);
         List<Point> veritableAdjacentCells2 = new LinkedList<>();
         veritableAdjacentCells2.add(new Point(2, 1));
         veritableAdjacentCells2.add(new Point(1, 2));
