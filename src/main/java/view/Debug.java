@@ -1,6 +1,7 @@
 package view;
 
 import net.miginfocom.swing.MigLayout;
+import view.game.ColorableFlatBorder;
 import view.game.GameView;
 import view.game.GrowingJLabel;
 import view.game.annotations.AutoSetter;
@@ -36,15 +37,16 @@ public class Debug {
 
         // JPanel root = new JPanel();
         // root.setLayout(new BorderLayout());
+        // root.add(new JButton("yesy"), BorderLayout.SOUTH);
         // root.add(jp, BorderLayout.NORTH);
 
         // g.add(root);
         // g.setVisible(true);
 
-        Player p = Player.createHumanPlayer("caca");
+        Player p = Player.createHumanPlayer("ezadza");
         ArrayList<Player> l = new ArrayList<>();
         l.add(p);
-        l.add(Player.createHumanPlayer("caca"));
+        l.add(Player.createHumanPlayer("arthur"));
         GameController c = new GameController(l, p);
         c.getGameView().setVisible(true);
         GameView g = c.getGameView();
@@ -59,7 +61,7 @@ public class Debug {
         public Caca(Player p, MigLayout mig) {
             super(mig, new Dimension(100, 100), new Dimension(300, 120));
             this.player = p;
-            this.setText("Arthur");
+            this.setBorder(new ColorableFlatBorder(Color.GREEN));
         }
 
         @Override
@@ -69,14 +71,19 @@ public class Debug {
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
 
             if (this.getSize().equals(this.initialDimension)) {
-                // TODO : on affiche la pp du joueur
+                // TODO : afficher pp joueur
+                this.setText(""+player.getPseudo().charAt(0));
             } else if (this.getSize().equals(this.zoomingDimension)) {
                 // TODO : afficher info joueur
             } else {
                 // TODO : growing barre
             }
 
+            if (false)
+                paintBorder(g2);
+
             g2.dispose();
+            
             super.paintComponent(g);
         }
     }

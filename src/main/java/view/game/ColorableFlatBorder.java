@@ -13,14 +13,31 @@ import java.awt.Component;
  */
 public class ColorableFlatBorder extends FlatBorder {
     Color color; 
+    int arc;
+
+    public ColorableFlatBorder(Color c, int arc) {
+        super();
+        this.arc = arc;
+        this.color = c;
+    }
 
     public ColorableFlatBorder(Color c) {
         super();
         this.color = c;
     }
 
+    public ColorableFlatBorder(int arc) {
+        super();
+        this.arc = arc;
+    }
+
     @Override
     protected Color getOutlineColor(Component c) {
         return this.color;
+    }
+
+    @Override
+    protected int getArc(Component c) {
+        return arc;
     }
 }

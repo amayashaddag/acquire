@@ -12,14 +12,14 @@ import net.miginfocom.swing.MigLayout;
 
 public class PlayerBoard extends javax.swing.JPanel {
     private final GameView g;
-    private final Dimension INITIAL_DIMENSION = new Dimension(100, 100);
-    private final Dimension ZOOM_DIMENSION = new Dimension(300, 120);
+    private final Dimension INITIAL_DIMENSION = new Dimension(80, 80);
+    private final Dimension ZOOM_DIMENSION = new Dimension(200, 120);
     private final MigLayout mig;
 
     public PlayerBoard(GameView g) {
         this.g = g;
         mig = new MigLayout("al center, filly", "10[]10");
-
+        this.setLayout(mig);
         this.setOpaque(false);
 
         for (Player p : g.getController().getCurrentPlayers()) {
@@ -34,17 +34,33 @@ public class PlayerBoard extends javax.swing.JPanel {
 
     private class PlayerItem extends GrowingJLabel {
         final Player player;
+        int arc;
 
         public PlayerItem(Player p) {
             super(PlayerBoard.this.mig, INITIAL_DIMENSION, ZOOM_DIMENSION);
             this.player = p;
+            this.arc = 10;
+            this.setBorder(new ColorableFlatBorder(Color.GREEN, this.arc));   // Couleur quel joueur est en traint de jouer
         }
 
         @Override
         protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setColor(Color.RED);
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setColor(Color.DARK_GRAY);  // TODO : peut-être mettre une image de fond
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), this.arc, this.arc);
+
+            if (this.getSize().equals(this.initialDimension)) {
+                // TODO : afficher pp joueur
+                this.setText(""+player.getPseudo());
+            } else if (this.getSize().equals(this.zoomingDimension)) {
+                // TODO : afficher info joueur
+            } else {
+                // TODO : growing barre
+            }
+
+            if (PlayerBoard.this.g.getPlayer().equals(this.player))
+                paintBorder(g2);
+            
             g2.dispose();
             super.paintComponent(g);
         }
