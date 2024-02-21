@@ -1,31 +1,14 @@
 package view;
 
 import net.miginfocom.swing.MigLayout;
-import tools.Point;
-import view.game.ColorableFlatBorder;
 import view.game.GameView;
 import view.game.GrowingJLabel;
-import view.game.PlayerBoard;
 import view.game.annotations.AutoSetter;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.Border;
-
-import com.formdev.flatlaf.*;
-import com.formdev.flatlaf.ui.*;
-
-import java.awt.event.*;
-
-import com.formdev.flatlaf.ui.FlatStylingSupport.Styleable;
-import com.formdev.flatlaf.util.DerivedColor;
-import com.formdev.flatlaf.util.UIScale;
 
 import model.Player;
-
-import java.util.Map;
-
-import javax.swing.plaf.basic.BasicBorders;
 
 @AutoSetter(paramType = GameView.class)
 public class Debug {
@@ -43,7 +26,7 @@ public class Debug {
         MigLayout mig = new MigLayout("al center, filly", "10[]10");
         jp.setLayout(mig);
 
-        Player p = new Player();
+        Player p = Player.createHumanPlayer("Arthur Deck");
         jp.add(new Debug.Caca(p, mig), "w 100, h 100");
 
         JPanel root = new JPanel();
