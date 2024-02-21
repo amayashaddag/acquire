@@ -61,7 +61,6 @@ public class GameFrame extends JFrame {
     private void setForm(Form form) {
         this.getContentPane().removeAll();
         form.setOn(this);
-        this.getContentPane().add(form);
         this.repaint();
         this.revalidate();
     }

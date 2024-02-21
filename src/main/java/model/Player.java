@@ -150,4 +150,7 @@ public class Player {
     public static Player createBotPlayer() {
         return new Player(PlayerType.BOT, botPseudoPrefix + (botNumber++));
     }
+    public int getCash() {
+        return cash;
+    }
 }

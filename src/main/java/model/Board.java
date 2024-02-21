@@ -145,6 +145,9 @@ public class Board {
         System.out.println(chosenCell);
         return chosenCell;
     }
+    public Map<Corporation, Integer> getRemainingStocks() {
+        return remainingStocks;
+    }
 
     /**
      *

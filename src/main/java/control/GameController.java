@@ -82,6 +82,10 @@ public class GameController {
         return playerTurnIndex;
     }
 
+    public List<Player> getCurrentPlayers() {
+        return currentPlayers;
+    }
+
     /**
      * This function is used at the beginning of the game (where it is already
      * supposed that there is enough board cells for everyone) to initialize players
@@ -282,4 +286,5 @@ public class GameController {
     public void stopGame() {
         gameTimer.stop();
     }
+
 }
