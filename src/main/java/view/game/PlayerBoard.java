@@ -35,12 +35,13 @@ public class PlayerBoard extends javax.swing.JPanel {
     private class PlayerItem extends GrowingJLabel {
         final Player player;
         int arc;
+        ColorableFlatBorder playingBorder;
 
         public PlayerItem(Player p) {
             super(PlayerBoard.this.mig, INITIAL_DIMENSION, ZOOM_DIMENSION);
             this.player = p;
             this.arc = 10;
-            this.setBorder(new ColorableFlatBorder(Color.GREEN, this.arc));   // Couleur quel joueur est en traint de jouer
+            this.playingBorder = new ColorableFlatBorder(Color.GREEN, this.arc);   // Couleur quel joueur est en traint de jouer
         }
 
         @Override
@@ -58,8 +59,12 @@ public class PlayerBoard extends javax.swing.JPanel {
                 // TODO : growing barre
             }
 
-            if (PlayerBoard.this.g.getPlayer().equals(this.player))
+            if (PlayerBoard.this.g.getPlayer().equals(this.player)) {
+                this.setBorder(playingBorder);
                 paintBorder(g2);
+            } else if (this.getBorder() != null) {
+                this.setBorder(null);
+            }
             
             g2.dispose();
             super.paintComponent(g);

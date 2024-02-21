@@ -62,7 +62,7 @@ public class GameController {
     }
 
     public void handleCellPlacing(Point cellPosition, Player player) {
-        placeCell(cellPosition, player);
+        placeCell(cellPosition, player);  // FIXME  : exception levé par cette fonction lorsque player.deck est vide
         updatePlayerDeck(player);
         board.updateDeadCells();
     }
