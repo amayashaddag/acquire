@@ -6,38 +6,51 @@ import view.game.GrowingJLabel;
 import view.game.annotations.AutoSetter;
 
 import java.awt.*;
+import java.util.ArrayList;
+
 import javax.swing.*;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+
+import control.GameController;
 import model.Player;
 
 @AutoSetter(paramType = GameView.class)
 public class Debug {
 
     public static void main(String[] args) {
-        // FlatDarculaLaf.setup();
+        FlatDarculaLaf.setup();
 
-        JFrame g = new JFrame();
-        g.setTitle("Acquire");
-        g.setSize(1000, 600);
-        g.setLocationRelativeTo(null);
-        g.setDefaultCloseOperation(3);
+        // JFrame g = new JFrame();
+        // g.setTitle("Acquire");
+        // g.setSize(1000, 600);
+        // g.setLocationRelativeTo(null);
+        // g.setDefaultCloseOperation(3);
 
-        JPanel jp = new JPanel();
-        MigLayout mig = new MigLayout("al center, filly", "10[]10");
-        jp.setLayout(mig);
+        // JPanel jp = new JPanel();
+        // MigLayout mig = new MigLayout("al center, filly", "10[]10");
+        // jp.setLayout(mig);
 
-        Player p = Player.createHumanPlayer("Arthur Deck");
-        jp.add(new Debug.Caca(p, mig), "w 100, h 100");
+        // Player p = Player.createHumanPlayer("Arthur Deck");
+        // jp.add(new Debug.Caca(p, mig), "w 100, h 100");
 
-        JPanel root = new JPanel();
-        root.setLayout(new BorderLayout());
-        root.add(jp, BorderLayout.NORTH);
+        // JPanel root = new JPanel();
+        // root.setLayout(new BorderLayout());
+        // root.add(jp, BorderLayout.NORTH);
 
-        g.add(root);
-        g.setVisible(true);
+        // g.add(root);
+        // g.setVisible(true);
 
-        // GameFrame f = new GameFrame();
-        // f.setVisible(true);
+        Player p = Player.createHumanPlayer("caca");
+        ArrayList<Player> l = new ArrayList<>();
+        l.add(p);
+        l.add(Player.createHumanPlayer("caca"));
+        GameController c = new GameController(l, p);
+        c.getGameView().setVisible(true);
+        GameView g = c.getGameView();
+        GameFrame frame = new GameFrame();
+        g.setOn(frame);
+        frame.setVisible(true);
     }
 
     public static class Caca extends GrowingJLabel {

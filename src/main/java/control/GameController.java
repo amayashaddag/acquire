@@ -27,9 +27,8 @@ public class GameController {
     public final static int GAME_DELAY = 1000 / FPS;
     public final static int FOUNDING_STOCK_BONUS = 1;
 
-    public GameController(Board board, GameView GameView, List<Player> currentPlayers) {
-        this.board = board;
-        this.GameView = GameView;
+    public GameController(List<Player> currentPlayers, Player currentPlayer) {
+        this.board = new Board();
         this.currentPlayers = currentPlayers;
         this.numberOfPlayers = currentPlayers.size();
         this.playerTurnIndex = 0;
@@ -59,6 +58,13 @@ public class GameController {
 
             }
         });
+        this.GameView = new GameView(this, currentPlayer);
+    }
+
+    public void handleCellPlacing(Point cellPosition, Player player) {
+        placeCell(cellPosition, player);
+        updatePlayerDeck(player);
+        board.updateDeadCells();
     }
 
     public GameView getGameView() {

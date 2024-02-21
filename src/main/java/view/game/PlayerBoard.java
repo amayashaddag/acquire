@@ -14,19 +14,15 @@ public class PlayerBoard extends javax.swing.JPanel {
     private final GameView g;
     private final Dimension INITIAL_DIMENSION = new Dimension(100, 100);
     private final Dimension ZOOM_DIMENSION = new Dimension(300, 120);
-
-    MigLayout mig;
+    private final MigLayout mig;
 
     public PlayerBoard(GameView g) {
-        mig = new MigLayout("al center, filly", "10[]10");
         this.g = g;
+        mig = new MigLayout("al center, filly", "10[]10");
 
-        // TODO : attendre le controleur
-        for (Player p : new java.lang.Iterable<Player>() {
-            public java.util.Iterator<Player> iterator() {
-                return null;
-            }
-        }) {
+        this.setOpaque(false);
+
+        for (Player p : g.getController().getCurrentPlayers()) {
             PlayerItem item = new PlayerItem(p);
             if (p.equals(g.getPlayer()))
                 item.setBorder(new ColorableFlatBorder(new Color(104, 203, 44)));

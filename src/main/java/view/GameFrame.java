@@ -21,6 +21,7 @@ import com.formdev.flatlaf.FlatDarculaLaf;
  * @author Arthur Deck
  * @version 0.1
  */
+@Deprecated
 public class GameFrame extends JFrame {
     final int DEFAULT_WIDTH = 1200;
     final int DEFAULT_HEIGHT = 900;
@@ -43,7 +44,7 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-        setGameView(null, null);
+        //setGameView(null, null);
     }
 
     public void setGameView(GameController controller, Player player) {

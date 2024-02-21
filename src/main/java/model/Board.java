@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 import tools.Point;
 
 public class Board {
-    public final static int BOARD_WIDTH = 12, BOARD_HEIGHT = 9;
+    public final static int BOARD_WIDTH = 9, BOARD_HEIGHT = 9;
     public final static int INITIAL_STOCKS_PER_COMPANY = 25;
     public final static int DECK_SIZE = 6;
     public final static int SAFETY_SIZE = 11;
@@ -142,7 +142,7 @@ public class Board {
             remainingCells.remove(chosenCell);
         }
 
-        System.out.println(chosenCell);
+        // System.out.println(chosenCell);
         return chosenCell;
     }
     public Map<Corporation, Integer> getRemainingStocks() {
