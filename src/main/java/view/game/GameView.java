@@ -113,8 +113,20 @@ public class GameView extends Form {
         g.getContentPane().add(this);
     }
 
-    public void showNotification(String msg, Notifications.Type type) {
-        Notifications.getInstance().show(type, Notifications.Location.TOP_RIGHT, msg);
+    public void showSuccessNotification(String msg) {
+        Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.TOP_RIGHT, msg);
+    }
+
+    public void showErrorNotification(String msg) {
+        Notifications.getInstance().show(Notifications.Type.ERROR, Notifications.Location.TOP_RIGHT, msg);
+    }
+    
+    public void showInfoNotification(String msg) {
+        Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_RIGHT, msg);
+    }
+
+    public void showWarningNotification(String msg) {
+        Notifications.getInstance().show(Notifications.Type.WARNING, Notifications.Location.TOP_RIGHT, msg);
     }
 
     /**
