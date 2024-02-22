@@ -29,3 +29,7 @@ test :
 	@java -cp "$(LIB)/*:$(OUT)" org.junit.platform.console.ConsoleLauncher --scan-class-path
 
 all : clean compile test run
+
+debug:
+	javac -cp "src/main/java:$(LIB)/*" -d $(OUT) src/main/java/view/Debug.java
+	java -cp "$(OUT):$(LIB)/*" view.Debug

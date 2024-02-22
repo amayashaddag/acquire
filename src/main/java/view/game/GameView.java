@@ -15,7 +15,7 @@ import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 import raven.toast.Notifications;
 
@@ -84,10 +84,24 @@ public class GameView extends Form {
                 if (currentCell.isOccupied()) {
                     // y'a un jeton sans entreprise
                 } else if (currentCell.isOwned()) {
-                    // y'a une entreprise dessus
+                    int radiusX = cellWidth/2;
+                    int radiusY = cellHeight/2;
+                    Color c = switch (currentCell.getCorporation()) {
+                        case WORLDWIDE -> Color.BLUE;
+                        case TOWER -> Color.CYAN;
+                        case CONTINENTAL -> Color.MAGENTA;
+                        case SACKSON -> Color.ORANGE;
+                        case AMERICAN -> Color.PINK;
+                        case FESTIVAL -> Color.RED;
+                        case IMPERIAL -> Color.YELLOW;
+                        default -> null;
+                    };
+                    g2d.setColor(c);
+                    g2d.fillOval(x+radiusX, y+radiusY, radiusX, radiusY);
                 } else if (currentCell.isDead()) {
                     // C'est mort
                 }
+
 
                 if (new tools.Point(row, col).equals(jetonsPanel.getSelection())) {
                     g2d.setColor(new Color(0, 255, 0, 128));
@@ -107,24 +121,24 @@ public class GameView extends Form {
      * {@link view.Form#setOn(GameFrame)}
      */
     public void setOn(GameFrame g) {
-        this.setSize(g.getWidth(), g.getHeight()); // FIXME map != null
+        this.setSize(g.getWidth(), g.getHeight());
         g.getContentPane().add(this);
     }
 
     public void showSuccessNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.TOP_RIGHT, msg);
+        Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.TOP_CENTER, msg);
     }
 
     public void showErrorNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.ERROR, Notifications.Location.TOP_RIGHT, msg);
+        Notifications.getInstance().show(Notifications.Type.ERROR, Notifications.Location.TOP_CENTER, msg);
     }
     
     public void showInfoNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_RIGHT, msg);
+        Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_CENTER, msg);
     }
 
     public void showWarningNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.WARNING, Notifications.Location.TOP_RIGHT, msg);
+        Notifications.getInstance().show(Notifications.Type.WARNING, Notifications.Location.TOP_CENTER, msg);
     }
 
     /**
