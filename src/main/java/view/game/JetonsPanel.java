@@ -68,22 +68,28 @@ public class JetonsPanel extends JPanel {
             this.setText(p.toString());
             this.addActionListener((e) -> {
                 g.getController().handleCellPlacing(p, g.getPlayer());
-                ArrayList<JetonButton> l = new ArrayList<>();
-                for (Component c : buttonPanel.getComponents())
-                    if (c instanceof JetonButton)
-                        l.add((JetonButton)c);
 
-                if (l.size() != g.getPlayer().getDeck().length)
-                    g.showError(new Exception("length of player's deck different of JetonButton's number"), 
-                    () -> buttonPanel = getNewButtonPanel());
-                else {
-                    tools.Point[] playerDeck = g.getPlayer().getDeck();
-                    for (int i = 0; i < l.size(); i++) {
-                        l.get(i).setPoint(playerDeck[i]);
-                        l.get(i).setText(playerDeck[i].toString());
+                tools.Point[] playerDeck = g.getPlayer().getDeck();
+                if (playerDeck.length == 0) {
+                    buttonPanel.removeAll();
+                    g.repaint();
+                } else {
+                    ArrayList<JetonButton> l = new ArrayList<>();
+                    for (Component c : buttonPanel.getComponents())
+                        if (c instanceof JetonButton)
+                            l.add((JetonButton)c);
+
+                    if (l.size() != g.getPlayer().getDeck().length)
+                        g.showError(new Exception("length of player's deck different of JetonButton's number"), 
+                        () -> buttonPanel = getNewButtonPanel());
+                    else {
+                        for (int i = 0; i < l.size(); i++) {
+                            l.get(i).setPoint(playerDeck[i]);
+                            l.get(i).setText(playerDeck[i].toString());
+                        }
                     }
+                    g.repaint();
                 }
-                g.repaint();
             });
             this.addMouseListener(this);
         }

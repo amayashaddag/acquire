@@ -17,6 +17,8 @@ import java.io.StringWriter;
 
 import javax.swing.JOptionPane;
 
+import raven.toast.Notifications;
+
 /**
  * The panel which has the map
  * 
@@ -45,6 +47,8 @@ public class GameView extends Form {
         this.jetonsPanel = new JetonsPanel(this);
         this.mouseListener = new MouseManager(this);
         this.playerBoard = new PlayerBoard(this);
+
+        Notifications.getInstance().setJFrame(this);
     }
 
     public Player getPlayer() {
@@ -107,6 +111,10 @@ public class GameView extends Form {
     public void setOn(GameFrame g) {
         this.setSize(g.getWidth(), g.getHeight()); // FIXME map != null
         g.getContentPane().add(this);
+    }
+
+    public void showNotification(String msg, Notifications.Type type) {
+        Notifications.getInstance().show(type, Notifications.Location.TOP_RIGHT, msg);
     }
 
     /**
