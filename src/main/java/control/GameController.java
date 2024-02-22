@@ -12,11 +12,12 @@ import model.Cell;
 import model.Corporation;
 import model.Player;
 import tools.Point;
+import view.game.GameNotifications;
 import view.game.GameView;
 
 public class GameController {
     private final Board board;
-    private final GameView GameView;
+    private final GameView gameView;
     private final List<Player> currentPlayers;
     private int playerTurnIndex;
     private final int numberOfPlayers;
@@ -58,7 +59,7 @@ public class GameController {
 
             }
         });
-        this.GameView = new GameView(this, currentPlayer);
+        this.gameView = new GameView(this, currentPlayer);
     }
 
     public void handleCellPlacing(Point cellPosition, Player player) {
@@ -68,7 +69,7 @@ public class GameController {
     }
 
     public GameView getGameView() {
-        return GameView;
+        return gameView;
     }
 
     public Board getBoard() {
@@ -126,26 +127,27 @@ public class GameController {
 
     public void buyStocks(Player player, Corporation corporation, int amount) {
         if (!board.enoughRemainingStocks(corporation, amount)) {
-            // TODO : display message telling that there is not enough remaining stocks
+            gameView.showErrorNotification(GameNotifications.NOT_ENOUGH_REMAINING_STOCKS_IN_BANK);
             return;
         }
         int unityStockPrice = board.getStockPrice(corporation);
         int amountToPay = unityStockPrice * amount;
 
         if (!player.hasEnoughCash(amountToPay)) {
-            // TODO : display message you don't have enough cash
+            gameView.showErrorNotification(GameNotifications.NOT_ENOUGH_CASH);
             return;
         }
 
         board.removeFromRemainingStocks(corporation, amount);
         player.addToEarnedStocks(corporation, amount);
         player.removeFromCash(amountToPay);
+        gameView.showSuccessNotification(GameNotifications.successfullyBoughtStocks(amount, corporation));
     }
 
 
     public void sellStocks(Player player, Corporation corporation, int amount) {
         if (!player.hasEnoughStocks(corporation, amount)) {
-            // TODO : print a don't have enough stocks message
+            gameView.showErrorNotification(GameNotifications.NOT_ENOUGH_STOCKS_PLAYER);
             return;
         }
 
@@ -155,6 +157,7 @@ public class GameController {
         board.addToRemainingStocks(corporation, amountToEarn);
         player.removeFromEarnedStocks(corporation, amountToEarn);
         player.addToCash(amountToEarn);
+        gameView.showSuccessNotification(GameNotifications.successfullySoldStocks(amount, corporation, amountToEarn));
     }
 
 
@@ -227,6 +230,9 @@ public class GameController {
     public void placeCell(Point cellPosition, Player currentPlayer) {
         Cell currentCell = board.getCell(cellPosition.getX(), cellPosition.getY());
         currentCell.setAsOccupied();
+        gameView.showSuccessNotification(
+                GameNotifications.cellPlacingNotification(currentPlayer.getPseudo(), cellPosition)
+        );
 
         List<Point> adjacentOwnedCells = board.adjacentOwnedCells(cellPosition);
         if (adjacentOwnedCells.isEmpty()) {
@@ -244,11 +250,11 @@ public class GameController {
             for (Point adj : adjacentOccupiedCells) {
                 Cell adjacentCell = board.getCell(adj);
                 board.replaceCellCorporation(adjacentCell, chosenCorporation);
-                return;
             }
 
             board.removeFromRemainingStocks(chosenCorporation, FOUNDING_STOCK_BONUS);
             currentPlayer.addToEarnedStocks(chosenCorporation, FOUNDING_STOCK_BONUS);
+            return;
         }
 
         if (adjacentOwnedCells.size() == 1) {

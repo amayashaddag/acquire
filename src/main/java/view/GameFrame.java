@@ -10,6 +10,7 @@ import java.awt.GraphicsEnvironment;
 
 import control.GameController;
 import model.Player;
+import raven.toast.Notifications;
 import view.game.GameView;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
@@ -44,7 +45,7 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-        //setGameView(null, null);
+        Notifications.getInstance().setJFrame(this);
     }
 
     public void setGameView(GameController controller, Player player) {

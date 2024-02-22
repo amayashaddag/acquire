@@ -15,7 +15,7 @@ import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import raven.toast.Notifications;
 
@@ -47,8 +47,6 @@ public class GameView extends Form {
         this.jetonsPanel = new JetonsPanel(this);
         this.mouseListener = new MouseManager(this);
         this.playerBoard = new PlayerBoard(this);
-
-        Notifications.getInstance().setJFrame(this);
     }
 
     public Player getPlayer() {
@@ -106,7 +104,7 @@ public class GameView extends Form {
     /*------------------ Form ------------------- */
 
     /**
-     * {@link view.Form#setOn()}
+     * {@link view.Form#setOn(GameFrame)}
      */
     public void setOn(GameFrame g) {
         this.setSize(g.getWidth(), g.getHeight()); // FIXME map != null
