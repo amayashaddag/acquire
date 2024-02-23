@@ -10,6 +10,16 @@ import java.awt.Graphics2D;
 
 import net.miginfocom.swing.MigLayout;
 
+import javax.swing.*;
+
+/**
+ * <p> A JPanel which contains all
+ * the {@link view.game.PlayerBoard.PlayerItem}
+ * for displaying the players's infos</p>
+ *
+ * @author Arthur Deck
+ * @version 1
+ */
 public class PlayerBoard extends javax.swing.JPanel {
     private final GameView g;
     private final Dimension INITIAL_DIMENSION = new Dimension(80, 80);
@@ -41,22 +51,44 @@ public class PlayerBoard extends javax.swing.JPanel {
             super(PlayerBoard.this.mig, INITIAL_DIMENSION, ZOOM_DIMENSION);
             this.player = p;
             this.arc = 10;
-            this.playingBorder = new ColorableArcableFlatBorder(Color.GREEN, this.arc);   // Couleur quel joueur est en traint de jouer
+            this.playingBorder = new ColorableArcableFlatBorder(Color.GREEN, this.arc);   // Couleur indiquant quel joueur est en traint de jouer
+            this.setHorizontalAlignment(SwingConstants.CENTER);
+            this.setVerticalAlignment(SwingConstants.CENTER);
         }
 
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
-            g2.setColor(Color.DARK_GRAY);  // TODO : peut-être mettre une image de fond
+            g2.setColor(Color.DARK_GRAY);
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), this.arc, this.arc);
 
             if (this.getSize().equals(this.initialDimension)) {
                 // TODO : afficher pp joueur
-                this.setText(""+player.getPseudo());
+                this.setText(player.getPseudo());
             } else if (this.getSize().equals(this.zoomingDimension)) {
-                // TODO : afficher info joueur
+                this.setText("""
+                                  <html>
+                                        <table>
+                                          <tr>
+                                            <td>1,1</td>
+                                            <td>1,2</td>
+                                            <td>1,3</td>
+                                          </tr>
+                                          <tr>
+                                            <td>2,1</td>
+                                            <td>2,2</td>
+                                            <td>2,3</td>
+                                          </tr>
+                                          <tr>
+                                            <td>3,1</td>
+                                            <td>3,2</td>
+                                            <td>3,3</td>
+                                          </tr>
+                                        </table>
+                                  </html>
+                                """);
             } else {
-                // TODO : growing barre
+                this.setText("loading...");
             }
 
             if (PlayerBoard.this.g.getPlayer().equals(this.player)) {
