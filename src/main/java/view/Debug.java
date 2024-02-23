@@ -4,7 +4,7 @@ import net.miginfocom.swing.MigLayout;
 import view.game.ColorableArcableFlatBorder;
 import view.game.GameView;
 import view.game.GrowingJLabel;
-import view.game.annotations.AutoSetter;
+import tools.AutoSetter;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,8 +14,10 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import control.GameController;
 import model.Player;
 
-@AutoSetter(paramType = GameView.class)
+@AutoSetter(typeParam = GameView.class)
 public class Debug {
+
+    public Debug(String s) {}
 
     public static void main(String[] args) {
         FlatDarculaLaf.setup();

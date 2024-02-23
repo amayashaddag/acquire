@@ -30,6 +30,13 @@ test :
 
 all : clean compile test run
 
+
+# For debugging, please do not modify
+PROCESS:=processor
+
+processor:
+	javac -cp "$(JAVA_MAIN):$(LIB)/*" -d $(OUT) $(JAVA_MAIN)/$(PROCESS)/*
+
 debug:
-	javac -cp "src/main/java:$(LIB)/*" -d $(OUT) src/main/java/view/Debug.java
+	javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -processor $(PROCESS).AutoSetterProcessor -d $(OUT) src/main/java/view/Debug.java
 	java -cp "$(OUT):$(LIB)/*" view.Debug
