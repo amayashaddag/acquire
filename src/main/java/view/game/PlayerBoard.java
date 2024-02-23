@@ -25,7 +25,7 @@ public class PlayerBoard extends javax.swing.JPanel {
         for (Player p : g.getController().getCurrentPlayers()) {
             PlayerItem item = new PlayerItem(p);
             if (p.equals(g.getPlayer()))
-                item.setBorder(new ColorableFlatBorder(new Color(104, 203, 44)));
+                item.setBorder(new ColorableArcableFlatBorder(Color.GREEN));
             this.add(item, "w " + INITIAL_DIMENSION.width + ", h " + INITIAL_DIMENSION.height);
         }
 
@@ -35,13 +35,13 @@ public class PlayerBoard extends javax.swing.JPanel {
     private class PlayerItem extends GrowingJLabel {
         final Player player;
         int arc;
-        ColorableFlatBorder playingBorder;
+        ColorableArcableFlatBorder playingBorder;
 
         public PlayerItem(Player p) {
             super(PlayerBoard.this.mig, INITIAL_DIMENSION, ZOOM_DIMENSION);
             this.player = p;
             this.arc = 10;
-            this.playingBorder = new ColorableFlatBorder(Color.GREEN, this.arc);   // Couleur quel joueur est en traint de jouer
+            this.playingBorder = new ColorableArcableFlatBorder(Color.GREEN, this.arc);   // Couleur quel joueur est en traint de jouer
         }
 
         @Override

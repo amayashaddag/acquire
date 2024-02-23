@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.Color;
 import java.awt.Component;
@@ -54,6 +53,16 @@ public class JetonsPanel extends JPanel {
         return selection;
     }
 
+    @Override
+    public void repaint() {
+        try {
+            if (g.getController().getCurrentPlayer().equals(g.getPlayer()))
+                super.repaint();
+        } catch (NullPointerException e) {
+            // Arrive at the initialation of JetonPanel
+        }
+    }
+
     private class JetonButton extends JButton {
         tools.Point p;
 
@@ -90,7 +99,7 @@ public class JetonsPanel extends JPanel {
             this.addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e) {
                     JetonsPanel.this.selection = JetonButton.this.p;
-                    JetonButton.this.setBorder(new ColorableFlatBorder(new Color(104, 203, 44)));
+                    JetonButton.this.setBorder(new ColorableArcableFlatBorder(new Color(69, 158, 14)));
                     g.repaint();
                 }
 

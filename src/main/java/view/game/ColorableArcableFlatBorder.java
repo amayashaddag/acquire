@@ -11,23 +11,43 @@ import java.awt.Component;
  * @version 1
  * @see com.formdev.flatlaf.ui.FlatBorder
  */
-public class ColorableFlatBorder extends FlatBorder {
+public class ColorableArcableFlatBorder extends FlatBorder {
     Color color; 
     int arc;
 
-    public ColorableFlatBorder(Color c, int arc) {
+    public ColorableArcableFlatBorder() {
+        this(null, 0);
+    }
+
+    public ColorableArcableFlatBorder(Color c, int arc) {
         super();
         this.arc = arc;
         this.color = c;
     }
 
-    public ColorableFlatBorder(Color c) {
+    public ColorableArcableFlatBorder(Color c) {
         super();
         this.color = c;
     }
 
-    public ColorableFlatBorder(int arc) {
+    public ColorableArcableFlatBorder(int arc) {
         super();
+        this.arc = arc;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public int getArc() {
+        return arc;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public void setArc(int arc) {
         this.arc = arc;
     }
 

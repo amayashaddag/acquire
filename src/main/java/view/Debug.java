@@ -1,15 +1,13 @@
 package view;
 
 import net.miginfocom.swing.MigLayout;
-import view.game.ColorableFlatBorder;
+import view.game.ColorableArcableFlatBorder;
 import view.game.GameView;
 import view.game.GrowingJLabel;
 import view.game.annotations.AutoSetter;
 
 import java.awt.*;
 import java.util.ArrayList;
-
-import javax.swing.*;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 
@@ -43,11 +41,13 @@ public class Debug {
         // g.add(root);
         // g.setVisible(true);
 
-        Player p = Player.createHumanPlayer("ezadza");
         ArrayList<Player> l = new ArrayList<>();
-        l.add(p);
-        l.add(Player.createHumanPlayer("arthur"));
-        GameController c = new GameController(l, p);
+        l.add(Player.createHumanPlayer("caca1"));
+        l.add(Player.createHumanPlayer("caca2"));
+        l.add(Player.createHumanPlayer("caca3"));
+        l.add(Player.createHumanPlayer("caca4"));
+        l.add(Player.createHumanPlayer("caca5"));
+        GameController c = new GameController(l, l.get(1));
         c.getGameView().setVisible(true);
         GameView g = c.getGameView();
         GameFrame frame = new GameFrame();
@@ -61,7 +61,7 @@ public class Debug {
         public Caca(Player p, MigLayout mig) {
             super(mig, new Dimension(100, 100), new Dimension(300, 120));
             this.player = p;
-            this.setBorder(new ColorableFlatBorder(Color.GREEN));
+            this.setBorder(new ColorableArcableFlatBorder(Color.GREEN));
         }
 
         @Override
