@@ -76,13 +76,18 @@ public class GameView extends Form {
             x = -row * cellWidth / 2 + getWidth() / 2 - cellWidth;
             y = row * cellHeight / 2;
             for (int col = 0; col < Board.BOARD_HEIGHT; col++) {
+                Cell currentCell = board.getCell(row, col);
                 x += cellWidth / 2;
                 y += cellHeight / 2;
-                g2d.drawImage(Ressources.Assets.GRASS, x, y, cellWidth, cellHeight, this);
 
-                Cell currentCell = board.getCell(row, col);
-                if (currentCell.isOccupied()) {
-                    // y'a un jeton sans entreprise
+                if (!currentCell.isDead())
+                    g2d.drawImage(Ressources.Assets.GRASS, x, y, cellWidth, cellHeight, this);
+
+                if (currentCell.isOccupied()) { // TODO : mettre des images à la places des ronds
+                    int radiusX = cellWidth/2;
+                    int radiusY = cellHeight/2;
+                    g2d.setColor(Color.BLACK);
+                    g2d.fillOval(x+radiusX/2, y+radiusY/2, radiusX, radiusY);
                 } else if (currentCell.isOwned()) {
                     int radiusX = cellWidth/2;
                     int radiusY = cellHeight/2;
@@ -97,11 +102,8 @@ public class GameView extends Form {
                         default -> null;
                     };
                     g2d.setColor(c);
-                    g2d.fillOval(x+radiusX, y+radiusY, radiusX, radiusY);
-                } else if (currentCell.isDead()) {
-                    // C'est mort
+                    g2d.fillOval(x+radiusX/2, y+radiusY/2, radiusX, radiusY);
                 }
-
 
                 if (new tools.Point(row, col).equals(jetonsPanel.getSelection())) {
                     g2d.setColor(new Color(0, 255, 0, 128));

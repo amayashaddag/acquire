@@ -1,5 +1,6 @@
 package view.game;
 
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 
 import java.awt.GridLayout;
@@ -53,12 +54,7 @@ public class JetonsPanel extends JPanel {
         return selection;
     }
 
-    @Override
-    public void repaint() {
-        super.repaint();
-    }
-
-    private class JetonButton extends JButton implements MouseListener {
+    private class JetonButton extends JButton {
         tools.Point p;
 
         JetonButton(tools.Point p) {
@@ -91,33 +87,24 @@ public class JetonsPanel extends JPanel {
                     g.repaint();
                 }
             });
-            this.addMouseListener(this);
+            this.addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e) {
+                    JetonsPanel.this.selection = JetonButton.this.p;
+                    JetonButton.this.setBorder(new ColorableFlatBorder(new Color(104, 203, 44)));
+                    g.repaint();
+                }
+
+                public void mouseExited(MouseEvent e) {
+                    JetonsPanel.this.selection = null;
+                    JetonButton.this.setBorder(UIManager.getBorder("Button.border"));
+                    g.repaint();
+                }
+            });
         }
 
         private void setPoint(tools.Point p) {
             this.p.setX(p.getX());
             this.p.setY(p.getY());
-        }
-
-        public void mouseEntered(MouseEvent e) {
-            JetonsPanel.this.selection = this.p;
-            this.setBorder(new ColorableFlatBorder(new Color(104, 203, 44)));
-            g.repaint();
-        }
-
-        public void mouseExited(MouseEvent e) {
-            JetonsPanel.this.selection = null;
-            this.setBorder(UIManager.getBorder("Button.border"));
-            g.repaint();
-        }
-
-        public void mousePressed(MouseEvent arg0) {
-        }
-
-        public void mouseClicked(MouseEvent arg0) {
-        }
-
-        public void mouseReleased(MouseEvent arg0) {
         }
     }
 }
