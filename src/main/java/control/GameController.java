@@ -39,12 +39,12 @@ public class GameController {
         board.updateDeadCells();
         board.updatePlayerDeck(player);
 
-        System.out.println(board.getCorporationSizes());
-        for (Point p : player.getDeck()) {
-            System.out.print(p + " ");
-        }
-        System.out.println();
-        System.out.println(board.getRemainingCells());
+//        System.out.println(board.getCorporationSizes());
+//        for (Point p : player.getDeck()) {
+//            System.out.print(p + " ");
+//        }
+//        System.out.println();
+//        System.out.println(board.getRemainingCells());
         for (Point p : board.getRemainingCells()) {
             System.out.println(p + " : " + board.canPlaceIn(p));
         }

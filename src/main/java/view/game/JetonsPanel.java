@@ -18,7 +18,7 @@ import javax.swing.UIManager;
 
 /**
  * The JPanel for the jetons
- * 
+ *
  * @author Arthur Deck
  * @version 1
  */
@@ -62,7 +62,7 @@ public class JetonsPanel extends JPanel {
             if (g.getController().getCurrentPlayer().equals(g.getPlayer()))
                 super.repaint();
         } catch (NullPointerException e) {
-            // Arrive at the initialization of JetonPanel
+            // Don't woory it's normal. This arrive at the initialation of JetonPanel.
         }
     }
 
@@ -85,26 +85,15 @@ public class JetonsPanel extends JPanel {
                     ArrayList<JetonButton> l = new ArrayList<>();
                     for (Component c : buttonPanel.getComponents())
                         if (c instanceof JetonButton)
-                            l.add((JetonButton)c);
+                            l.add((JetonButton) c);
 
-                    if (l.size() != g.getPlayer().getDeck().length)
-                        g.showError(new Exception("length of player's deck different of JetonButton's number"), 
-                        () -> buttonPanel = getNewButtonPanel());
-                    else {
-                        for (int i = 0; i < l.size(); i++) {
-                            tools.Point jeton = playerDeck[i];
-                            JetonButton currentButton = l.get(i);
-
-                            if (jeton != null) {
-                                currentButton.setPoint(jeton);
-                                currentButton.setText(jeton.toString());
-                                currentButton.setEnabled(true);
-                            } else {
-                                currentButton.setText("-");
-                                currentButton.setEnabled(false);
-                            }
-                        }
+                    for (int i = 0; i < l.size(); i++) {
+                        if (playerDeck[i] != null) {
+                            l.get(i).setPoint(playerDeck[i]);
+                            l.get(i).setText(playerDeck[i].toString());
+                        } else buttonPanel.remove(l.get(i));
                     }
+
                     g.repaint();
                 }
             });
