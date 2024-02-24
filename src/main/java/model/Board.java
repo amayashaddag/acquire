@@ -15,10 +15,10 @@ public class Board {
     public final static int WINNING_CORPORATION_SIZE = 41;
     public final static int MAXIMUM_AMOUNT_OF_BUYING_STOCKS = 3;
 
-    private Cell[][] grid;
-    private Map<Corporation, Integer> corporationSizes;
-    private Map<Corporation, Integer> remainingStocks;
-    private List<Point> remainingCells;
+    private final Cell[][] grid;
+    private final Map<Corporation, Integer> corporationSizes;
+    private final Map<Corporation, Integer> remainingStocks;
+    private final List<Point> remainingCells;
 
     public Board() {
         this.grid = new Cell[BOARD_HEIGHT][BOARD_WIDTH];
@@ -102,6 +102,11 @@ public class Board {
         return this.grid[y][x];
     }
 
+    // TODO : To remove after finishing tests
+    public List<Point> getRemainingCells() {
+        return remainingCells;
+    }
+
     /**
      * 
      * @param corporation
@@ -132,7 +137,6 @@ public class Board {
             remainingCells.remove(chosenCell);
         }
 
-        // System.out.println(chosenCell);
         return chosenCell;
     }
     public Map<Corporation, Integer> getRemainingStocks() {
@@ -162,15 +166,14 @@ public class Board {
      * Does the job of adding one cell of a corporation to the board
      */
     public void replaceCellCorporation(Cell cell, Corporation newCorporation) {
-        Corporation oldCorporation = cell.getCorporation();
-
-        int oldCorporationSize;
-        int newCorporationSize = getCorporationSize(newCorporation);
-
         if (cell.isOwned()) {
+            Corporation oldCorporation = cell.getCorporation();
+            int oldCorporationSize;
+
             oldCorporationSize = getCorporationSize(oldCorporation);
             setCorporationSize(oldCorporation, oldCorporationSize - 1);
         }
+        int newCorporationSize = getCorporationSize(newCorporation);
 
         setCorporationSize(newCorporation, newCorporationSize + 1);
         cell.setCorporation(newCorporation);
@@ -256,7 +259,8 @@ public class Board {
         for (Point adj : adjacentCells) {
             Cell cell = getCell(adj);
 
-            if (cell.getCorporation() == corporation && !(visitedCells.contains(adj))) {
+            if ((cell.getCorporation() == corporation || cell.isOccupied())
+                    && !(visitedCells.contains(adj))) {
                 mappingDFS(corporation, adj, visitedCells, op);
             }
         }
@@ -322,8 +326,7 @@ public class Board {
     }
 
     /**
-     * 
-     * @param corporation
+     *
      * @return returns current stock price of given corporation
      */
     public int getStockPrice(Corporation corporation) {
@@ -345,22 +348,21 @@ public class Board {
      */
     public int getMinoritySharehold(Corporation corporation) {
         int corporationSize = getCorporationSize(corporation);
-        int stockPrice = ReferenceChart.getMinoritySharehold(corporation, corporationSize);
-        return stockPrice;
+        return ReferenceChart.getMinoritySharehold(corporation, corporationSize);
     }
 
     @Override
     public String toString() {
-        String board = "";
+        StringBuilder board = new StringBuilder();
 
         for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
-                board += this.grid[i][j].toString() + " ";
+                board.append(this.grid[i][j].toString()).append(" ");
             }
-            board += "\n";
+            board.append("\n");
         }
 
-        return board;
+        return board.toString();
     }
 
     /**
@@ -393,28 +395,33 @@ public class Board {
 
     /**
      * This function updates the cells adjacent to a given cell to detect the dead ones
-     * @param cellPosition the given cell we want update cells around
      */
-    public void updateDeadCells(Point cellPosition) {
-        Set<Point> adjacentEmptyCells = adjacentEmptyCells(cellPosition);
-        for (Point adj : adjacentEmptyCells) {
-            Cell adjacentCell = getCell(adj);
-            Set<Point> adjacentSafeCells = adjacentSafeCells(adj);
-            Set<Corporation> adjacentSafeCorporations = new HashSet<>();
-            int numberOfAdjacentSafeCorporations = 0;
+    public void updateDeadCells() {
+        for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
+                Point cellPosition = new Point(j, i);
+                Cell cell = getCell(cellPosition);
 
-            for (Point adjacent : adjacentSafeCells) {
-                Cell adjacentSafeCell = getCell(adjacent);
-                Corporation adjacentSafeCorporation = adjacentSafeCell.getCorporation();
+                if (cell.isEmpty()) {
+                    Set<Point> adjacentSafeCells = adjacentSafeCells(cellPosition);
+                    Set<Corporation> adjacentSafeCorporations = new HashSet<>();
+                    int numberOfAdjacentSafeCorporations = 0;
 
-                if (!adjacentSafeCorporations.contains(adjacentSafeCorporation)) {
-                    adjacentSafeCorporations.add(adjacentSafeCorporation);
-                    numberOfAdjacentSafeCorporations++;
+                    for (Point adjacent : adjacentSafeCells) {
+                        Cell adjacentSafeCell = getCell(adjacent);
+                        Corporation adjacentSafeCorporation = adjacentSafeCell.getCorporation();
+
+                        if (!adjacentSafeCorporations.contains(adjacentSafeCorporation)) {
+                            adjacentSafeCorporations.add(adjacentSafeCorporation);
+                            numberOfAdjacentSafeCorporations++;
+                        }
+                    }
+
+                    if (numberOfAdjacentSafeCorporations > 1) {
+                        cell.setAsDead();
+                        remainingCells.remove(cellPosition);
+                    }
                 }
-            }
-
-            if (numberOfAdjacentSafeCorporations > 1) {
-                adjacentCell.setAsDead();
             }
         }
     }
@@ -478,4 +485,36 @@ public class Board {
         return possibleBuyingStocks;
     }
 
+    public void updatePlayerDeck(Player player) {
+        Point[] deck = player.getDeck();
+
+        for (int i = 0; i < DECK_SIZE; i++) {
+            Point oldCellPosition = deck[i];
+
+            if (oldCellPosition != null && canPlaceIn(oldCellPosition)) {
+                continue;
+            }
+
+            Point newCellPosition = null;
+            for (Point possibleCellPosition : remainingCells) {
+                if (canPlaceIn(possibleCellPosition)) {
+                    newCellPosition = possibleCellPosition;
+                    break;
+                }
+            }
+
+            if (oldCellPosition != null) {
+                Cell oldCell = getCell(oldCellPosition);
+
+                if (oldCell.isEmpty()) {
+                    remainingCells.add(oldCellPosition);
+                }
+            }
+
+            if (newCellPosition != null) {
+                remainingCells.remove(newCellPosition);
+            }
+            deck[i] = newCellPosition;
+        }
+    }
 }

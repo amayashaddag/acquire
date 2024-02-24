@@ -36,8 +36,18 @@ public class GameController {
 
     public void handleCellPlacing(Point cellPosition, Player player) {
         placeCell(cellPosition, player);  // FIXME  : Fix NullPointerException in this function
-        updatePlayerDeck(player);
-        board.updateDeadCells(cellPosition);
+        board.updateDeadCells();
+        board.updatePlayerDeck(player);
+
+        System.out.println(board.getCorporationSizes());
+        for (Point p : player.getDeck()) {
+            System.out.print(p + " ");
+        }
+        System.out.println();
+        System.out.println(board.getRemainingCells());
+        for (Point p : board.getRemainingCells()) {
+            System.out.println(p + " : " + board.canPlaceIn(p));
+        }
     }
 
     public GameView getGameView() {
@@ -78,20 +88,6 @@ public class GameController {
             }
 
             player.setDeck(deck);
-        }
-    }
-
-    // TODO : Correct this function
-    public void updatePlayerDeck(Player player) {
-        Point[] playerDeck = player.getDeck();
-
-        for (int i = 0; i < Board.DECK_SIZE; i++) {
-            Point cellPosition = playerDeck[i];
-
-            if (cellPosition == null || !board.canPlaceIn(cellPosition)) {
-                Point randomChosenCell = board.getFromRemainingCells();
-                playerDeck[i] = randomChosenCell;
-            }
         }
     }
 
@@ -233,6 +229,10 @@ public class GameController {
             Corporation adjacentCorporation = adjacentOwnedCell.getCorporation();
 
             board.replaceCellCorporation(currentCell, adjacentCorporation);
+            for (Point adjacent : adjacentOccupiedCells) {
+                Cell adjacentOccupiedCell = board.getCell(adjacent);
+                board.replaceCellCorporation(adjacentOccupiedCell, adjacentCorporation);
+            }
             return;
         }
 
@@ -249,7 +249,7 @@ public class GameController {
 
         Player currentPlayer = getCurrentPlayer();
 
-        while(!gameOver) {
+        while (!gameOver) {
 
             for (Point p : currentPlayer.getDeck()) {
                 System.out.print(p + " ");
@@ -260,8 +260,8 @@ public class GameController {
             Point cellPosition = currentPlayer.getCell(inventoryIndex);
 
             placeCell(cellPosition, currentPlayer);
-            board.updateDeadCells(cellPosition);
-            updatePlayerDeck(currentPlayer);
+            board.updateDeadCells();
+            board.updatePlayerDeck(currentPlayer);
 
             System.out.println(board);
             System.out.println(board.getCorporationSizes());

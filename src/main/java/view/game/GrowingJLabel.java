@@ -13,9 +13,9 @@ import net.miginfocom.swing.MigLayout;
 
 
 /**
- * <p> A JTable wich automatly grow
+ * <p> A JTable which automatically grow
  * when you pass your mouse on it</p>
- * <p> It use for print player's informations </p>
+ * <p> It use for print player's information </p>
  * 
  * @author Arthur Deck
  * @version 1
@@ -39,9 +39,9 @@ public class GrowingJLabel extends JLabel {
         timer = new Timer(0, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                int width = getWidth();
+                int height = getHeight();
                 if (show) {
-                    int width = getWidth();
-                    int height = getHeight();
                     if (width < zoomingDimension.width) {
                         mig.setComponentConstraints(GrowingJLabel.this, "w " + (width + 1) + ", h " + Math.min(height + 1, zoomingDimension.height));
                         getParent().revalidate();
@@ -49,8 +49,6 @@ public class GrowingJLabel extends JLabel {
                         timer.stop();
                     }
                 } else {
-                    int width = getWidth();
-                    int height = getHeight();
                     if (width > initialDimension.width) {
                         mig.setComponentConstraints(GrowingJLabel.this, "w " + (width - 1) + ", h " + Math.max(height - 1, initialDimension.height));
                         getParent().revalidate();

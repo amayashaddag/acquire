@@ -3,3 +3,4 @@ debug/
 *.iml
 .idea/
 .vscode/
+out/
