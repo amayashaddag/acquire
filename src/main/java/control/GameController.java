@@ -45,9 +45,9 @@ public class GameController {
 //        }
 //        System.out.println();
 //        System.out.println(board.getRemainingCells());
-        for (Point p : board.getRemainingCells()) {
-            System.out.println(p + " : " + board.canPlaceIn(p));
-        }
+//        for (Point p : board.getRemainingCells()) {
+//            System.out.println(p + " : " + board.canPlaceIn(p));
+//        }
     }
 
     public GameView getGameView() {

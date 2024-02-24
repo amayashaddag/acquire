@@ -72,19 +72,17 @@ public class PlayerBoard extends javax.swing.JPanel {
                                 <html>
                                   <table>
                                   <tr>
-                                    <td>1,1</td>
-                                    <td>1,2</td>
-                                    <td>1,3</td>
+                                    <td><b>Name</td>
+                                    <td>"""+player.getPseudo()+"""
+                                  </td>
                                   </tr>
                                   <tr>
-                                    <td>2,1</td>
-                                    <td>2,2</td>
-                                    <td>2,3</td>
+                                    <td><b>Cash</td>
+                                    <td>"""+player.getCash()+ """
+                                  $</td>
                                   </tr>
                                   <tr>
-                                    <td>3,1</td>
-                                    <td>3,2</td>
-                                    <td>3,3</td>
+                                    empty because is poor
                                   </tr>
                                 </table>
                                 </html>
