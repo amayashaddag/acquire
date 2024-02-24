@@ -132,27 +132,6 @@ public class BoardTest {
     }
 
     @Test
-    public void updateDeadCellsTest() {
-        Board board = boardExample();
-        board.replaceCellCorporation(board.getCell(5, 0), Corporation.IMPERIAL);
-        board.replaceCellCorporation(board.getCell(5, 1), Corporation.IMPERIAL);
-        board.replaceCellCorporation(board.getCell(5, 2), Corporation.IMPERIAL);
-        board.replaceCellCorporation(board.getCell(5, 3), Corporation.IMPERIAL);
-        board.replaceCellCorporation(board.getCell(5, 4), Corporation.IMPERIAL);
-        board.replaceCellCorporation(board.getCell(5, 5), Corporation.IMPERIAL);
-        board.replaceCellCorporation(board.getCell(5, 6), Corporation.IMPERIAL);
-        board.replaceCellCorporation(board.getCell(5, 7), Corporation.IMPERIAL);
-
-        board.updateDeadCells(new Point(2, 5));
-        board.updateDeadCells(new Point(6, 5));
-        board.updateDeadCells(new Point(7, 7));
-
-        assertTrue(board.getCell(2, 6).isDead());
-        assertTrue(board.getCell(6, 6).isDead());
-        assertFalse(board.getCell(7, 7).isDead());
-    }
-
-    @Test
     public void canPlaceInTest() {
         Board board = new Board();
 

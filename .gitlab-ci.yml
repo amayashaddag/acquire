@@ -11,7 +11,7 @@ stages:
 compile:
   stage: build
   script:
-    - javac -cp "lib/*" -d build/ src/main/java/*/* src/test/java/*/*
+    - javac -cp "lib/*" -d build src/main/java/app/* src/main/java/control/* src/main/java/model/* src/main/java/tools/* src/main/java/view/game/*.java src/main/java/view/*.java src/test/java/*/*
 # Job de test pour un seul fichier
 test:
   stage: test

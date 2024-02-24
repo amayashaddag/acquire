@@ -1,10 +1,9 @@
 JAVA_MAIN=src/main/java
 APP=app/*
-CONTROL=/control/*
+CONTROL=control/*
 MODEL=model/*
 TOOLS=tools/*
 GAME_VIEW=view/game/*.java
-ANNOTATIONS=view/game/annotations/*
 GAME_FRAME=view/*.java
 
 JAVA_TEST=src/test/java
@@ -19,7 +18,7 @@ clean :
 	@echo "✅ Cleaned successfully..."
 compile :
 	@echo "⏳ Compiling project..."
-	@javac -cp "$(LIB)/*" -d $(OUT) $(JAVA_MAIN)/$(APP) $(JAVA_MAIN)/$(CONTROL) $(JAVA_MAIN)/$(MODEL) $(JAVA_MAIN)/$(TOOLS) $(JAVA_MAIN)/$(GAME_VIEW) $(JAVA_MAIN)/$(ANNOTATIONS) $(JAVA_MAIN)/$(GAME_FRAME) $(JAVA_TEST)/*/*
+	@javac -cp "$(LIB)/*" -d $(OUT) $(JAVA_MAIN)/$(APP) $(JAVA_MAIN)/$(CONTROL) $(JAVA_MAIN)/$(MODEL) $(JAVA_MAIN)/$(TOOLS) $(JAVA_MAIN)/$(GAME_VIEW) $(JAVA_MAIN)/$(GAME_FRAME) $(JAVA_TEST)/*/*
 	@echo "✅ Compiled successfully"
 run :
 	@echo "⏳ Running project..."
