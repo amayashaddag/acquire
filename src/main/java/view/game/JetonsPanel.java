@@ -1,5 +1,7 @@
 package view.game;
 
+import tools.AutoSetter;
+
 import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 
@@ -20,6 +22,7 @@ import javax.swing.UIManager;
  * @author Arthur Deck
  * @version 1
  */
+@AutoSetter(typeParam = GameView.class)
 public class JetonsPanel extends JPanel {
     final private GameView g;
     tools.Point selection = null;

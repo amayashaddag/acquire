@@ -1,5 +1,6 @@
 package view.game;
 
+import tools.AutoSetter;
 import view.GameFrame;
 
 import java.awt.geom.AffineTransform;
@@ -24,15 +25,10 @@ import java.awt.event.MouseMotionListener;
  * @see java.awt.event.MouseMotionListener
  * @see java.awt.event.MouseWheelListener
  */
+@AutoSetter(typeParam = GameView.class)
 public class MouseManager implements MouseListener, MouseWheelListener, MouseMotionListener {
     private final double MINIMAL_ZOOM = 1;
 
-    /**
-     * Create object and set hitself on the GameView
-     * 
-     * @param g : the GameView on wich to 
-     * put this listener
-     */
     public MouseManager(GameView g) {
         this.lastClickedPos = new Point2D.Float();
         this.at = g.at;

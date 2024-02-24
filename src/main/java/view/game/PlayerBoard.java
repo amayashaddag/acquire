@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import net.miginfocom.swing.MigLayout;
+import tools.AutoSetter;
 
 import javax.swing.*;
 
@@ -20,6 +21,7 @@ import javax.swing.*;
  * @author Arthur Deck
  * @version 1
  */
+@AutoSetter(typeParam = GameView.class)
 public class PlayerBoard extends javax.swing.JPanel {
     private final GameView g;
     private final Dimension INITIAL_DIMENSION = new Dimension(80, 80);

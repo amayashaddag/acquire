@@ -14,10 +14,7 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import control.GameController;
 import model.Player;
 
-@AutoSetter(typeParam = GameView.class)
 public class Debug {
-
-    public Debug(String s) {}
 
     public static void main(String[] args) {
         FlatDarculaLaf.setup();

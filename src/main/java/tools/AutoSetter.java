@@ -10,7 +10,7 @@ import javax.swing.JPanel;
  * 
  * @apiNote Fo an example of utilisation see {@link view.game.JetonsPanel}
  * @apiNote All class taged
- * must implement a public YourClass(paramType g) 
+ * must implement a public YourClass(typeParam g)
  * constructor
  * @author Arthur Deck
  * @version 1
@@ -18,5 +18,5 @@ import javax.swing.JPanel;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 public @interface AutoSetter {
-    Class<?> typeParam();
+    Class<? extends javax.swing.JPanel> typeParam();
 }
