@@ -9,7 +9,7 @@ GAME_FRAME=view/*.java
 
 JAVA_TEST=src/test/java
 OUT=build
-MAIN=view.Debug
+MAIN=app.App
 LIB=lib
 
 

@@ -1,11 +1,6 @@
 package model;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.BiFunction;
 
@@ -23,7 +18,7 @@ public class Board {
     private Cell[][] grid;
     private Map<Corporation, Integer> corporationSizes;
     private Map<Corporation, Integer> remainingStocks;
-    private Set<Point> remainingCells;
+    private List<Point> remainingCells;
 
     public Board() {
         this.grid = new Cell[BOARD_HEIGHT][BOARD_WIDTH];
@@ -37,13 +32,13 @@ public class Board {
         this.remainingCells = initialCells();
     }
 
-    // TODO : A supprimer ensuite
+    // TODO : To delete
     public Map<Corporation, Integer> getCorporationSizes() {
         return corporationSizes;
     }
 
     /**
-     * This function is only used to intialize the variable remainingStocks in
+     * This function is only used to initialize the variable remainingStocks in
      * constructor
      * 
      * @return returns initial stocks associated to each corporation
@@ -63,14 +58,15 @@ public class Board {
      * @return returns all the cells of the board in a list
      * @see Board
      */
-    private Set<Point> initialCells() {
-        Set<Point> cells = new HashSet<>();
+    private List<Point> initialCells() {
+        List<Point> cells = new LinkedList<>();
         for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
                 Point cell = new Point(j, i);
                 cells.add(cell);
             }
         }
+        Collections.shuffle(cells);
         return cells;
     }
 
@@ -95,12 +91,6 @@ public class Board {
         return amount <= this.remainingCells.size();
     }
 
-    /**
-     * 
-     * @param x
-     * @param y
-     * @return the cell object at position (x, y)
-     */
     public Cell getCell(Point cellPosition) {
         return this.grid[cellPosition.getY()][cellPosition.getX()];
     }
@@ -116,7 +106,7 @@ public class Board {
      * 
      * @param corporation
      * @param amount      the amount of stocks of a corporation we want to check
-     * @return returns wether the number of remaining stocks of a given corporation
+     * @return returns whether the number of remaining stocks of a given corporation
      *         is sufficient according to the given amount
      */
     public boolean enoughRemainingStocks(Corporation corporation, int amount) {
@@ -155,8 +145,7 @@ public class Board {
      * @return given a corporation, it returns its size on the board
      */
     public int getCorporationSize(Corporation corporation) {
-        int size = corporationSizes.get(corporation);
-        return size;
+        return corporationSizes.get(corporation);
     }
 
     /**
@@ -188,7 +177,7 @@ public class Board {
     }
 
     /**
-     * Removes an number of stocks from a given corporation
+     * Removes a number of stocks from a given corporation
      * 
      * @param corporation
      */
@@ -224,11 +213,11 @@ public class Board {
      * 
      * @param cell
      * @return returns all the adjacent cells to cell
-     * @see #mappingDFS(Corporation, Point, List)
+     * @see #mappingDFS(Corporation, Point, List, Function)
      * @see #foldingDFS(Corporation, Point, List, BiFunction, Object)
      */
-    public List<Point> adjacentCells(Point cell, Function<Cell, Boolean> mapper) {
-        List<Point> adjacentCells = new LinkedList<>();
+    public Set<Point> adjacentCells(Point cell, Function<Cell, Boolean> mapper) {
+        Set<Point> adjacentCells = new HashSet<>();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i != 0 ^ j != 0) {
@@ -248,8 +237,7 @@ public class Board {
 
     /**
      * This function is a dfs graph algorithm that maps all the cells of the board
-     * that are belonging
-     * to a given company with the given function
+     * that belong to a given company with the given function
      * 
      * @param corporation  corporation to test if the cells belong to it
      * @param currentPoint the current point in the algorithm iteration
@@ -263,7 +251,7 @@ public class Board {
         Cell currentCell = getCell(currentPoint);
         op.apply(currentCell);
 
-        List<Point> adjacentCells = adjacentCells(currentPoint, (cell) -> true);
+        Set<Point> adjacentCells = adjacentCells(currentPoint, (cell) -> true);
 
         for (Point adj : adjacentCells) {
             Cell cell = getCell(adj);
@@ -295,7 +283,7 @@ public class Board {
     public <U> U foldingDFS(Corporation corporation, Point currentPoint, List<Point> visitedCells,
             BiFunction<U, U, U> op, U initialValue) {
         visitedCells.add(currentPoint);
-        List<Point> adjacentCells = adjacentCells(currentPoint, (cell) -> true);
+        Set<Point> adjacentCells = adjacentCells(currentPoint, (cell) -> true);
         U value = initialValue;
 
         for (Point adj : adjacentCells) {
@@ -340,24 +328,19 @@ public class Board {
      */
     public int getStockPrice(Corporation corporation) {
         int corporationSize = getCorporationSize(corporation);
-        int stockPrice = ReferenceChart.getStockPrice(corporation, corporationSize);
-        return stockPrice;
+        return ReferenceChart.getStockPrice(corporation, corporationSize);
     }
 
     /**
-     * 
-     * @param corporation
      * @return returns majority sharehold for given corporation
      */
     public int getMajoritySharehold(Corporation corporation) {
         int corporationSize = getCorporationSize(corporation);
-        int stockPrice = ReferenceChart.getMajoritySharehold(corporation, corporationSize);
-        return stockPrice;
+        return ReferenceChart.getMajoritySharehold(corporation, corporationSize);
     }
 
     /**
-     * 
-     * @param corporation
+     *
      * @return returns minority sharehold for given corporation
      */
     public int getMinoritySharehold(Corporation corporation) {
@@ -384,48 +367,60 @@ public class Board {
      * Returns the adjacent owned cell positions to a given cell position in order
      * to
      * determine the action to perform on the cell
-     * 
-     * @param cellPosition
-     * @return
      */
-    public List<Point> adjacentOwnedCells(Point cellPosition) {
-        return adjacentCells(cellPosition, (cell) -> cell.isOwned());
+    public Set<Point> adjacentOwnedCells(Point cellPosition) {
+        return adjacentCells(cellPosition, Cell::isOwned);
     }
 
-    public List<Point> adjacentOccupiedCells(Point cellPosition) {
-        return adjacentCells(cellPosition, (cell) -> cell.isOccupied());
+    public Set<Point> adjacentOccupiedCells(Point cellPosition) {
+        return adjacentCells(cellPosition, Cell::isOccupied);
+    }
+
+    public Set<Point> adjacentEmptyCells(Point cellPosition) {
+        return adjacentCells(cellPosition, Cell::isEmpty);
+    }
+
+    public Set<Point> adjacentSafeCells(Point cellPosition) {
+        return adjacentCells(cellPosition, (cell) -> {
+            if (!cell.isOwned()) {
+                return false;
+            }
+
+            Corporation corporation = cell.getCorporation();
+            return corporationIsSafe(corporation);
+        });
     }
 
     /**
-     * Updates the cells of the board to update the dead ones
+     * This function updates the cells adjacent to a given cell to detect the dead ones
+     * @param cellPosition the given cell we want update cells around
      */
-    public void updateDeadCells() {
-        for (int i = 0; i < BOARD_HEIGHT; i++) {
-            for (int j = 0; j < BOARD_WIDTH; j++) {
-                Point current = new Point(j, i);
-                Cell currentCell = getCell(current);
-                List<Point> adjacentOwnedCells = adjacentOwnedCells(current);
+    public void updateDeadCells(Point cellPosition) {
+        Set<Point> adjacentEmptyCells = adjacentEmptyCells(cellPosition);
+        for (Point adj : adjacentEmptyCells) {
+            Cell adjacentCell = getCell(adj);
+            Set<Point> adjacentSafeCells = adjacentSafeCells(adj);
+            Set<Corporation> adjacentSafeCorporations = new HashSet<>();
+            int numberOfAdjacentSafeCorporations = 0;
 
-                int adjacentSafeCorporations = 0;
-                for (Point adj : adjacentOwnedCells) {
-                    Cell adjacentCell = getCell(adj);
-                    Corporation adjacentCorporation = adjacentCell.getCorporation();
-                    if (corporationIsSafe(adjacentCorporation)) {
-                        adjacentSafeCorporations++;
-                    }
+            for (Point adjacent : adjacentSafeCells) {
+                Cell adjacentSafeCell = getCell(adjacent);
+                Corporation adjacentSafeCorporation = adjacentSafeCell.getCorporation();
+
+                if (!adjacentSafeCorporations.contains(adjacentSafeCorporation)) {
+                    adjacentSafeCorporations.add(adjacentSafeCorporation);
+                    numberOfAdjacentSafeCorporations++;
                 }
+            }
 
-                if (adjacentSafeCorporations > 1) {
-                    currentCell.setAsDead();
-                }
-
+            if (numberOfAdjacentSafeCorporations > 1) {
+                adjacentCell.setAsDead();
             }
         }
     }
 
     /**
-     * @param cellPosition
-     * @return Returns wether a player can place a cell in the given position or not
+     * @return Returns whether a player can place a cell in the given position or not
      */
     public boolean canPlaceIn(Point cellPosition) {
         Cell cell = getCell(cellPosition);
@@ -435,9 +430,9 @@ public class Board {
         }
 
         List<Corporation> unplacedCorporations = unplacedCorporations();
-        List<Point> adjacentOccupiedCells = adjacentOccupiedCells(cellPosition);
+        Set<Point> adjacentOccupiedCells = adjacentOccupiedCells(cellPosition);
 
-        return !adjacentOccupiedCells.isEmpty()|| !unplacedCorporations.isEmpty();
+        return adjacentOccupiedCells.isEmpty() || !unplacedCorporations.isEmpty();
     }
 
     public List<Corporation> unplacedCorporations() {
@@ -475,14 +470,7 @@ public class Board {
             int corporationSize = corporationSizes.get(corporation);
 
             if (corporationSize != 0) {
-                int possibleBuyingAmount;
-
-                if (corporationSize >= MAXIMUM_AMOUNT_OF_BUYING_STOCKS) {
-                    possibleBuyingAmount = MAXIMUM_AMOUNT_OF_BUYING_STOCKS;
-                } else {
-                    possibleBuyingAmount = corporationSize;
-                }
-
+                int possibleBuyingAmount = Math.min(corporationSize, MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
                 possibleBuyingStocks.put(corporation, possibleBuyingAmount);
             }
         }
