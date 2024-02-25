@@ -1,5 +1,6 @@
 package view.game;
 
+import model.Corporation;
 import model.Player;
 
 import java.awt.Dimension;
@@ -7,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.HashMap;
 
 import net.miginfocom.swing.MigLayout;
 import tools.AutoSetter;
@@ -53,9 +55,13 @@ public class PlayerBoard extends javax.swing.JPanel {
             super(PlayerBoard.this.mig, INITIAL_DIMENSION, ZOOM_DIMENSION);
             this.player = p;
             this.arc = 10;
-            this.playingBorder = new ColorableArcableFlatBorder(Color.GREEN, this.arc);   // Couleur indiquant quel joueur est en traint de jouer
+            this.playingBorder = new ColorableArcableFlatBorder(Color.GREEN, this.arc);
             this.setHorizontalAlignment(SwingConstants.CENTER);
             this.setVerticalAlignment(SwingConstants.CENTER);
+        }
+
+        private String getPlayersActionsHTMLString() {
+            return null; // TODO : à faire
         }
 
         @Override
@@ -82,7 +88,7 @@ public class PlayerBoard extends javax.swing.JPanel {
                                   $</td>
                                   </tr>
                                   <tr>
-                                    empty because is poor
+                                    empty because he is poor
                                   </tr>
                                 </table>
                                 </html>

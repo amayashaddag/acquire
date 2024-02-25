@@ -104,7 +104,7 @@ public class JetonsPanel extends JPanel {
             this.addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e) {
                     JetonsPanel.this.selection = JetonButton.this.p;
-                    JetonButton.this.setBorder(new ColorableArcableFlatBorder(new Color(69, 158, 14)));
+                    JetonButton.this.setBorder(new ColorableArcableFlatBorder(Color.GREEN));
                     g.repaint();
                 }
 
