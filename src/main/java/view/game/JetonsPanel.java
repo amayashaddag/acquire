@@ -22,9 +22,7 @@ import javax.swing.UIManager;
 public class JetonsPanel extends JPanel {
     final private GameView g;
     private tools.Point selection = null;
-    private JPanel buttonPanel;
-
-    private Dimension JETON_BUTTON_SIZE = new Dimension(100, 100);
+    private final JPanel buttonPanel;
 
     JetonsPanel(GameView g) {
         super();
@@ -85,6 +83,7 @@ public class JetonsPanel extends JPanel {
                         if (c instanceof JetonButton)
                             l.add((JetonButton) c);
 
+                    int position = 0;
                     for (int i = 0; i < l.size(); i++) {
                         if (playerDeck[i] != null) {
                             l.get(i).setVisible(true);
@@ -94,7 +93,8 @@ public class JetonsPanel extends JPanel {
                             l.get(i).setVisible(false);
                             buttonPanel.remove(l.get(i));
                             buttonPanel.revalidate();
-                            buttonPanel.add(l.get(i));
+                            buttonPanel.add(l.get(i), position);
+                            position = (position == 0) ? buttonPanel.getComponentCount()-1 : 0;
                         }
                     }
 
@@ -114,8 +114,6 @@ public class JetonsPanel extends JPanel {
                     g.repaint();
                 }
             });
-
-            this.setPreferredSize(JETON_BUTTON_SIZE);
         }
 
         private void setPoint(tools.Point p) {
