@@ -60,7 +60,7 @@ public class JetonsPanel extends JPanel {
             if (g.getController().getCurrentPlayer().equals(g.getPlayer()))
                 super.repaint();
         } catch (NullPointerException e) {
-            // Don't woory it's normal. This arrive at the initialation of JetonPanel.
+            // Don't worry it's normal. This arrives at the initialisation of JetonPanel.
         }
     }
 
@@ -87,9 +87,15 @@ public class JetonsPanel extends JPanel {
 
                     for (int i = 0; i < l.size(); i++) {
                         if (playerDeck[i] != null) {
+                            l.get(i).setVisible(true);
                             l.get(i).setPoint(playerDeck[i]);
                             l.get(i).setText(playerDeck[i].toString());
-                        } else buttonPanel.remove(l.get(i));
+                        } else {
+                            l.get(i).setVisible(false);
+                            buttonPanel.remove(l.get(i));
+                            buttonPanel.revalidate();
+                            buttonPanel.add(l.get(i));
+                        }
                     }
 
                     g.repaint();
