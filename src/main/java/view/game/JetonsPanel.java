@@ -2,15 +2,11 @@ package view.game;
 
 import tools.AutoSetter;
 
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 
-import java.awt.GridLayout;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
-import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -25,8 +21,10 @@ import javax.swing.UIManager;
 @AutoSetter(typeParam = GameView.class)
 public class JetonsPanel extends JPanel {
     final private GameView g;
-    tools.Point selection = null;
-    JPanel buttonPanel;
+    private tools.Point selection = null;
+    private JPanel buttonPanel;
+
+    private Dimension JETON_BUTTON_SIZE = new Dimension(100, 100);
 
     JetonsPanel(GameView g) {
         super();
@@ -110,6 +108,8 @@ public class JetonsPanel extends JPanel {
                     g.repaint();
                 }
             });
+
+            this.setPreferredSize(JETON_BUTTON_SIZE);
         }
 
         private void setPoint(tools.Point p) {
