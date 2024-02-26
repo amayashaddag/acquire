@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.HashMap;
+import java.util.Map;
 
 import net.miginfocom.swing.MigLayout;
 import tools.AutoSetter;
@@ -60,8 +61,24 @@ public class PlayerBoard extends javax.swing.JPanel {
             this.setVerticalAlignment(SwingConstants.CENTER);
         }
 
-        private String getPlayersActionsHTMLString() {
-            return null; // TODO : à faire
+        private String getPlayersActionsHTMLString(Player p) {
+            String res = "";
+            HashMap<Corporation, Integer> earnedStocks = p.getEarnedStocks();
+
+            for (HashMap.Entry<Corporation, Integer> entry : earnedStocks.entrySet()) {
+                if (entry.getValue() > 0)
+                    res += "<span style='color: " + switch (entry.getKey()) {
+                        case CONTINENTAL -> "PURPLE";
+                        case WORLDWIDE -> "ORANGE";
+                        case TOWER -> "GREEN";
+                        case SACKSON -> "BLUE";
+                        case AMERICAN -> "RED";
+                        case FESTIVAL -> "YELLOW";
+                        case IMPERIAL -> "CYAN";
+                    } +";'> " + entry.getValue() + "</span>";
+            }
+
+            return res;
         }
 
         @Override
@@ -84,11 +101,11 @@ public class PlayerBoard extends javax.swing.JPanel {
                                   </tr>
                                   <tr>
                                     <td><b>Cash</td>
-                                    <td>"""+player.getCash()+ """
+                                    <td>"""+player.getCash()+"""
                                   $</td>
                                   </tr>
                                   <tr>
-                                    empty because he is poor
+                                    """+getPlayersActionsHTMLString(player)+"""
                                   </tr>
                                 </table>
                                 </html>
