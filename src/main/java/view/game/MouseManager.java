@@ -83,7 +83,6 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
                 inverseAt.transform(p, q);
 
                 at.translate(q.getX() - lastClickedPos.getX(), q.getY() - lastClickedPos.getY());
-                wrapTranslation();
             } catch (NoninvertibleTransformException excp) {
                 GameFrame.showError(excp, () -> {
                 });
@@ -93,6 +92,7 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
         }
     }
 
+    @Deprecated
     private void wrapTranslation() {
         double matrix[] = new double[6];
         at.getMatrix(matrix);
@@ -101,7 +101,7 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
             matrix[4] = 0;
         if (at.getTranslateY() > 0)
             matrix[5] = 0;
-        // FIXME : dépacement droite bas
+        // gérer les dépacement droite bas
 
         at = new AffineTransform(matrix);
     }

@@ -62,8 +62,8 @@ public class GameView extends Form {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
 
-        g2d.setTransform(mouseListener.getAffineTransform());
         g2d.drawImage(Ressources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
+        g2d.setTransform(mouseListener.getAffineTransform());
 
         Board board = controller.getBoard();
 
@@ -73,44 +73,23 @@ public class GameView extends Form {
         int x = 0;
         int y = 0;
         for (int row = 0; row < Board.BOARD_WIDTH; row++) { 
-            x = -row * cellWidth / 2 + getWidth() / 2 - cellWidth;
+            x = -row * cellWidth / 2 + getWidth() / 2;
             y = row * cellHeight / 2;
             for (int col = 0; col < Board.BOARD_HEIGHT; col++) {
                 Cell currentCell = board.getCell(row, col);
                 x += cellWidth / 2;
                 y += cellHeight / 2;
 
-                if (!currentCell.isDead())
-                    g2d.drawImage(Ressources.Assets.GRASS, x, y, cellWidth, cellHeight, this);
-
-                if (currentCell.isOccupied()) { // TODO : mettre des images à la places des ronds
-                    int radiusX = cellWidth/2;
-                    int radiusY = cellHeight/2;
-                    g2d.setColor(Color.BLACK);
-                    g2d.fillOval(x+radiusX/2, y+radiusY/2, radiusX, radiusY);
-                } else if (currentCell.isOwned()) {
-                    int radiusX = cellWidth/2;
-                    int radiusY = cellHeight/2;
-                    Color c = switch (currentCell.getCorporation()) {
-                        case WORLDWIDE -> Color.BLUE;
-                        case TOWER -> Color.CYAN;
-                        case CONTINENTAL -> Color.MAGENTA;
-                        case SACKSON -> Color.ORANGE;
-                        case AMERICAN -> Color.PINK;
-                        case FESTIVAL -> Color.RED;
-                        case IMPERIAL -> Color.YELLOW;
+                if (new tools.Point(row, col).equals(jetonsPanel.getSelection()))
+                    g2d.drawImage(Ressources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                else if (currentCell.isOwned())
+                    g2d.drawImage(switch (currentCell.getCorporation()) {
                         default -> null;
-                    };
-                    g2d.setColor(c);
-                    g2d.fillOval(x+radiusX/2, y+radiusY/2, radiusX, radiusY);
-                }
-
-                if (new tools.Point(row, col).equals(jetonsPanel.getSelection())) {
-                    g2d.setColor(new Color(0, 255, 0, 128));
-                    int radiusX = cellWidth/3;
-                    int radiusY = cellHeight/3;
-                    g2d.fillOval(x+radiusX, y+radiusY, radiusX, radiusY);
-                }
+                    }, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                else if (currentCell.isOccupied())
+                    g2d.drawImage(Ressources.Assets.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
+                else if (currentCell.isEmpty())
+                    g2d.drawImage(Ressources.Assets.EMPTY_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
             }
         }
 
