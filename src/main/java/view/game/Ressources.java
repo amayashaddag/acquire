@@ -1,8 +1,12 @@
 package view.game;
 
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 /**
@@ -28,6 +32,8 @@ public class Ressources {
          * Please do not modify !
          */
         static {
+            File dir = new File(MAIN_PATH + RESSOURCES_PATH + IMAGES_PATH);
+
             Class<?> clazz = Assets.class;
             Field[] fields = clazz.getFields();
 
@@ -35,10 +41,33 @@ public class Ressources {
                 if (field.getType() == Image.class && Modifier.isStatic(field.getModifiers())) {
                     String nameVar = field.getName().toLowerCase();
                     String nameImg = nameVar.replace('_', '-');
-                    ImageIcon ico = new ImageIcon(MAIN_PATH + RESSOURCES_PATH + IMAGES_PATH + nameImg + ".png");
+
                     try {
-                        field.set(null, ico.getImage());
+                        File[] filesFounded = dir.listFiles((dir1, name) -> name.startsWith(nameImg+"."));
+
+                        if (filesFounded == null || filesFounded.length == 0)
+                            throw new IllegalArgumentException("The file " + nameImg + " doesn't exists.");
+
+                        Image img = null;
+                        for (File f: filesFounded) {
+                            try {
+                                img = ImageIO.read(f);
+                                break;
+                            } catch (IOException e) {
+                                // Continue, we are looking for the first Image who match with nameImg
+                            }
+                        }
+
+                        field.set(null, img);
+
+                        if (filesFounded.length > 1)
+                            throw new IllegalArgumentException("More than one file correspond to " + nameImg + ".* .");
+
+                    } catch (IllegalArgumentException e) {
+                        System.err.println(e.getMessage());
+                        e.printStackTrace();
                     } catch (IllegalAccessException e) {
+                        System.err.println("An error ocured during the setting of " + field.getName());
                         e.printStackTrace();
                     }
                 }
