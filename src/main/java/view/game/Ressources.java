@@ -1,6 +1,8 @@
 package view.game;
 
 import java.awt.Image;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import javax.swing.ImageIcon;
 
 /**
@@ -14,16 +16,40 @@ public class Ressources {
     public static final String RESSOURCES_PATH = "ressources/";
     public static final String IMAGES_PATH ="images/game/";
 
+    /**
+     * If you want to add an Image,
+     * it must be a png and you must define
+     * a public static Image with the following
+     * name convention : same name as the png file
+     * but in UPPER CASE, and replace '-' by '_'.
+     */
     public class Assets {
+        /**
+         * Please do not modify !
+         */
         static {
-            ImageIcon ico = new ImageIcon(MAIN_PATH + RESSOURCES_PATH + IMAGES_PATH + "background.jpg");
-            BACKGROUND = ico.getImage();
+            Class<?> clazz = Assets.class;
+            Field[] fields = clazz.getFields();
 
-            ico = new ImageIcon(MAIN_PATH+RESSOURCES_PATH + IMAGES_PATH + "grass.png");
-            GRASS = ico.getImage();
+            for (Field field : fields) {
+                if (field.getType() == Image.class && Modifier.isStatic(field.getModifiers())) {
+                    String nameVar = field.getName().toLowerCase();
+                    String nameImg = nameVar.replace('_', '-');
+                    ImageIcon ico = new ImageIcon(MAIN_PATH + RESSOURCES_PATH + IMAGES_PATH + nameImg + ".png");
+                    try {
+                        field.set(null, ico.getImage());
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
 
-        public static final Image BACKGROUND;
-        public static final Image GRASS;
+        public static Image BACKGROUND;
+        public static Image GRASS;
+        public static Image BOARD_CELL;
+        public static Image EMPTY_CELL;
+        public static Image OCCUPIED_CELL;
+        public static Image SELECTED_CELL;
     }
 }
