@@ -80,5 +80,12 @@ public class Ressources {
         public static Image EMPTY_CELL;
         public static Image OCCUPIED_CELL;
         public static Image SELECTED_CELL;
+        public static Image BLUE_TOWER_CELL;
+        public static Image CYAN_TOWER_CELL;
+        public static Image GREEN_TOWER_CELL;
+        public static Image ORANGE_TOWER_CELL;
+        public static Image PURPLE_TOWER_CELL;
+        public static Image RED_TOWER_CELL;
+        public static Image YELLOW_TOWER_CELL;
     }
 }

@@ -84,7 +84,13 @@ public class GameView extends Form {
                     g2d.drawImage(Ressources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOwned())
                     g2d.drawImage(switch (currentCell.getCorporation()) {
-                        default -> null;
+                        case IMPERIAL -> Ressources.Assets.CYAN_TOWER_CELL;
+                        case FESTIVAL -> Ressources.Assets.YELLOW_TOWER_CELL;
+                        case AMERICAN -> Ressources.Assets.RED_TOWER_CELL;
+                        case SACKSON -> Ressources.Assets.BLUE_TOWER_CELL;
+                        case TOWER -> Ressources.Assets.GREEN_TOWER_CELL;
+                        case WORLDWIDE -> Ressources.Assets.ORANGE_TOWER_CELL;
+                        case CONTINENTAL -> Ressources.Assets.PURPLE_TOWER_CELL;
                     }, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOccupied())
                     g2d.drawImage(Ressources.Assets.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
