@@ -27,7 +27,7 @@ import java.awt.event.MouseMotionListener;
  */
 @AutoSetter(typeParam = GameView.class)
 public class MouseManager implements MouseListener, MouseWheelListener, MouseMotionListener {
-    private final double MINIMAL_ZOOM = 1;
+    private final double MINIMAL_ZOOM = 0.75;
 
     public MouseManager(GameView g) {
         this.lastClickedPos = new Point2D.Float();
@@ -126,6 +126,7 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
 
         if (at.getScaleX() < MINIMAL_ZOOM || at.getScaleY() < MINIMAL_ZOOM) {
             at.setToScale(MINIMAL_ZOOM, MINIMAL_ZOOM);
+            at.translate(200, 150); // FIXME : trouver formule avec MINIMAL_ZOOM
         }
 
         g.repaint();
