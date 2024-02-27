@@ -11,10 +11,12 @@ stages:
 compile:
   stage: build
   script:
+    - echo "Hello world"
 # Job de test pour un seul fichier
 test:
   stage: test
   script:
+    - echo "Hello world"
 # Job de déploiement
 deploy:
   stage: deploy
