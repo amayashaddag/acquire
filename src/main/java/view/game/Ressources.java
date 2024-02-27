@@ -21,16 +21,14 @@ public class Ressources {
     public static final String IMAGES_PATH ="images/game/";
 
     /**
-     * If you want to add an Image,
-     * it must be a png and you must define
-     * a public static Image with the following
-     * name convention : same name as the png file
+     * Use with the following name
+     * convention : same name as the image file
      * but in UPPER CASE, and replace '-' by '_'.
+     *
+     * ! Specials characters are not allowed (except
+     * '-' and '_')!
      */
     public class Assets {
-        /**
-         * Please do not modify !
-         */
         static {
             File dir = new File(MAIN_PATH + RESSOURCES_PATH + IMAGES_PATH);
 
@@ -54,14 +52,14 @@ public class Ressources {
                                 img = ImageIO.read(f);
                                 break;
                             } catch (IOException e) {
-                                // Continue, we are looking for the first Image who match with nameImg
+                                // Continue, we are looking for the first Load who match with nameImg
                             }
                         }
 
                         field.set(null, img);
 
                         if (filesFounded.length > 1)
-                            throw new IllegalArgumentException("More than one file correspond to " + nameImg + ".* .");
+                            throw new IllegalArgumentException("More than one file correspond to " + nameImg + ".");
 
                     } catch (IllegalArgumentException e) {
                         System.err.println(e.getMessage());

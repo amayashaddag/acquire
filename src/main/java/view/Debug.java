@@ -1,6 +1,7 @@
 package view;
 
 import net.miginfocom.swing.MigLayout;
+import tools.Load;
 import view.game.ColorableArcableFlatBorder;
 import view.game.GameView;
 import view.game.GrowingJLabel;
@@ -16,6 +17,8 @@ import model.Player;
 
 public class Debug {
 
+    @Load
+    int dadza = 0;
     public static void main(String[] args) {
         FlatDarculaLaf.setup();
 
