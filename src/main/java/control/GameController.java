@@ -38,16 +38,6 @@ public class GameController {
         placeCell(cellPosition, player);  // FIXME  : Fix NullPointerException in this function
         board.updateDeadCells();
         board.updatePlayerDeck(player);
-
-//        System.out.println(board.getCorporationSizes());
-//        for (Point p : player.getDeck()) {
-//            System.out.print(p + " ");
-//        }
-//        System.out.println();
-//        System.out.println(board.getRemainingCells());
-//        for (Point p : board.getRemainingCells()) {
-//            System.out.println(p + " : " + board.canPlaceIn(p));
-//        }
     }
 
     public GameView getGameView() {
@@ -108,7 +98,7 @@ public class GameController {
         board.removeFromRemainingStocks(corporation, amount);
         player.addToEarnedStocks(corporation, amount);
         player.removeFromCash(amountToPay);
-        gameView.showSuccessNotification(GameNotifications.successfullyBoughtStocks(amount, corporation));
+        gameView.showSuccessNotification(GameNotifications.successfullyBoughtStocksNotification(amount, corporation));
     }
 
 
@@ -124,7 +114,7 @@ public class GameController {
         board.addToRemainingStocks(corporation, amountToEarn);
         player.removeFromEarnedStocks(corporation, amountToEarn);
         player.addToCash(amountToEarn);
-        gameView.showSuccessNotification(GameNotifications.successfullySoldStocks(amount, corporation, amountToEarn));
+        gameView.showSuccessNotification(GameNotifications.successfullySoldStocksNotification(amount, corporation, amountToEarn));
     }
 
 
@@ -168,7 +158,7 @@ public class GameController {
      *                     started
      * @see #placeCell(Point, Player)
      */
-    public void mergeCorporations(Set<Point> cellsToMerge, Point cellPosition) {
+    public void mergeCorporations(Set<Point> cellsToMerge, Point cellPosition, Player player) {
         List<Point> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
         Point chosenCellPosition;
         Cell chosenCell, currentCell = board.getCell(cellPosition);
@@ -193,11 +183,17 @@ public class GameController {
                 board.replaceCorporationFrom(chosenCellCorporation, adj);
             }
         }
+
+        gameView.showSuccessNotification(
+                GameNotifications.corporationMergingNotification(player.getPseudo(), chosenCellCorporation)
+        );
     }
 
     public void placeCell(Point cellPosition, Player currentPlayer) {
         Cell currentCell = board.getCell(cellPosition.getX(), cellPosition.getY());
         currentCell.setAsOccupied();
+        gameView.showSuccessNotification(GameNotifications.cellPlacingNotification(currentPlayer.getPseudo()));
+
         Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(cellPosition);
         Set<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(cellPosition);
 
@@ -236,7 +232,7 @@ public class GameController {
             return;
         }
 
-        mergeCorporations(adjacentOwnedCells, cellPosition);
+        mergeCorporations(adjacentOwnedCells, cellPosition, currentPlayer);
         Corporation mergedCorporation = currentCell.getCorporation();
 
         for (Point adj : adjacentOccupiedCells) {

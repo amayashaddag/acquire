@@ -10,21 +10,25 @@ public class GameNotifications {
     public final static String NOT_ENOUGH_STOCKS_PLAYER = "You don't have enough stocks.";
 
     /* Success notifications */
-    public static String successfullyBoughtStocks(int amount, Corporation corporation) {
+    public static String successfullyBoughtStocksNotification(int amount, Corporation corporation) {
         return "You successfully bought " + amount + " stocks of the company " + corporation + ".";
     }
 
-    public static String successfullySoldStocks(int amount, Corporation corporation, int moneyGained) {
+    public static String successfullySoldStocksNotification(int amount, Corporation corporation, int moneyGained) {
         return "You successfully sold " + amount + " stocks of the company " + corporation
                 + " for " + moneyGained + "$.";
     }
 
-    public static String playerTurnNotifying(String pseudo) {
+    public static String playerTurnNotification(String pseudo) {
         return pseudo + " is about to play.";
     }
 
-    public static String cellPlacingNotification(String pseudo, Point cellPosition) {
-        return pseudo + " placed a cell at " + cellPosition + ".";
+    public static String cellPlacingNotification(String pseudo) {
+        return pseudo + " placed a cell.";
+    }
+
+    public static String corporationMergingNotification(String pseudo, Corporation corporation) {
+        return pseudo + "merged corporations into " + corporation;
     }
 
 }
