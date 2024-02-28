@@ -74,11 +74,11 @@ public class GameView extends Form {
         int y = 0;
         for (int row = 0; row < Board.BOARD_WIDTH; row++) { 
             x = -row * cellWidth / 2 + getWidth() / 2;
-            y = row * cellHeight / 3;
+            y = row * cellHeight / 3 + getHeight() / 6;
             for (int col = 0; col < Board.BOARD_HEIGHT; col++) {
                 Cell currentCell = board.getCell(row, col);
                 x += cellWidth / 2;
-                y += (cellHeight / 2) - 15;
+                y += (cellHeight / 3);
 
                 if (new tools.Point(row, col).equals(jetonsPanel.getSelection()))
                     g2d.drawImage(Ressources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);

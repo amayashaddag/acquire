@@ -22,7 +22,7 @@ public class LoadProcessor extends AbstractProcessor {
         Set<? extends Element> elements = renv.getElementsAnnotatedWith(Load.class);
         for (Element e : elements) {
             if (e instanceof VariableElement && ((VariableElement)e).getKind() == ElementKind.FIELD) {
-                Field field = (Field) e; // How to transform a field in element ?
+                // Field field = (Field) e; // How to transform a field in element ?
             } else {
                 throw new IllegalArgumentException("@Load must be use on field.");
             }
