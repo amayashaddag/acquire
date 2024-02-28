@@ -1,6 +1,7 @@
 package view.game;
 
 import control.GameController;
+import model.Corporation;
 import model.Player;
 import model.Board;
 import model.Cell;
@@ -14,6 +15,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -102,7 +104,10 @@ public class GameView extends Form {
         g2d.dispose();
     }
 
-    /*------------------ Form ------------------- */
+    public Corporation getCorporationChoice(List<Corporation> unplacedCorps) {
+        // TODO : demander au joueur quelle truc
+        return unplacedCorps.get(0);
+    }
 
     /**
      * {@link view.Form#setOn(GameFrame)}
