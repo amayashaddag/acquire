@@ -1,16 +1,11 @@
 package login;
 
+import com.formdev.flatlaf.extras.components.FlatButton;
+import javax.swing.*;
+import java.awt.*;
+
 import frame.Form;
 import frame.GameFrame;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import com.formdev.flatlaf.extras.components.FlatButton;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 
 public class LoginView extends Form {
 
@@ -71,11 +66,11 @@ public class LoginView extends Form {
         comeBackToLoginButton.addActionListener((ActionListener) ->{fromSignInMenuToLoginMenu();});
 
 
-        PlaceHolderTextArea idArea = new PlaceHolderTextArea(InterfaceLoginMessages.ID_TEXT_AREA);
+        PlaceHolderTextField idArea = new PlaceHolderTextField(InterfaceLoginMessages.ID_TEXT_AREA);
         idArea.setText(InterfaceLoginMessages.ID_TEXT_AREA);
 
 
-        PlaceHolderTextArea passwordArea = new PlaceHolderTextArea(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
+        PlaceHolderTextField passwordArea = new PlaceHolderTextField(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
         passwordArea.setText(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
 
 
