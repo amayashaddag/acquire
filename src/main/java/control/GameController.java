@@ -208,7 +208,7 @@ public class GameController {
             // This initialization should be replaced later with the choice of the player
 
             List<Corporation> unplacedCorporations = board.unplacedCorporations();
-            Corporation chosenCorporationToPlace = unplacedCorporations.get(0);
+            Corporation chosenCorporationToPlace = gameView.getCorporationChoice(unplacedCorporations);
 
             board.replaceCellCorporation(currentCell, chosenCorporationToPlace);
             for (Point adjacent : adjacentOccupiedCells) {
