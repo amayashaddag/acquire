@@ -393,6 +393,22 @@ public class Board {
         });
     }
 
+    public Set<Corporation> adjacentCorporations(Point cellPosition) {
+        Set<Corporation> adjacentCorporations = new HashSet<>();
+        Set<Point> adjacentOwnedCells = adjacentOwnedCells(cellPosition);
+
+        for (Point adj : adjacentOwnedCells) {
+            Cell adjacentOwnedCell = getCell(adj);
+            Corporation adjacentCorporation = adjacentOwnedCell.getCorporation();
+
+            if (!adjacentCorporations.contains(adjacentCorporation)) {
+                adjacentCorporations.add(adjacentCorporation);
+            }
+        }
+
+        return adjacentCorporations;
+    }
+
     /**
      * This function updates the cells adjacent to a given cell to detect the dead ones
      */

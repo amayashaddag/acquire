@@ -98,7 +98,7 @@ public class GameController {
         board.removeFromRemainingStocks(corporation, amount);
         player.addToEarnedStocks(corporation, amount);
         player.removeFromCash(amountToPay);
-        gameView.showSuccessNotification(GameNotifications.successfullyBoughtStocksNotification(amount, corporation));
+        gameView.showSuccessNotification(GameNotifications.boughtStocksNotification(amount, corporation));
     }
 
 
@@ -114,7 +114,7 @@ public class GameController {
         board.addToRemainingStocks(corporation, amountToEarn);
         player.removeFromEarnedStocks(corporation, amountToEarn);
         player.addToCash(amountToEarn);
-        gameView.showSuccessNotification(GameNotifications.successfullySoldStocksNotification(amount, corporation, amountToEarn));
+        gameView.showSuccessNotification(GameNotifications.soldStocksNotification(amount, corporation, amountToEarn));
     }
 
 
@@ -184,7 +184,7 @@ public class GameController {
             }
         }
 
-        gameView.showSuccessNotification(
+        gameView.showInfoNotification(
                 GameNotifications.corporationMergingNotification(player.getPseudo(), chosenCellCorporation)
         );
     }
@@ -196,8 +196,9 @@ public class GameController {
 
         Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(cellPosition);
         Set<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(cellPosition);
+        Set<Corporation> adjacentCorporations = board.adjacentCorporations(cellPosition);
 
-        if (adjacentOwnedCells.isEmpty()) {
+        if (adjacentCorporations.isEmpty()) {
             if (adjacentOccupiedCells.isEmpty()) {
                 return;
             }
@@ -215,10 +216,17 @@ public class GameController {
                 board.replaceCellCorporation(adjacentOccupiedCell, chosenCorporationToPlace);
             }
 
+            gameView.showInfoNotification(
+                    GameNotifications.corporationFoundingNotification(
+                            currentPlayer.getPseudo(),
+                            chosenCorporationToPlace
+                    )
+            );
+
             return;
         }
 
-        if (adjacentOwnedCells.size() == 1) {
+        if (adjacentCorporations.size() == 1) {
             Iterator<Point> adjacentOwnedCellsIterator = adjacentOwnedCells.iterator();
             Point adjacentOwnedCellPosition = adjacentOwnedCellsIterator.next();
             Cell adjacentOwnedCell = board.getCell(adjacentOwnedCellPosition);

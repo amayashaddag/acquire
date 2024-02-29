@@ -10,11 +10,11 @@ public class GameNotifications {
     public final static String NOT_ENOUGH_STOCKS_PLAYER = "You don't have enough stocks.";
 
     /* Success notifications */
-    public static String successfullyBoughtStocksNotification(int amount, Corporation corporation) {
+    public static String boughtStocksNotification(int amount, Corporation corporation) {
         return "You successfully bought " + amount + " stocks of the company " + corporation + ".";
     }
 
-    public static String successfullySoldStocksNotification(int amount, Corporation corporation, int moneyGained) {
+    public static String soldStocksNotification(int amount, Corporation corporation, int moneyGained) {
         return "You successfully sold " + amount + " stocks of the company " + corporation
                 + " for " + moneyGained + "$.";
     }
@@ -28,7 +28,11 @@ public class GameNotifications {
     }
 
     public static String corporationMergingNotification(String pseudo, Corporation corporation) {
-        return pseudo + "merged corporations into " + corporation;
+        return pseudo + " merged corporations into " + corporation + ".";
+    }
+
+    public static String corporationFoundingNotification(String pseudo, Corporation corporation) {
+        return pseudo + " founded the corporation " + corporation + ".";
     }
 
 }
