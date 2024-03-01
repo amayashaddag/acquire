@@ -4,11 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1f98e992-bb50-44ef-b846-dd677b344d7b" name="Changes" comment="Refactoring needed due to MR conflicts" />
+    <list default="true" id="1f98e992-bb50-44ef-b846-dd677b344d7b" name="Changes" comment="#19 Beginnong of implementation of Client class">
+      <change beforePath="$PROJECT_DIR$/src/main/java/control/network/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/control/network/Client.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="module-info" />
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -33,23 +43,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Application.Debug.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;iss10&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/amayas/S4/PI4/acquire&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Application.Debug.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "iss19",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/amayas/S4/PI4/acquire",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -69,6 +80,7 @@
       <workItem from="1708461284171" duration="86000" />
       <workItem from="1708461394029" duration="151000" />
       <workItem from="1708461557931" duration="48000" />
+      <workItem from="1709200818195" duration="8156000" />
     </task>
     <task id="LOCAL-00001" summary="Refactoring needed due to MR conflicts">
       <option name="closed" value="true" />
@@ -78,7 +90,39 @@
       <option name="project" value="LOCAL" />
       <updated>1708460765320</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="#19 Server and Client class creation">
+      <option name="closed" value="true" />
+      <created>1709201102562</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1709201102562</updated>
+    </task>
+    <task id="LOCAL-00003" summary="#19 Server class beginning of implementation">
+      <option name="closed" value="true" />
+      <created>1709300035739</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1709300035739</updated>
+    </task>
+    <task id="LOCAL-00004" summary="#19 first version of Server Class">
+      <option name="closed" value="true" />
+      <created>1709303831471</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1709303831471</updated>
+    </task>
+    <task id="LOCAL-00005" summary="#19 Beginnong of implementation of Client class">
+      <option name="closed" value="true" />
+      <created>1709305317087</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1709305317087</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -100,6 +144,10 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Refactoring needed due to MR conflicts" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring needed due to MR conflicts" />
+    <MESSAGE value="#19 Server and Client class creation" />
+    <MESSAGE value="#19 Server class beginning of implementation" />
+    <MESSAGE value="#19 first version of Server Class" />
+    <MESSAGE value="#19 Beginnong of implementation of Client class" />
+    <option name="LAST_COMMIT_MESSAGE" value="#19 Beginnong of implementation of Client class" />
   </component>
 </project>

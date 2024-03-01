@@ -18,7 +18,7 @@ public class Server {
         try{
             while(true){
                 Socket socketForClient = listener.accept();
-                //
+                new ServiceThread(client,socketForClient).start();
                 System.out.println("Player n°"+client+" joined the game.");
                 client++;
             }
