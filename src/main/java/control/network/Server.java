@@ -40,8 +40,8 @@ public class Server {
             try{
                 BufferedReader clientRequest = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 BufferedWriter serverRequest = new BufferedWriter((new OutputStreamWriter(clientSocket.getOutputStream())));
+                serverRequest.write("Hello ! Welcome to you player n°"+idClient+" !");
                 while(true){
-                    serverRequest.write("Hello ! Welcome to you player n°"+idClient+" !");
                     serverRequest.newLine();
                     serverRequest.flush();
                     String clientResponse = clientRequest.readLine();
