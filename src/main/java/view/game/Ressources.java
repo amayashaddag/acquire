@@ -1,13 +1,12 @@
 package view.game;
 
+import model.Corporation;
+
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 /**
  * All images used for game are ir
@@ -18,13 +17,13 @@ import javax.swing.ImageIcon;
 public class Ressources {
     public static final String MAIN_PATH = "src/main/";
     public static final String RESSOURCES_PATH = "ressources/";
-    public static final String IMAGES_PATH ="images/game/";
+    public static final String IMAGES_PATH = "images/game/";
 
     /**
      * Use with the following name
      * convention : same name as the image file
      * but in UPPER CASE, and replace '-' by '_'.
-     *
+     * <p>
      * ! Specials characters are not allowed (except
      * '-' and '_')!
      */
@@ -36,23 +35,23 @@ public class Ressources {
             Field[] fields = clazz.getFields();
 
             for (Field field : fields) {
-                if (field.getType() == Image.class && Modifier.isStatic(field.getModifiers())) {
+                if (field.getType() == Image.class) {
                     String nameVar = field.getName().toLowerCase();
                     String nameImg = nameVar.replace('_', '-');
 
                     try {
-                        File[] filesFounded = dir.listFiles((dir1, name) -> name.startsWith(nameImg+"."));
+                        File[] filesFounded = dir.listFiles((dir1, name) -> name.startsWith(nameImg + "."));
 
                         if (filesFounded == null || filesFounded.length == 0)
                             throw new IllegalArgumentException("The file " + nameImg + " doesn't exists.");
 
                         Image img = null;
-                        for (File f: filesFounded) {
+                        for (File f : filesFounded) {
                             try {
                                 img = ImageIO.read(f);
                                 break;
                             } catch (IOException e) {
-                                // Continue, we are looking for the first Load who match with nameImg
+                                // Continue, we are looking for the first AutoLoadProcessor who match with nameImg
                             }
                         }
 
@@ -68,6 +67,7 @@ public class Ressources {
                         System.err.println("An error ocured during the setting of " + field.getName());
                         e.printStackTrace();
                     }
+
                 }
             }
         }
@@ -85,5 +85,17 @@ public class Ressources {
         public static Image PURPLE_TOWER_CELL;
         public static Image RED_TOWER_CELL;
         public static Image YELLOW_TOWER_CELL;
+
+        public static Image getCorpImage(Corporation c) {
+            return switch (c) {
+                case IMPERIAL -> Ressources.Assets.CYAN_TOWER_CELL;
+                case FESTIVAL -> Ressources.Assets.YELLOW_TOWER_CELL;
+                case AMERICAN -> Ressources.Assets.RED_TOWER_CELL;
+                case SACKSON -> Ressources.Assets.BLUE_TOWER_CELL;
+                case TOWER -> Ressources.Assets.GREEN_TOWER_CELL;
+                case WORLDWIDE -> Ressources.Assets.ORANGE_TOWER_CELL;
+                case CONTINENTAL -> Ressources.Assets.PURPLE_TOWER_CELL;
+            };
+        }
     }
 }

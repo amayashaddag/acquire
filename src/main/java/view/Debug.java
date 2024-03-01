@@ -1,92 +1,110 @@
 package view;
 
+import javaswingdev.pggb.PanelGlowingGradient;
+import model.Corporation;
 import net.miginfocom.swing.MigLayout;
-import tools.Load;
-import view.game.ColorableArcableFlatBorder;
-import view.game.GameView;
-import view.game.GrowingJLabel;
-import tools.AutoSetter;
+import view.game.*;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
-
+import java.util.List;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 import control.GameController;
 import model.Player;
 
+import javax.swing.*;
+import javax.swing.plaf.LayerUI;
+
 public class Debug {
 
-    @Load
-    int dadza = 0;
     public static void main(String[] args) {
         FlatDarculaLaf.setup();
 
-        // JFrame g = new JFrame();
-        // g.setTitle("Acquire");
-        // g.setSize(1000, 600);
-        // g.setLocationRelativeTo(null);
-        // g.setDefaultCloseOperation(3);
+//        ArrayList<Player> l = new ArrayList<>();
+//        l.add(Player.createHumanPlayer("caca1"));
+//        l.add(Player.createHumanPlayer("caca2"));
+//        l.add(Player.createHumanPlayer("caca3"));
+//        l.add(Player.createHumanPlayer("caca4"));
+//        l.add(Player.createHumanPlayer("caca5"));
+//        GameController c = new GameController(l, l.get(1));
+//        c.getGameView().setVisible(true);
+//        GameView g = c.getGameView();
+//        GameFrame frame = new GameFrame();
+//        g.setOn(frame);
+//        frame.setVisible(true);
 
-        // JPanel jp = new JPanel();
-        // MigLayout mig = new MigLayout("al center, filly", "10[]10");
-        // jp.setLayout(mig);
+         JFrame g = new JFrame();
+         g.setTitle("Acquire");
+         g.setSize(1000, 600);
+         g.setLocationRelativeTo(null);
+         g.setDefaultCloseOperation(3);
 
-        // Player p = Player.createHumanPlayer("Arthur Deck");
-        // jp.add(new Debug.Caca(p, mig), "w 100, h 100");
+         ArrayList<Corporation> l = new ArrayList<>();
+         l.add(Corporation.CONTINENTAL);
+         l.add(Corporation.AMERICAN);
+         ChoiceCorpPane c = new ChoiceCorpPane(l);
+         g.add(c);
 
-        // JPanel root = new JPanel();
-        // root.setLayout(new BorderLayout());
-        // root.add(new JButton("yesy"), BorderLayout.SOUTH);
-        // root.add(jp, BorderLayout.NORTH);
+         g.repaint();
+         g.setVisible(true);
 
-        // g.add(root);
-        // g.setVisible(true);
+        while (c.getChoice() == null) {
 
-        ArrayList<Player> l = new ArrayList<>();
-        l.add(Player.createHumanPlayer("caca1"));
-        l.add(Player.createHumanPlayer("caca2"));
-        l.add(Player.createHumanPlayer("caca3"));
-        l.add(Player.createHumanPlayer("caca4"));
-        l.add(Player.createHumanPlayer("caca5"));
-        GameController c = new GameController(l, l.get(1));
-        c.getGameView().setVisible(true);
-        GameView g = c.getGameView();
-        GameFrame frame = new GameFrame();
-        g.setOn(frame);
-        frame.setVisible(true);
+        }
+        System.out.println(c.getChoice());
     }
 
-    public static class Caca extends GrowingJLabel {
-        final Player player;
+    public static class Box<T> {
+        private T t;
 
-        public Caca(Player p, MigLayout mig) {
-            super(mig, new Dimension(100, 100), new Dimension(300, 120));
-            this.player = p;
-            this.setBorder(new ColorableArcableFlatBorder(Color.GREEN));
+        public void set(T t) {
+            this.t = t;
         }
 
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setColor(Color.GRAY);
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+        public T get() {
+            return t;
+        }
+    }
 
-            if (this.getSize().equals(this.initialDimension)) {
-                // TODO : afficher pp joueur
-                this.setText(""+player.getPseudo().charAt(0));
-            } else if (this.getSize().equals(this.zoomingDimension)) {
-                // TODO : afficher info joueur
-            } else {
-                // TODO : growing barre
+    public static class Caca extends JDialog {
+        private final Box<Corporation> corp;
+        private final JPanel contentPanel;
+        public Caca(JFrame parent, List<Corporation> corps, Box<Corporation> corp) {
+            super(parent, false);
+            this.corp = corp;
+            this.contentPanel = new JPanel();
+
+            setContentPane(contentPanel);
+
+            setUndecorated(true);
+            setSize(300, 100);
+            setLocationRelativeTo(parent);
+
+            contentPanel.setLayout(new MigLayout("al center, filly", "10[]10"));
+            contentPanel.setOpaque(true);
+
+            for (Corporation c : corps) {
+                JButton jb = new JButton() {
+                    @Override
+                    public void paint(Graphics g) {
+                        super.paint(g);
+                        g.setColor(Color.RED);
+                        g.fillRect(0,0,30,30);
+                    }
+                };
+                jb.addActionListener(e -> {
+                    System.out.println("deadza");
+                    corp.set(c);
+                    System.out.println(corp.get());
+                    dispose();
+                });
+                contentPanel.add(jb);
             }
 
-            if (false)
-                paintBorder(g2);
-
-            g2.dispose();
-            
-            super.paintComponent(g);
+            setVisible(true);
         }
     }
 }

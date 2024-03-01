@@ -17,7 +17,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import raven.toast.Notifications;
 
@@ -85,15 +85,7 @@ public class GameView extends Form {
                 if (new tools.Point(row, col).equals(jetonsPanel.getSelection()))
                     g2d.drawImage(Ressources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOwned())
-                    g2d.drawImage(switch (currentCell.getCorporation()) {
-                        case IMPERIAL -> Ressources.Assets.CYAN_TOWER_CELL;
-                        case FESTIVAL -> Ressources.Assets.YELLOW_TOWER_CELL;
-                        case AMERICAN -> Ressources.Assets.RED_TOWER_CELL;
-                        case SACKSON -> Ressources.Assets.BLUE_TOWER_CELL;
-                        case TOWER -> Ressources.Assets.GREEN_TOWER_CELL;
-                        case WORLDWIDE -> Ressources.Assets.ORANGE_TOWER_CELL;
-                        case CONTINENTAL -> Ressources.Assets.PURPLE_TOWER_CELL;
-                    }, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(Ressources.Assets.getCorpImage(currentCell.getCorporation()), x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOccupied())
                     g2d.drawImage(Ressources.Assets.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isEmpty())
@@ -136,7 +128,7 @@ public class GameView extends Form {
     /**
      * A graphical display of errors / exceptions
      * @param e : the exception you want display
-     * @param task : the task you want execute (example :  System.exit(1))
+     * @param task : the task you want to execute (example :  System.exit(1))
      * @apiNote example : GameFrame.showError(new Exception(), () -> System.exit(1))
      */
     public void showError(Exception e, Runnable task) {
