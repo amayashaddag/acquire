@@ -23,6 +23,7 @@ private static boolean LEAVE = false;
                 if (LEAVE){
                     clientRequest.write("LEAVE");
                     clientRequest.flush();
+                    System.out.println(serverRequest.readLine());
                     clientRequest.close();
                     serverRequest.close();
                     socketOfClient.close();

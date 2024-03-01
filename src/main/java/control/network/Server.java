@@ -11,6 +11,7 @@ public class Server {
         int client = 0;
         try{
             listener = new ServerSocket(9999);
+            System.out.println("Waiting for players...");
         }catch (IOException e){
             e.printStackTrace();
             System.exit(4);
@@ -41,6 +42,7 @@ public class Server {
                 BufferedWriter serverRequest = new BufferedWriter((new OutputStreamWriter(clientSocket.getOutputStream())));
                 while(true){
                     serverRequest.write("Hello ! Welcome to you player n°"+idClient+" !");
+                    serverRequest.newLine();
                     serverRequest.flush();
                     String clientResponse = clientRequest.readLine();
                     System.out.println(clientResponse);

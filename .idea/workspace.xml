@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1f98e992-bb50-44ef-b846-dd677b344d7b" name="Changes" comment="#19 Beginnong of implementation of Client class">
+    <list default="true" id="1f98e992-bb50-44ef-b846-dd677b344d7b" name="Changes" comment="#19 First version of server and client class">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/app/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/App.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/control/network/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/control/network/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/control/network/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/control/network/Server.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,24 +46,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Application.Debug.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "iss19",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/amayas/S4/PI4/acquire",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Application.Debug.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;iss19&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/amayas/S4/PI4/acquire&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -80,7 +83,8 @@
       <workItem from="1708461284171" duration="86000" />
       <workItem from="1708461394029" duration="151000" />
       <workItem from="1708461557931" duration="48000" />
-      <workItem from="1709200818195" duration="8156000" />
+      <workItem from="1709200818195" duration="9804000" />
+      <workItem from="1709308949893" duration="379000" />
     </task>
     <task id="LOCAL-00001" summary="Refactoring needed due to MR conflicts">
       <option name="closed" value="true" />
@@ -122,7 +126,15 @@
       <option name="project" value="LOCAL" />
       <updated>1709305317087</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="#19 First version of server and client class">
+      <option name="closed" value="true" />
+      <created>1709306450395</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1709306450395</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -148,6 +160,7 @@
     <MESSAGE value="#19 Server class beginning of implementation" />
     <MESSAGE value="#19 first version of Server Class" />
     <MESSAGE value="#19 Beginnong of implementation of Client class" />
-    <option name="LAST_COMMIT_MESSAGE" value="#19 Beginnong of implementation of Client class" />
+    <MESSAGE value="#19 First version of server and client class" />
+    <option name="LAST_COMMIT_MESSAGE" value="#19 First version of server and client class" />
   </component>
 </project>
