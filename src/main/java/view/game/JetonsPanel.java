@@ -62,6 +62,17 @@ public class JetonsPanel extends JPanel {
         }
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        buttonPanel.setEnabled(enabled);
+        for (Component c : buttonPanel.getComponents())
+            if (c instanceof JetonButton) {
+                JetonButton jb = (JetonButton) c;
+                jb.setEnabled(enabled);
+            }
+    }
+
     private class JetonButton extends JButton {
         tools.Point p;
 
@@ -103,6 +114,7 @@ public class JetonsPanel extends JPanel {
             });
             this.addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e) {
+                    if (!JetonButton.this.isEnabled()) return;
                     JetonsPanel.this.selection = JetonButton.this.p;
                     JetonButton.this.setBorder(new ColorableArcableFlatBorder(Color.GREEN));
                     g.repaint();

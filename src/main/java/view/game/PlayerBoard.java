@@ -3,11 +3,7 @@ package view.game;
 import model.Corporation;
 import model.Player;
 
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +41,13 @@ public class PlayerBoard extends javax.swing.JPanel {
         }
 
         this.g.add(this, BorderLayout.NORTH);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        for (Component c : getComponents())
+            c.setEnabled(enabled);
     }
 
     private class PlayerItem extends GrowingJLabel {

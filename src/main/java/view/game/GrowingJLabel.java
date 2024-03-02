@@ -24,9 +24,7 @@ public class GrowingJLabel extends JLabel {
 
     private Timer timer;
     private boolean show;
-
     protected final Dimension initialDimension, zoomingDimension;
-
     public GrowingJLabel(MigLayout mig) {
         this(mig, new Dimension(100, 100), new Dimension(200, 120));
     }
@@ -61,7 +59,7 @@ public class GrowingJLabel extends JLabel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent me) {
-                show = true;
+                show = isEnabled();
                 timer.start();
             }
 

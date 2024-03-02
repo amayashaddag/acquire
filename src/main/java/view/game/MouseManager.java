@@ -28,6 +28,7 @@ import java.awt.event.MouseMotionListener;
 @AutoSetter(typeParam = GameView.class)
 public class MouseManager implements MouseListener, MouseWheelListener, MouseMotionListener {
     private final double MINIMAL_ZOOM = 0.75;
+    private boolean enabled = true;
 
     public MouseManager(GameView g) {
         this.lastClickedPos = new Point2D.Float();
@@ -47,6 +48,8 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
     }
 
     public void mousePressed(MouseEvent e) {
+        if (!enabled) return;
+
         if (e.getButton() == MouseEvent.BUTTON1) {
             g.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
             Point2D p = new Point2D.Float(e.getX(), e.getY());
@@ -61,6 +64,8 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
     }
 
     public void mouseReleased(MouseEvent e) {
+        if (!enabled) return;
+
         lastClickedPos = new Point2D.Float();
         if (e.getButton() == MouseEvent.BUTTON1)
             g.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -69,9 +74,7 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
     public void mouseClicked(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
-
-    public void mouseMoved(MouseEvent e) {
-    }
+    public void mouseMoved(MouseEvent e) {}
 
     public void mouseDragged(MouseEvent e) {
         if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
@@ -83,6 +86,7 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
                 inverseAt.transform(p, q);
 
                 at.translate(q.getX() - lastClickedPos.getX(), q.getY() - lastClickedPos.getY());
+                wrapTranslation();
             } catch (NoninvertibleTransformException excp) {
                 GameFrame.showError(excp, () -> {
                 });
@@ -92,7 +96,6 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
         }
     }
 
-    @Deprecated
     private void wrapTranslation() {
         double matrix[] = new double[6];
         at.getMatrix(matrix);
@@ -108,6 +111,8 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
     
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        if (!enabled) return;
+
         double scale = e.getWheelRotation() < 0 ? 1.5 : 0.5;
         Point2D p = new Point2D.Float(e.getX(), e.getY());
         Point2D q = new Point2D.Float();
@@ -130,5 +135,9 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
         }
 
         g.repaint();
+    }
+
+    public void setEnabled(boolean arg) {
+        this.enabled = arg;
     }
 }

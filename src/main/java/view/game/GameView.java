@@ -98,6 +98,7 @@ public class GameView extends Form {
     }
 
     public Corporation getCorporationChoice(List<Corporation> unplacedCorps) {
+        setEnabled(false);
         tools.Box<Corporation> monitor = new tools.Box<>(unplacedCorps.get(0));
         ChoiceCorpPane c = new ChoiceCorpPane(unplacedCorps, monitor);
         this.add(c, BorderLayout.CENTER);
@@ -108,7 +109,16 @@ public class GameView extends Form {
                 showError(e, () -> System.exit(1));
             }
         }
+        setEnabled(true);
         return monitor.get();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        mouseListener.setEnabled(enabled);
+        playerBoard.setEnabled(enabled);
+        jetonsPanel.setEnabled(enabled);
     }
 
     /**
