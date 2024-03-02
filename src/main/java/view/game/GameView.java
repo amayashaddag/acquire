@@ -5,6 +5,7 @@ import model.Corporation;
 import model.Player;
 import model.Board;
 import model.Cell;
+import view.Debug;
 import view.Form;
 import view.GameFrame;
 
@@ -97,8 +98,17 @@ public class GameView extends Form {
     }
 
     public Corporation getCorporationChoice(List<Corporation> unplacedCorps) {
-        // TODO : demander au joueur quelle truc
-        return unplacedCorps.get(0);
+        tools.Box<Corporation> monitor = new tools.Box<>(unplacedCorps.get(0));
+        ChoiceCorpPane c = new ChoiceCorpPane(unplacedCorps, monitor);
+        this.add(c, BorderLayout.CENTER);
+        synchronized (monitor) {
+            try {
+                monitor.wait();
+            } catch (InterruptedException e) {
+                showError(e, () -> System.exit(1));
+            }
+        }
+        return monitor.get();
     }
 
     /**

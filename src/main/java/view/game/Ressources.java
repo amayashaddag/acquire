@@ -2,7 +2,8 @@ package view.game;
 
 import model.Corporation;
 
-import java.awt.Image;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -18,6 +19,15 @@ public class Ressources {
     public static final String MAIN_PATH = "src/main/";
     public static final String RESSOURCES_PATH = "ressources/";
     public static final String IMAGES_PATH = "images/game/";
+
+    public static BufferedImage imageToBufferedImage(Image im) {
+        BufferedImage bi = new BufferedImage
+                (im.getWidth(null),im.getHeight(null),BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2D = bi.createGraphics();
+        g2D.drawImage(im, 0, 0, null);
+        g2D.dispose();
+        return bi;
+    }
 
     /**
      * Use with the following name

@@ -23,41 +23,57 @@ public class Debug {
     public static void main(String[] args) {
         FlatDarculaLaf.setup();
 
-//        ArrayList<Player> l = new ArrayList<>();
-//        l.add(Player.createHumanPlayer("caca1"));
-//        l.add(Player.createHumanPlayer("caca2"));
-//        l.add(Player.createHumanPlayer("caca3"));
-//        l.add(Player.createHumanPlayer("caca4"));
-//        l.add(Player.createHumanPlayer("caca5"));
-//        GameController c = new GameController(l, l.get(1));
-//        c.getGameView().setVisible(true);
-//        GameView g = c.getGameView();
-//        GameFrame frame = new GameFrame();
-//        g.setOn(frame);
-//        frame.setVisible(true);
+        ArrayList<Player> l = new ArrayList<>();
+        l.add(Player.createHumanPlayer("caca1"));
+        l.add(Player.createHumanPlayer("caca2"));
+        l.add(Player.createHumanPlayer("caca3"));
+        l.add(Player.createHumanPlayer("caca4"));
+        l.add(Player.createHumanPlayer("caca5"));
+        GameController c = new GameController(l, l.get(1));
+        c.getGameView().setVisible(true);
+        GameView g = c.getGameView();
+        GameFrame frame = new GameFrame();
+        g.setOn(frame);
+        SwingUtilities.invokeLater(() -> frame.setVisible(true));
+        ArrayList<Corporation> corpsList = new ArrayList<>();
+        corpsList.add(Corporation.CONTINENTAL);
+        corpsList.add(Corporation.TOWER);
+        Corporation choice = g.getCorporationChoice(corpsList);
+        System.out.println(choice.toString());
 
-         JFrame g = new JFrame();
-         g.setTitle("Acquire");
-         g.setSize(1000, 600);
-         g.setLocationRelativeTo(null);
-         g.setDefaultCloseOperation(3);
-
-         ArrayList<Corporation> l = new ArrayList<>();
-         l.add(Corporation.CONTINENTAL);
-         l.add(Corporation.AMERICAN);
-         ChoiceCorpPane c = new ChoiceCorpPane(l);
-         g.add(c);
-
-         g.repaint();
-         g.setVisible(true);
-
-        while (c.getChoice() == null) {
-
-        }
-        System.out.println(c.getChoice());
+//         JFrame g = new JFrame();
+//         g.setTitle("Acquire");
+//         g.setSize(1000, 600);
+//         g.setLocationRelativeTo(null);
+//         g.setDefaultCloseOperation(3);
+//
+//         ArrayList<Corporation> l = new ArrayList<>();
+//         l.add(Corporation.CONTINENTAL);
+//         l.add(Corporation.TOWER);
+//         tools.Box<Corporation> monitor = new tools.Box<>(Corporation.AMERICAN);
+//         ChoiceCorpPane c = new ChoiceCorpPane(l, monitor);
+//         g.add(c);
+//
+//         g.repaint();
+//
+//         SwingUtilities.invokeLater(() -> g.setVisible(true));
+//
+//         synchronized (monitor) {
+//             try {
+//                 monitor.wait();
+//             } catch (InterruptedException e) {
+//                 e.printStackTrace();
+//             }
+//         }
+//         System.out.println("finn");
+//         System.out.println(monitor.get().toString());
     }
 
     public static class Box<T> {
+        public Box(T t) {
+            this.t = t;
+        }
+
         private T t;
 
         public void set(T t) {
