@@ -27,7 +27,7 @@ public class ChoiceCorpPane extends JComponent {
         setLayout(new MigLayout("al center, filly, ins 0, wrap 4"));
 
         for (Corporation corp : corps)
-            add(new GlowingItem(corp), "w 200, h 300");
+            add(new GlowingItem(corp), "w 16%, h 33%");
     }
 
     private void close() {

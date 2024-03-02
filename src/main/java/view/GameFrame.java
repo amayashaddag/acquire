@@ -29,12 +29,6 @@ public class GameFrame extends JFrame {
 
     public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 
-    /**
-     * For inizialise the view
-     * 
-     * @param player : the player will seen this View
-     * @param controller : current game superviser
-     */
     public GameFrame() {
         super();
         FlatDarculaLaf.setup();
