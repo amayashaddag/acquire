@@ -4,13 +4,13 @@ import tools.AutoSetter;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import java.awt.event.MouseEvent;
+import java.util.Map;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 /**
  * The JPanel for the jetons
@@ -82,35 +82,37 @@ public class JetonsPanel extends JPanel {
             this.setFocusPainted(false);
             this.setText(p.toString());
             this.addActionListener((e) -> {
-                g.getController().handleCellPlacing(p, g.getPlayer());
+                new Thread(() -> {
+                    g.getController().handleCellPlacing(p, g.getPlayer());
 
-                tools.Point[] playerDeck = g.getPlayer().getDeck();
-                if (playerDeck.length == 0) {
-                    buttonPanel.removeAll();
-                    g.repaint();
-                } else {
-                    ArrayList<JetonButton> l = new ArrayList<>();
-                    for (Component c : buttonPanel.getComponents())
-                        if (c instanceof JetonButton)
-                            l.add((JetonButton) c);
+                    tools.Point[] playerDeck = g.getPlayer().getDeck();
+                    if (playerDeck.length == 0) {
+                        buttonPanel.removeAll();
+                        g.repaint();
+                    } else {
+                        ArrayList<JetonButton> l = new ArrayList<>();
+                        for (Component c : buttonPanel.getComponents())
+                            if (c instanceof JetonButton)
+                                l.add((JetonButton) c);
 
-                    int position = 0;
-                    for (int i = 0; i < l.size(); i++) {
-                        if (playerDeck[i] != null) {
-                            l.get(i).setVisible(true);
-                            l.get(i).setPoint(playerDeck[i]);
-                            l.get(i).setText(playerDeck[i].toString());
-                        } else {
-                            l.get(i).setVisible(false);
-                            buttonPanel.remove(l.get(i));
-                            buttonPanel.revalidate();
-                            buttonPanel.add(l.get(i), position);
-                            position = (position == 0) ? buttonPanel.getComponentCount()-1 : 0;
+                        int position = 0;
+                        for (int i = 0; i < l.size(); i++) {
+                            if (playerDeck[i] != null) {
+                                l.get(i).setVisible(true);
+                                l.get(i).setPoint(playerDeck[i]);
+                                l.get(i).setText(playerDeck[i].toString());
+                            } else {
+                                l.get(i).setVisible(false);
+                                buttonPanel.remove(l.get(i));
+                                buttonPanel.revalidate();
+                                buttonPanel.add(l.get(i), position);
+                                position = (position == 0) ? buttonPanel.getComponentCount() - 1 : 0;
+                            }
                         }
-                    }
 
-                    g.repaint();
-                }
+                        g.repaint();
+                    }
+                }).start();
             });
             this.addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e) {

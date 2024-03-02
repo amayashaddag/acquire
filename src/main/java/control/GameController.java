@@ -34,7 +34,7 @@ public class GameController {
         this.scanner = new Scanner(System.in);
     }
 
-    public void handleCellPlacing(Point cellPosition, Player player) {
+    public synchronized void handleCellPlacing(Point cellPosition, Player player) {
         placeCell(cellPosition, player);  // FIXME  : Fix NullPointerException in this function
         board.updateDeadCells();
         board.updatePlayerDeck(player);

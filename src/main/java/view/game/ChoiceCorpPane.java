@@ -29,8 +29,10 @@ public class ChoiceCorpPane extends JComponent {
         for (Corporation corp : corps)
             add(new GlowingItem(corp), "w 300, h 400");
 
-        revalidate();
-        repaint();
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
     }
 
     private void close() {
@@ -38,11 +40,6 @@ public class ChoiceCorpPane extends JComponent {
         parent.remove(this);
         parent.revalidate();
         parent.repaint();
-    }
-
-    public Corporation ask(JPanel jp) {
-        jp.add(this);
-        return null;
     }
 
     private class GlowingItem extends PanelGlowingGradient {

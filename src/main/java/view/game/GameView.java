@@ -101,7 +101,8 @@ public class GameView extends Form {
         setEnabled(false);
         tools.Box<Corporation> monitor = new tools.Box<>(unplacedCorps.get(0));
         ChoiceCorpPane c = new ChoiceCorpPane(unplacedCorps, monitor);
-        this.add(c, BorderLayout.CENTER);
+        add(c, BorderLayout.CENTER);
+
         synchronized (monitor) {
             try {
                 monitor.wait();
@@ -109,6 +110,7 @@ public class GameView extends Form {
                 showError(e, () -> System.exit(1));
             }
         }
+
         setEnabled(true);
         return monitor.get();
     }

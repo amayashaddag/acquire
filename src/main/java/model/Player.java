@@ -16,7 +16,7 @@ public class Player {
 
     private int cash;
     private HashMap<Corporation,Integer> earnedStocks;
-    private Point[] deck;
+    private volatile Point[] deck;
     private PlayerType playerType;
     private String pseudo;
 

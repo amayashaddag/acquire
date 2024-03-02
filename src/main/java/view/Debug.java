@@ -38,8 +38,7 @@ public class Debug {
         ArrayList<Corporation> corpsList = new ArrayList<>();
         corpsList.add(Corporation.CONTINENTAL);
         corpsList.add(Corporation.TOWER);
-        Corporation choice = g.getCorporationChoice(corpsList);
-        System.out.println(choice.toString());
+
 
 //         JFrame g = new JFrame();
 //         g.setTitle("Acquire");
@@ -67,6 +66,10 @@ public class Debug {
 //         }
 //         System.out.println("finn");
 //         System.out.println(monitor.get().toString());
+    }
+
+    public void test(GameView g, List<Corporation> corpsList) {
+        System.out.println("Le choix est : " + g.getCorporationChoice(corpsList));
     }
 
     public static class Box<T> {
