@@ -38,6 +38,7 @@ public class Debug {
         ArrayList<Corporation> corpsList = new ArrayList<>();
         corpsList.add(Corporation.CONTINENTAL);
         corpsList.add(Corporation.TOWER);
+        g.getCorporationChoice(corpsList);
 
 
 //         JFrame g = new JFrame();

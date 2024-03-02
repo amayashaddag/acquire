@@ -77,7 +77,7 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
     public void mouseMoved(MouseEvent e) {}
 
     public void mouseDragged(MouseEvent e) {
-        if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
+        if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0 && enabled) {
             try {
                 Point2D p = new Point2D.Double(e.getX(), e.getY());
                 Point2D q = new Point2D.Double();
@@ -86,7 +86,6 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
                 inverseAt.transform(p, q);
 
                 at.translate(q.getX() - lastClickedPos.getX(), q.getY() - lastClickedPos.getY());
-                wrapTranslation();
             } catch (NoninvertibleTransformException excp) {
                 GameFrame.showError(excp, () -> {
                 });
@@ -96,6 +95,7 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
         }
     }
 
+    @Deprecated
     private void wrapTranslation() {
         double matrix[] = new double[6];
         at.getMatrix(matrix);

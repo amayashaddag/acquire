@@ -103,6 +103,11 @@ public class GameView extends Form {
         ChoiceCorpPane c = new ChoiceCorpPane(unplacedCorps, monitor);
         add(c, BorderLayout.CENTER);
 
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
+
         synchronized (monitor) {
             try {
                 monitor.wait();
