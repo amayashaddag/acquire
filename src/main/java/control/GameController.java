@@ -18,10 +18,7 @@ public class GameController {
     private final int numberOfPlayers;
     private boolean gameOver;
 
-    private final Scanner scanner;
-
-    public final static int FPS = 60;
-    public final static int GAME_DELAY = 1000 / FPS;
+    
     public final static int FOUNDING_STOCK_BONUS = 1;
 
     public GameController(List<Player> currentPlayers, Player currentPlayer) {
@@ -31,13 +28,13 @@ public class GameController {
         this.playerTurnIndex = 0;
         initPlayersDecks();
         this.gameView = new GameView(this, currentPlayer);
-        this.scanner = new Scanner(System.in);
     }
 
     public synchronized void handleCellPlacing(Point cellPosition, Player player) {
         placeCell(cellPosition, player);  // FIXME  : Fix NullPointerException in this function
         board.updateDeadCells();
         board.updatePlayerDeck(player);
+        playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
     }
 
     public GameView getGameView() {
@@ -145,7 +142,7 @@ public class GameController {
         return maxCorporations;
     }
 
-    // TODO : Code should be rewrote
+
     /**
      * This function is called when a merge is possible and processes it.
      * It checks whether there is a unique maximum size company and merges all the
@@ -160,6 +157,8 @@ public class GameController {
      */
     public void mergeCorporations(Set<Point> cellsToMerge, Point cellPosition, Player player) {
         List<Point> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
+        Set<Corporation> adjacentCorporations = board.adjacentCorporations(cellPosition);
+
         Point chosenCellPosition;
         Cell chosenCell, currentCell = board.getCell(cellPosition);
         Corporation chosenCellCorporation;
@@ -180,13 +179,25 @@ public class GameController {
         board.replaceCellCorporation(currentCell, chosenCellCorporation);
         for (Point adj : cellsToMerge) {
             if (!adj.equals(chosenCellPosition)) {
+                Cell adjacentCell = board.getCell(adj);
+                Corporation adjacentCorporation = adjacentCell.getCorporation();
+
                 board.replaceCorporationFrom(chosenCellCorporation, adj);
+                // TODO : Do not add the case where the adjacentCorporation equals to chosenCorporation
+                if (chosenCellCorporation != adjacentCorporation) {
+                    addSharingBonus(adjacentCorporation);
+                }
             }
         }
 
-        gameView.showInfoNotification(
-                GameNotifications.corporationMergingNotification(player.getPseudo(), chosenCellCorporation)
-        );
+        if (adjacentCorporations.size() > 1) {
+            gameView.showInfoNotification(
+                    GameNotifications.corporationMergingNotification(
+                            player.getPseudo(),
+                            chosenCellCorporation
+                    )
+            );
+        }
     }
 
     public void placeCell(Point cellPosition, Player currentPlayer) {
@@ -209,6 +220,7 @@ public class GameController {
 
             List<Corporation> unplacedCorporations = board.unplacedCorporations();
             Corporation chosenCorporationToPlace = gameView.getCorporationChoice(unplacedCorporations);
+            currentPlayer.addToEarnedStocks(chosenCorporationToPlace, FOUNDING_STOCK_BONUS);
 
             board.replaceCellCorporation(currentCell, chosenCorporationToPlace);
             for (Point adjacent : adjacentOccupiedCells) {
@@ -226,21 +238,8 @@ public class GameController {
             return;
         }
 
-        if (adjacentCorporations.size() == 1) {
-            Iterator<Point> adjacentOwnedCellsIterator = adjacentOwnedCells.iterator();
-            Point adjacentOwnedCellPosition = adjacentOwnedCellsIterator.next();
-            Cell adjacentOwnedCell = board.getCell(adjacentOwnedCellPosition);
-            Corporation adjacentCorporation = adjacentOwnedCell.getCorporation();
-
-            board.replaceCellCorporation(currentCell, adjacentCorporation);
-            for (Point adjacent : adjacentOccupiedCells) {
-                Cell adjacentOccupiedCell = board.getCell(adjacent);
-                board.replaceCellCorporation(adjacentOccupiedCell, adjacentCorporation);
-            }
-            return;
-        }
-
         mergeCorporations(adjacentOwnedCells, cellPosition, currentPlayer);
+
         Corporation mergedCorporation = currentCell.getCorporation();
 
         for (Point adj : adjacentOccupiedCells) {
@@ -249,28 +248,75 @@ public class GameController {
         }
     }
 
-    public void consoleGameLoop() {
+    /**
+     * @return List of the players owning at least one stock from the given corporation
+     */
+    public List<Player> allOwners(Corporation corporation) {
+        List<Player> playersOwning = new LinkedList<>();
 
-        Player currentPlayer = getCurrentPlayer();
-
-        while (!gameOver) {
-
-            for (Point p : currentPlayer.getDeck()) {
-                System.out.print(p + " ");
+        for (Player player : currentPlayers) {
+            if (player.ownsStocksFromCorporation(corporation)) {
+                playersOwning.add(player);
             }
-            System.out.println();
+        }
 
-            int inventoryIndex = scanner.nextInt();
-            Point cellPosition = currentPlayer.getCell(inventoryIndex);
+        return playersOwning;
+    }
 
-            placeCell(cellPosition, currentPlayer);
-            board.updateDeadCells();
-            board.updatePlayerDeck(currentPlayer);
+    /**
+     * Calculates the list of the major owners of a given company.
+     * It takes the corporation owners list calculated from {@link #allOwners(Corporation)}
+     * and removes the major owners from it to return it in a separated list.
+     */
+    public List<Player> majorOwners(List<Player> allOwners, Corporation c) {
+        List<Player> majorOwners = new LinkedList<>();
+        int majorOwnerAmountOfStocks = -1;
 
-            System.out.println(board);
-            System.out.println(board.getCorporationSizes());
+        for (Player owner : allOwners) {
+            int currentOwnerStocks = owner.getStocks(c);
 
+            if (majorOwnerAmountOfStocks == -1) {
+                majorOwnerAmountOfStocks = currentOwnerStocks;
+            } else if (currentOwnerStocks > majorOwnerAmountOfStocks) {
+                majorOwnerAmountOfStocks = currentOwnerStocks;
+            }
+        }
+
+        for (Player owner : allOwners) {
+            int currentOwnerStocks = owner.getStocks(c);
+
+            if (currentOwnerStocks >= majorOwnerAmountOfStocks) {
+                majorOwners.add(owner);
+            }
+        }
+
+        allOwners.removeAll(majorOwners);
+
+        return majorOwners;
+
+    }
+
+    /**
+     * This function takes all the owners of shares of the given function and adds them
+     * the owning bonus.
+     * This function is called when a corporation will be merged to another.
+     */
+    public void addSharingBonus(Corporation c) {
+        List<Player> owners = allOwners(c);
+        List<Player> majorOwners = majorOwners(owners, c);
+
+        int minoritySharehold = board.getMinoritySharehold(c);
+        int majoritySharehold = board.getMajoritySharehold(c);
+
+        for (Player p : owners) {
+            p.addToNet(minoritySharehold);
+        }
+
+        for (Player p : majorOwners) {
+            p.addToNet(majoritySharehold);
         }
     }
+
+
 
 }

@@ -15,6 +15,7 @@ public class Player {
     }
 
     private int cash;
+    private int net;
     private HashMap<Corporation,Integer> earnedStocks;
     private volatile Point[] deck;
     private PlayerType playerType;
@@ -25,7 +26,7 @@ public class Player {
     private final static String botPseudoPrefix = "Bot";
 
     private Player(PlayerType playerType, String pseudo) {
-        this.cash = INITIAL_CASH;
+        this.cash = this.net = INITIAL_CASH;
         this.earnedStocks = initEarnedStocks();
         this.deck = new Point[Board.DECK_SIZE];
         this.pseudo = pseudo;
@@ -87,6 +88,10 @@ public class Player {
      */
     public void addToCash(int amount){
         this.cash+=amount;
+    }
+
+    public void addToNet(int amount) {
+        this.net += amount;
     }
     /**
      * withdraw player's money the amount in argument
@@ -152,5 +157,13 @@ public class Player {
     }
     public int getCash() {
         return cash;
+    }
+
+    public boolean ownsStocksFromCorporation(Corporation c) {
+        return hasEnoughStocks(c, 1);
+    }
+
+    public int getStocks(Corporation c) {
+        return earnedStocks.get(c);
     }
 }
