@@ -77,9 +77,6 @@ public class ReferenceChart {
     }
 
     /**
-     * 
-     * @param corporation
-     * @param size
      * @return the purchasing stock price of the current corporation given according
      * to its size on the board
      */
@@ -98,9 +95,6 @@ public class ReferenceChart {
     }
 
     /**
-     * 
-     * @param corporation
-     * @param size
      * @return returns the majority sharehold of a given corporation according to its size
      * on the board
      */
@@ -119,9 +113,6 @@ public class ReferenceChart {
     }
 
     /**
-     * 
-     * @param corporation
-     * @param size
      * @return returns the minority sharehold of a given corporation according to its size
      */
     public static int getMinoritySharehold(Corporation corporation, int size) {
