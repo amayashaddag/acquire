@@ -11,7 +11,7 @@ private static boolean LEAVE = false;
         Socket socketOfClient;
         LEAVE = true; //Temporaire pour les tests
         try{
-            socketOfClient = new Socket("localhost",9999);
+            socketOfClient = new Socket("192.168.0.31",9999);
             serverRequest = new BufferedReader(new InputStreamReader(socketOfClient.getInputStream()));
             clientRequest = new BufferedWriter(new OutputStreamWriter(socketOfClient.getOutputStream()));
             clientRequest.write("Hello ! Thanks for accepting me");
