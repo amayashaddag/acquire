@@ -1,5 +1,6 @@
 package login;
 
+import assets.Fonts;
 import com.formdev.flatlaf.extras.components.FlatButton;
 import javax.swing.*;
 import java.awt.*;
@@ -7,20 +8,24 @@ import java.awt.*;
 import frame.Form;
 import frame.GameFrame;
 
-public class LoginView extends Form {
+public class LoginView extends JPanel {
 
-    JLabel titleLabel;
+    private final JLabel titleLabel;
 
-    Form loginComponentContainer;
-    Form loginAndSignInButtonContainer;
-    Form createAccountAndComeBackToLoginContainer;
+    private final JPanel loginComponentContainer;
+    private final JPanel loginAndSignUpButtonContainer = new Form() {
+        @Override
+        public void setOn(GameFrame g) {
+            this.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4));
+        }
+    };
+    private final JPanel createAccountAndComeBackToLoginContainer = new Form() {
+        @Override
+        public void setOn(GameFrame g) {
+            this.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4));
+        }
+    };
 
-
-    @Override
-    public void setOn(GameFrame g) {
-        this.setSize(GameFrame.DEFAULT_WIDTH, GameFrame.DEFAULT_HEIGHT);
-        g.setContentPane(this);
-    }
     public LoginView() {
 
         loginComponentContainer = new Form() {
@@ -29,53 +34,44 @@ public class LoginView extends Form {
                 g.setContentPane(this);
             }
         };
-        loginAndSignInButtonContainer = new Form() {
-            @Override
-            public void setOn(GameFrame g) {
-                this.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4));
-            }
-        };
-
-        createAccountAndComeBackToLoginContainer = new Form() {
-            @Override
-            public void setOn(GameFrame g) {
-                this.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4));
-            }
-        };
 
         loginComponentContainer.setLayout(new BoxLayout(loginComponentContainer, BoxLayout.Y_AXIS));
         loginComponentContainer.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/3,GameFrame.DEFAULT_HEIGHT*3/5));
 
 
-        titleLabel = new JLabel(InterfaceLoginMessages.LOGIN_BUTTON_TEXT);
+        titleLabel = new JLabel(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
+        titleLabel.setFont(Fonts.TITLE_FONT);
 
         FlatButton loginButton = new FlatButton();
-        loginButton.setText(InterfaceLoginMessages.LOGIN_BUTTON_TEXT);
+        loginButton.setText(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
+        loginButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
 
         FlatButton signInButton = new FlatButton();
-        signInButton.setText(InterfaceLoginMessages.SIGN_IN_BUTTON_TEXT);
-        signInButton.addActionListener(ActionListener->{fromLoginMenuToSignInMenu();});
+        signInButton.setText(LoginInterfaceResources.SIGN_UP_BUTTON_TEXT);
+        signInButton.addActionListener((ActionListener)-> fromLoginMenuToSignInMenu());
+        signInButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
         FlatButton createAccountButton = new FlatButton();
-        createAccountButton.setText("CREATE ACCOUNT");
+        createAccountButton.setText(LoginInterfaceResources.CREATE_ACCOUNT_BUTTON_TEXT);
+        createAccountButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
         FlatButton comeBackToLoginButton = new FlatButton();
-        comeBackToLoginButton.setText("LOGIN");
-        comeBackToLoginButton.addActionListener((ActionListener) ->{fromSignInMenuToLoginMenu();});
+        comeBackToLoginButton.setText(LoginInterfaceResources.GO_TO_LOGIN_PAGE_BUTTON_TEXT);
+        comeBackToLoginButton.addActionListener((ActionListener) -> fromSignInMenuToLoginMenu());
+        comeBackToLoginButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
 
-        PlaceHolderTextField idArea = new PlaceHolderTextField(InterfaceLoginMessages.ID_TEXT_AREA);
-        idArea.setText(InterfaceLoginMessages.ID_TEXT_AREA);
+        EmailField emailArea = new EmailField();
+        emailArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
+
+        PasswordField passwordArea = new PasswordField();
+        passwordArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
 
-        PlaceHolderTextField passwordArea = new PlaceHolderTextField(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
-        passwordArea.setText(InterfaceLoginMessages.PASSWORD_TEXT_AREA);
-
-
-        loginAndSignInButtonContainer.add(loginButton);
-        loginAndSignInButtonContainer.add(signInButton);
+        loginAndSignUpButtonContainer.add(loginButton);
+        loginAndSignUpButtonContainer.add(signInButton);
 
         createAccountAndComeBackToLoginContainer.add(comeBackToLoginButton);
         createAccountAndComeBackToLoginContainer.add(createAccountButton);
@@ -84,12 +80,12 @@ public class LoginView extends Form {
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(titleLabel);
         loginComponentContainer.add(Box.createHorizontalGlue());
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/8));
-        loginComponentContainer.add(idArea);
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/7));
+        loginComponentContainer.add(emailArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
         loginComponentContainer.add(passwordArea);
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/8));
-        loginComponentContainer.add(loginAndSignInButtonContainer);
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/7));
+        loginComponentContainer.add(loginAndSignUpButtonContainer);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
 
         this.setLayout(new GridBagLayout());
@@ -101,7 +97,7 @@ public class LoginView extends Form {
     }
     public void fromLoginMenuToSignInMenu(){
         titleLabel.setText("SIGN IN");
-        loginComponentContainer.remove(loginAndSignInButtonContainer);
+        loginComponentContainer.remove(loginAndSignUpButtonContainer);
         loginComponentContainer.add(createAccountAndComeBackToLoginContainer);
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
@@ -110,7 +106,7 @@ public class LoginView extends Form {
     public void fromSignInMenuToLoginMenu(){
         titleLabel.setText("LOGIN");
         loginComponentContainer.remove(createAccountAndComeBackToLoginContainer);
-        loginComponentContainer.add(loginAndSignInButtonContainer);
+        loginComponentContainer.add(loginAndSignUpButtonContainer);
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
     }
