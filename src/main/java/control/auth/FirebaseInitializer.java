@@ -22,14 +22,6 @@ public class FirebaseInitializer {
 
             FirebaseApp.initializeApp(options);
 
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-
-            UserRecord.CreateRequest request = new UserRecord.CreateRequest()
-                    .setEmail("lynaispretty@gmail.com")
-                    .setPassword("Lyna2024");
-
-            UserRecord userRecord = auth.createUser(request);
-
         } catch (Exception e) {
             // TODO : Arthur should handle this in GUI
             e.printStackTrace();
