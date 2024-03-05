@@ -10,6 +10,10 @@ import tools.Point;
 import view.game.GameNotifications;
 import view.game.GameView;
 
+/**
+ * @author Amayas HADDAG
+ * @version 1.0
+ */
 public class GameController {
     private final Board board;
     private final GameView gameView;
@@ -28,25 +32,6 @@ public class GameController {
         this.playerTurnIndex = 0;
         initPlayersDecks();
         this.gameView = new GameView(this, currentPlayer);
-    }
-
-    // TODO : Javadoc
-    public synchronized void handleCellPlacing(Point cellPosition, Player player) {
-        placeCell(cellPosition, player);
-        buyStocks(player);
-
-        Cell currentCell = board.getCell(cellPosition);
-        if (currentCell.isOwned()) {
-            Corporation placedCorporation = board.getCell(cellPosition).getCorporation();
-            adjustRelatedNet(placedCorporation, true);
-        }
-
-        board.updateDeadCells();
-        board.updatePlayerDeck(player);
-        playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
-
-        Player nextPlayer = currentPlayers.get(playerTurnIndex);
-        gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
     }
 
     public GameView getGameView() {
@@ -76,7 +61,7 @@ public class GameController {
     /**
      * This function is used at the beginning of the game (where it is already
      * supposed that there is enough board cells for everyone) to initialize players
-     * decks
+     * decks.
      */
     public void initPlayersDecks() {
         for (Player player : currentPlayers) {
@@ -90,33 +75,22 @@ public class GameController {
         }
     }
 
-
-    public void buyStocks(Player player) {
+    private void buyStocks(Player player) {
         // TODO : Implement this function
     }
 
-
-    // TODO : Javadoc
-    public void sellStocks(Player player, Corporation corporation, int amount) {
-        if (!player.hasEnoughStocks(corporation, amount)) {
-            gameView.showErrorNotification(GameNotifications.NOT_ENOUGH_STOCKS_PLAYER);
-            return;
-        }
-
-        int unityStockPrice = board.getStockPrice(corporation);
-        int amountToEarn = unityStockPrice * amount;
-
-        board.addToRemainingStocks(corporation, amountToEarn);
-        player.removeFromEarnedStocks(corporation, amountToEarn);
-        player.addToCash(amountToEarn);
-        gameView.showSuccessNotification(GameNotifications.soldStocksNotification(amount, corporation, amountToEarn));
+    private void sellStocks(Player player) {
+        // TODO : Implement this function
     }
 
-
-    // TODO : Javadoc
-    private List<Point> filterMaximalSizeCorporations(Set<Point> adjacentOwnedCells) {
+    /**
+     * This function is used in merging corporations process, it filters all the
+     * maximal sizes of corporations.
+     * @param adjacentOwnedCells The owned cells that we should filter corporations for
+     */
+    private Set<Corporation> filterMaximalSizeCorporations(Set<Point> adjacentOwnedCells) {
         int maxCorporationSize = 0;
-        List<Point> maxCorporations = new LinkedList<>();
+        Set<Corporation> maxCorporations = new HashSet<>();
 
         for (Point p : adjacentOwnedCells) {
             Cell cell = board.getCell(p);
@@ -134,7 +108,7 @@ public class GameController {
             int corporationSize = board.getCorporationSize(corporation);
 
             if (corporationSize == maxCorporationSize) {
-                maxCorporations.add(p);
+                maxCorporations.add(corporation);
             }
         }
 
@@ -155,7 +129,7 @@ public class GameController {
      * @see #placeCell(Point, Player)
      */
     public void mergeCorporations(Set<Point> cellsToMerge, Point cellPosition, Player player) {
-        List<Point> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
+        Set<Corporation> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
         Set<Corporation> adjacentCorporations = board.adjacentCorporations(cellPosition);
 
         Point chosenCellPosition;
@@ -163,24 +137,16 @@ public class GameController {
         Corporation chosenCellCorporation;
 
         if (maxCorporations.size() == 1) {
-            chosenCellPosition = maxCorporations.get(0);
+            Iterator<Corporation> iterator = maxCorporations.iterator();
+            chosenCellCorporation = iterator.next();
         } else {
-            // TODO : call the game view to request player to choose one major holder
-
-            /* Temporary initialization */
-            // TODO : Should pass maxCorporations as a parameter to gameView
-            chosenCellPosition = maxCorporations.get(0);
+            chosenCellCorporation = gameView.getCorporationChoice(maxCorporations.stream().toList());
         }
-
-        chosenCell = board.getCell(chosenCellPosition);
-        chosenCellCorporation = chosenCell.getCorporation();
 
         board.replaceCellCorporation(currentCell, chosenCellCorporation);
         for (Point adj : cellsToMerge) {
-            if (!adj.equals(chosenCellPosition)) {
-                Cell adjacentCell = board.getCell(adj);
-                Corporation adjacentCorporation = adjacentCell.getCorporation();
-
+            Cell adjacentCell = board.getCell(adj);
+            if (!adjacentCell.isOwned() || !(adjacentCell.getCorporation() == chosenCellCorporation)) {
                 board.replaceCorporationFrom(chosenCellCorporation, adj);
             }
         }
@@ -195,7 +161,13 @@ public class GameController {
         }
     }
 
-    // TODO : Javadoc
+    /**
+     * This function handles cell placing in board according to a given position for a given player.
+     * It handles also the choice of the founding corporation.
+     * If it is possible, it also handles the major holder while merging corporations.
+     * @param cellPosition represents where to place a new cell.
+     * @param currentPlayer represents the player that is about to place the cell.
+     */
     public void placeCell(Point cellPosition, Player currentPlayer) {
         Cell currentCell = board.getCell(cellPosition.getX(), cellPosition.getY());
         Corporation placedCorporation;
@@ -223,10 +195,6 @@ public class GameController {
             currentPlayer.addToEarnedStocks(placedCorporation, FOUNDING_STOCK_BONUS);
 
             board.replaceCellCorporation(currentCell, placedCorporation);
-            for (Point adjacent : adjacentOccupiedCells) {
-                Cell adjacentOccupiedCell = board.getCell(adjacent);
-                board.replaceCellCorporation(adjacentOccupiedCell, placedCorporation);
-            }
 
             gameView.showInfoNotification(
                     GameNotifications.corporationFoundingNotification(
@@ -237,14 +205,12 @@ public class GameController {
         } else {
             mergeCorporations(adjacentOwnedCells, cellPosition, currentPlayer);
             placedCorporation = currentCell.getCorporation();
-
-            for (Point adj : adjacentOccupiedCells) {
-                Cell adjacentOccupiedCell = board.getCell(adj);
-                board.replaceCellCorporation(adjacentOccupiedCell, placedCorporation);
-            }
         }
 
-        adjustRelatedNet(placedCorporation, false);
+        for (Point adj : adjacentOccupiedCells) {
+            Cell adjacentOccupiedCell = board.getCell(adj);
+            board.replaceCellCorporation(adjacentOccupiedCell, placedCorporation);
+        }
     }
 
     /**
@@ -276,7 +242,7 @@ public class GameController {
         List<Player> majorOwners = new LinkedList<>();
 
         int maxStocksOwnedByPlayer = -1;
-        for (Player p : currentPlayers) {
+        for (Player p : owners) {
             int currentNumberOfStocks = p.getStocks(c);
             
             if (maxStocksOwnedByPlayer < currentNumberOfStocks) {
@@ -284,7 +250,7 @@ public class GameController {
             }
         }
         
-        for (Player p : currentPlayers) {
+        for (Player p : owners) {
             int currentNumberOfStocks = p.getStocks(c);
             
             if (currentNumberOfStocks == maxStocksOwnedByPlayer) {
@@ -295,7 +261,9 @@ public class GameController {
         return majorOwners;
     }
 
-    // TODO : Javadoc
+    /**
+     * @return Net value of the owned shares of a corporation for a given player
+     */
     private int getBonusFreeNet(Player p, Corporation c) {
         int ownedStocks = p.getStocks(c);
         int unityStockPrice = board.getStockPrice(c);
@@ -303,54 +271,75 @@ public class GameController {
         return ownedStocks * unityStockPrice;
     }
 
-    // TODO : Javadoc
-    // TODO : Test this function
-    private void adjustRelatedNet(Corporation c, boolean addNet) {
-        List<Player> allOwners = getOwners(c);
-        List<Player> majorOwners = getMajorOwners(allOwners, c);
-        List<Player> minorOwners = new LinkedList<>(allOwners);
-        minorOwners.removeAll(majorOwners);
+    /**
+     * This functions adjusts the net of all the players according to current board state.
+     */
+    private void adjustNets() {
+        for (Corporation c : Corporation.values()) {
+            List<Player> allOwners = getOwners(c);
+            List<Player> majorOwners = getMajorOwners(allOwners, c);
+            List<Player> minorOwners = new LinkedList<>(allOwners);
+            minorOwners.removeAll(majorOwners);
 
-        int numberOfMajorOwners = majorOwners.size();
-        int numberOfMinorOwners = minorOwners.size();
-        int personalMajoritySharehold;
-        if (numberOfMajorOwners != 0) {
-             personalMajoritySharehold = board.getMajoritySharehold(c) / numberOfMajorOwners;
-        } else {
-            personalMajoritySharehold = 0;
-        }
+            int numberOfMajorOwners = majorOwners.size();
+            int numberOfMinorOwners = minorOwners.size();
+            int personalMajoritySharehold;
 
-        int personalMinoritySharehold;
-        if (numberOfMinorOwners != 0) {
-             personalMinoritySharehold = board.getMinoritySharehold(c) / numberOfMinorOwners;
-        } else {
-            personalMinoritySharehold = 0;
-        }
-
-        for (Player p : allOwners) {
-            int bonusFreeNet = getBonusFreeNet(p, c);
-
-            if (addNet) {
-                p.addToNet(bonusFreeNet);
+            if (numberOfMajorOwners != 0) {
+                personalMajoritySharehold = board.getMajoritySharehold(c) / numberOfMajorOwners;
             } else {
-                p.removeFromNet(bonusFreeNet);
+                personalMajoritySharehold = 0;
             }
 
-            int sharehold;
-
-            if (majorOwners.contains(p)) {
-                sharehold = personalMajoritySharehold;
+            int personalMinoritySharehold;
+            if (numberOfMinorOwners != 0) {
+                personalMinoritySharehold = board.getMinoritySharehold(c) / numberOfMinorOwners;
             } else {
-                sharehold = personalMinoritySharehold;
+                personalMinoritySharehold = 0;
             }
 
-            if (addNet) {
+            for (Player p : allOwners) {
+                p.addToNet(getBonusFreeNet(p, c));
+
+                int sharehold;
+
+                if (majorOwners.contains(p)) {
+                    sharehold = personalMajoritySharehold;
+                } else {
+                    sharehold = personalMinoritySharehold;
+                }
+
                 p.addToNet(sharehold);
-            } else {
-                p.removeFromNet(sharehold);
             }
         }
     }
 
+    /**
+     * Resets the players net to the basic value in order to recalculate the new value of players net.
+     */
+    private void resetNets() {
+        for (Player p : currentPlayers) {
+            p.setNet(Player.INITIAL_CASH);
+        }
+    }
 
+    /**
+     * This function is the function that handles all the process of placing a cell in board.
+     * It adjusts all the associated parameters.
+     * @param cellPosition represents where to place a new cell.
+     * @param player represents the player that is about to place a new cell.
+     */
+    public synchronized void handleCellPlacing(Point cellPosition, Player player) {
+        resetNets();
+        placeCell(cellPosition, player);
+        buyStocks(player);
+        adjustNets();
+
+        board.updateDeadCells();
+        board.updatePlayerDeck(player);
+        playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
+
+        Player nextPlayer = currentPlayers.get(playerTurnIndex);
+        gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
+    }
 }

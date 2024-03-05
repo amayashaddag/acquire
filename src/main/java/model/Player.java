@@ -30,6 +30,7 @@ public class Player {
         this.earnedStocks = initEarnedStocks();
         this.deck = new Point[Board.DECK_SIZE];
         this.pseudo = pseudo;
+        this.playerType = playerType;
     }
 
     public HashMap<Corporation, Integer> initEarnedStocks() {
@@ -66,6 +67,10 @@ public class Player {
 
     public int getNet() {
         return net;
+    }
+
+    public void setNet(int net) {
+        this.net = net;
     }
 
     /**

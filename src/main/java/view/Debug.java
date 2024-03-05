@@ -31,14 +31,12 @@ public class Debug {
         l.add(Player.createHumanPlayer("caca5"));
         GameController c = new GameController(l, l.get(1));
         c.getGameView().setVisible(true);
+
         GameView g = c.getGameView();
         GameFrame frame = new GameFrame();
+
         g.setOn(frame);
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
-        ArrayList<Corporation> corpsList = new ArrayList<>();
-        corpsList.add(Corporation.CONTINENTAL);
-        corpsList.add(Corporation.TOWER);
-        g.getCorporationChoice(corpsList);
 
 
 //         JFrame g = new JFrame();
