@@ -138,7 +138,7 @@ public class GameView extends Form {
      * final buying.
      *
      * @param possibleBuyingStocks Represents all the possible stocks to buy by the player.
-     * @apiNote This function is called in {@link GameController#buyStocks(Player)} function to handle
+     * @apiNote This function is called in {@link GameController} function to handle
      * the buying process.
      */
     public void chooseStocksToBuy(Map<Corporation, Integer> possibleBuyingStocks) {
