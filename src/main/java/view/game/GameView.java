@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.*;
 
@@ -125,6 +126,24 @@ public class GameView extends Form {
 
         setEnabled(true);
         return monitor.get();
+    }
+
+    /**
+     * This function handles the buying stocks process which is divided into 3 steps :
+     * 1 - Displaying the possible choices for the player.
+     * 2 - From the chosen corporations to buy, calculate the total price to pay using
+     * {@link GameController#calculateStocksPrice(Map)} function.
+     * 3 - Test if player has enough cash.
+     * 4 - Call {@link GameController#buyChosenStocks(Map, int, Player)} function to handle the
+     * final buying.
+     *
+     * @param possibleBuyingStocks Represents all the possible stocks to buy by the player.
+     * @apiNote This function is called in {@link GameController#buyStocks(Player)} function to handle
+     * the buying process.
+     */
+    public void chooseStocksToBuy(Map<Corporation, Integer> possibleBuyingStocks) {
+        // TODO : Implement this function
+        return;
     }
 
     @Override

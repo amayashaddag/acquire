@@ -1,5 +1,6 @@
 package control;
 
+import java.text.spi.CollatorProvider;
 import java.util.*;
 
 import model.Board;
@@ -63,7 +64,7 @@ public class GameController {
      * supposed that there is enough board cells for everyone) to initialize players
      * decks.
      */
-    public void initPlayersDecks() {
+    private void initPlayersDecks() {
         for (Player player : currentPlayers) {
             Point[] deck = new Point[Board.DECK_SIZE];
             for (int i = 0; i < Board.DECK_SIZE; i++) {
@@ -76,7 +77,52 @@ public class GameController {
     }
 
     private void buyStocks(Player player) {
-        // TODO : Implement this function
+        // TODO : Add if statement for available stocks to buy
+        Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
+        gameView.chooseStocksToBuy(possibleBuyingStocks);
+    }
+
+    /**
+     * @param chosenStocksToBuy Combination of corporations and number of stocks the player wants to buy.
+     * @return Price of the chosen combination of corporations and number of stocks
+     * @apiNote This function should be used in {@link GameView} class to calculate the price of the
+     * combination of number of stocks and corporations the player wants to buy.
+     * Example : chosenStocksToBuy = {Tower = 2, American = 1}, in this case, the player chose to buy
+     * two stocks of Tower corporation and one of American one.
+     * The purpose of this function is to verify whether the player has enough cash to buy the wanted
+     * combination in order to display a notification that tells him to reconsider his choice because of
+     * lack of cash.
+     */
+    public int calculateStocksPrice(Map<Corporation, Integer> chosenStocksToBuy) {
+        int totalValueToBuy = 0;
+        for (Corporation c : chosenStocksToBuy.keySet()) {
+            int stockPrice = board.getStockPrice(c);
+            int amount = chosenStocksToBuy.get(c);
+
+            totalValueToBuy += stockPrice * amount;
+        }
+
+        return totalValueToBuy;
+    }
+
+    /**
+     * This function takes the final choice that the player wants to buy from remaining stocks
+     * and handles the buying process.
+     * It supposes that the player has enough stocks to buy the stocks in {@link GameView} class.
+     * @param chosenStocks Stocks that the player chose th buy.
+     * @param totalPrice Total price of the chosen stocks.
+     * @apiNote This function should be used in {@link GameView} class after making sure that
+     * the player has enough cash to buy the chosen stocks.
+     */
+    public void buyChosenStocks(Map<Corporation, Integer> chosenStocks, int totalPrice, Player player) {
+        player.removeFromCash(totalPrice);
+
+        for (Corporation c : chosenStocks.keySet()) {
+            int amount = chosenStocks.get(c);
+
+            player.addToEarnedStocks(c, amount);
+            board.removeFromRemainingStocks(c, amount);
+        }
     }
 
     private void sellStocks(Player player) {
