@@ -97,6 +97,13 @@ public class GameView extends Form {
         g2d.dispose();
     }
 
+    /**
+     * Ask the player to choice into a Corporations list
+     *
+     * @apiNote call this method will freeze the current thread, so do not call it in the EDT
+     * @param unplacedCorps
+     * @return the choice of the Player
+     */
     public Corporation getCorporationChoice(List<Corporation> unplacedCorps) {
         setEnabled(false);
         tools.Box<Corporation> monitor = new tools.Box<>(unplacedCorps.get(0));
