@@ -178,8 +178,7 @@ public class GameController {
         Set<Corporation> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
         Set<Corporation> adjacentCorporations = board.adjacentCorporations(cellPosition);
 
-        Point chosenCellPosition;
-        Cell chosenCell, currentCell = board.getCell(cellPosition);
+        Cell currentCell = board.getCell(cellPosition);
         Corporation chosenCellCorporation;
 
         if (maxCorporations.size() == 1) {
@@ -205,6 +204,9 @@ public class GameController {
                     )
             );
         }
+
+        adjacentCorporations.remove(chosenCellCorporation);
+        // gameView.chooseSellingKeepingOrTradingStocks(adjacentCorporations);
     }
 
     /**
@@ -387,5 +389,13 @@ public class GameController {
 
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
         gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
+    }
+
+    public void sellStocks(Map<Corporation, Integer> stocks) {
+        // TODO : To implement
+    }
+
+    public void tradeStocks(Map<Corporation, Integer> stocks) {
+        // TODO : To implement
     }
 }

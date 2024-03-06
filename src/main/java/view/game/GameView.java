@@ -5,7 +5,6 @@ import model.Corporation;
 import model.Player;
 import model.Board;
 import model.Cell;
-import view.Debug;
 import view.Form;
 import view.GameFrame;
 
@@ -13,11 +12,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.*;
 
@@ -143,7 +142,17 @@ public class GameView extends Form {
      */
     public void chooseStocksToBuy(Map<Corporation, Integer> possibleBuyingStocks) {
         // TODO : Implement this function
-        return;
+    }
+
+    /**
+     * This function displays an interface to the player to choose whether the given stocks
+     * in parameter will be held, sold or traded to bank.
+     *
+     * @apiNote This function, once it knows the corporations to sell/keep/trade, calls
+     * the 2 functions that will sell and trade stocks in {@link GameController}
+     */
+    public void chooseSellingKeepingOrTradingStocks(Map<Corporation, Integer> stocks) {
+        // TODO : Implement this function
     }
 
     @Override
