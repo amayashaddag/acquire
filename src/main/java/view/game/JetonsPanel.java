@@ -59,6 +59,14 @@ public class JetonsPanel extends JPanel {
             super.repaint();
         } catch (NullPointerException e) {
             // Don't worry it's normal. This arrives at the initialisation of JetonPanel.
+            new Thread(() -> {
+                try {
+                    Thread.sleep(100); // We wait a little time for the end of the initialisation of the game and we repaint
+                    repaint();
+                } catch (InterruptedException e2) {
+                    g.showError(e2, this::repaint);
+                }
+            }).start();
         }
     }
 
