@@ -55,8 +55,8 @@ public class JetonsPanel extends JPanel {
     @Override
     public void repaint() {
         try {
-            if (g.getController().getCurrentPlayer().equals(g.getPlayer()))
-                super.repaint();
+            super.setVisible(g.getController().getCurrentPlayer().equals(g.getPlayer()));
+            super.repaint();
         } catch (NullPointerException e) {
             // Don't worry it's normal. This arrives at the initialisation of JetonPanel.
         }

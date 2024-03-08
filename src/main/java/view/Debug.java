@@ -29,7 +29,7 @@ public class Debug {
         l.add(Player.createHumanPlayer("caca3"));
         l.add(Player.createHumanPlayer("caca4"));
         l.add(Player.createHumanPlayer("caca5"));
-        GameController c = new GameController(l, l.get(1));
+        GameController c = new GameController(l, l.get(3));
         c.getGameView().setVisible(true);
 
         GameView g = c.getGameView();

@@ -108,6 +108,7 @@ public class GameView extends Form {
      */
     public Corporation getCorporationChoice(List<Corporation> unplacedCorps) {
         setEnabled(false);
+        jetonsPanel.setVisible(false);
         tools.Box<Corporation> monitor = new tools.Box<>(unplacedCorps.get(0));
         ChoiceCorpPane c = new ChoiceCorpPane(unplacedCorps, monitor);
         add(c, BorderLayout.CENTER);
@@ -125,6 +126,7 @@ public class GameView extends Form {
             }
         }
 
+        jetonsPanel.setVisible(true);
         setEnabled(true);
         return monitor.get();
     }
@@ -138,9 +140,8 @@ public class GameView extends Form {
      * 4 - Call {@link GameController#buyChosenStocks(Map, int, Player)} function to handle the
      * final buying.
      *
-     * @param possibleBuyingStocks Represents all the possible stocks to buy by the player.
-     * @apiNote This function is called in {@link GameController} function to handle
-     * the buying process.
+     * @param possibleBuyingStocks represents all the possible stocks to buy by the player.
+     * @apiNote call this method will freeze the current thread, so do not call it in the EDT
      */
     public void chooseStocksToBuy(Map<Corporation, Integer> possibleBuyingStocks) {
         // TODO : Implement this function
@@ -163,6 +164,17 @@ public class GameView extends Form {
         mouseListener.setEnabled(enabled);
         playerBoard.setEnabled(enabled);
         jetonsPanel.setEnabled(enabled);
+    }
+
+    @Override
+    public void repaint() {
+        super.repaint();
+
+        if (playerBoard != null)
+            playerBoard.repaint();
+
+        if (jetonsPanel != null)
+            jetonsPanel.repaint();
     }
 
     /**
