@@ -1,5 +1,14 @@
 package view;
 
+import com.raven.event.EventItem;
+import com.raven.model.ModelItem;
+import com.raven.swing.Background;
+import com.raven.swing.MainPanel;
+import com.raven.swing.win_button.WinButton;
+import org.jdesktop.animation.timing.TimingTargetAdapter;
+import org.jdesktop.animation.timing.interpolation.PropertySetter;
+import com.raven.form.FormHome;
+
 import javaswingdev.pggb.PanelGlowingGradient;
 import model.Corporation;
 import net.miginfocom.swing.MigLayout;
@@ -8,6 +17,7 @@ import view.game.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import com.formdev.flatlaf.FlatDarculaLaf;
@@ -18,111 +28,174 @@ import model.Player;
 import javax.swing.*;
 import javax.swing.plaf.LayerUI;
 
-public class Debug {
+public class Debug extends JFrame {
 
     public static void main(String[] args) {
-        FlatDarculaLaf.setup();
+        //FlatDarculaLaf.setup();
 
-        ArrayList<Player> l = new ArrayList<>();
-        l.add(Player.createHumanPlayer("caca1"));
-        l.add(Player.createHumanPlayer("caca2"));
-        l.add(Player.createHumanPlayer("caca3"));
-        l.add(Player.createHumanPlayer("caca4"));
-        l.add(Player.createHumanPlayer("caca5"));
-        GameController c = new GameController(l, l.get(3));
-        c.getGameView().setVisible(true);
-
-        GameView g = c.getGameView();
-        GameFrame frame = new GameFrame();
-
-        g.setOn(frame);
-        SwingUtilities.invokeLater(() -> frame.setVisible(true));
-
-
-//         JFrame g = new JFrame();
-//         g.setTitle("Acquire");
-//         g.setSize(1000, 600);
-//         g.setLocationRelativeTo(null);
-//         g.setDefaultCloseOperation(3);
+//        ArrayList<Player> l = new ArrayList<>();
+//        l.add(Player.createHumanPlayer("caca1"));
+//        l.add(Player.createHumanPlayer("caca2"));
+//        l.add(Player.createHumanPlayer("caca3"));
+//        l.add(Player.createHumanPlayer("caca4"));
+//        l.add(Player.createHumanPlayer("caca5"));
+//        GameController c = new GameController(l, l.get(3));
+//        c.getGameView().setVisible(true);
 //
-//         ArrayList<Corporation> l = new ArrayList<>();
-//         l.add(Corporation.CONTINENTAL);
-//         l.add(Corporation.TOWER);
-//         tools.Box<Corporation> monitor = new tools.Box<>(Corporation.AMERICAN);
-//         ChoiceCorpPane c = new ChoiceCorpPane(l, monitor);
-//         g.add(c);
+//        GameView g = c.getGameView();
+//        GameFrame frame = new GameFrame();
 //
-//         g.repaint();
-//
-//         SwingUtilities.invokeLater(() -> g.setVisible(true));
-//
-//         synchronized (monitor) {
-//             try {
-//                 monitor.wait();
-//             } catch (InterruptedException e) {
-//                 e.printStackTrace();
-//             }
-//         }
-//         System.out.println("finn");
-//         System.out.println(monitor.get().toString());
-    }
+//        g.setOn(frame);
+//        SwingUtilities.invokeLater(() -> frame.setVisible(true));
 
-    public void test(GameView g, List<Corporation> corpsList) {
-        System.out.println("Le choix est : " + g.getCorporationChoice(corpsList));
-    }
-
-    public static class Box<T> {
-        public Box(T t) {
-            this.t = t;
-        }
-
-        private T t;
-
-        public void set(T t) {
-            this.t = t;
-        }
-
-        public T get() {
-            return t;
-        }
-    }
-
-    public static class Caca extends JDialog {
-        private final Box<Corporation> corp;
-        private final JPanel contentPanel;
-        public Caca(JFrame parent, List<Corporation> corps, Box<Corporation> corp) {
-            super(parent, false);
-            this.corp = corp;
-            this.contentPanel = new JPanel();
-
-            setContentPane(contentPanel);
-
-            setUndecorated(true);
-            setSize(300, 100);
-            setLocationRelativeTo(parent);
-
-            contentPanel.setLayout(new MigLayout("al center, filly", "10[]10"));
-            contentPanel.setOpaque(true);
-
-            for (Corporation c : corps) {
-                JButton jb = new JButton() {
-                    @Override
-                    public void paint(Graphics g) {
-                        super.paint(g);
-                        g.setColor(Color.RED);
-                        g.fillRect(0,0,30,30);
-                    }
-                };
-                jb.addActionListener(e -> {
-                    System.out.println("deadza");
-                    corp.set(c);
-                    System.out.println(corp.get());
-                    dispose();
-                });
-                contentPanel.add(jb);
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Debug().setVisible(true);
             }
+        });
 
-            setVisible(true);
+    }
+
+    private FormHome home;
+    private Point animatePoint;
+    private ModelItem itemSelected;
+
+    private MainPanel mainPanel;
+    private WinButton winButton;
+    private Background background1;
+    private JPanel header;
+
+    Debug() {
+        initComponents();
+        setBackground(new Color(0, 0, 0, 0));
+        home = new FormHome();
+        winButton.initEvent(this, background1);
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(home);
+        testData();
+
+    }
+
+    private Point getLocationOf(Component com) {
+        Point p = home.getPanelItemLocation();
+        int x = p.x;
+        int y = p.y;
+        int itemX = com.getX();
+        int itemY = com.getY();
+        int left = 10;
+        int top = 35;
+        return new Point(x + itemX + left, y + itemY + top);
+    }
+
+    private void testData() {
+        home.setEvent(new EventItem() {
+            @Override
+            public void itemClick(Component com, ModelItem item) {
+                if (itemSelected != null) {
+                    mainPanel.setImageOld(itemSelected.getImage());
+                }
+                if (itemSelected != item) {
+                        itemSelected = item;
+                        animatePoint = getLocationOf(com);
+                        mainPanel.setImage(item.getImage());
+                        mainPanel.setImageLocation(animatePoint);
+                        mainPanel.setImageSize(new Dimension(180, 120));
+                        mainPanel.repaint();
+                        home.setSelected(com);
+                        home.showItem(item);
+                }
+            }
+        });
+        int ID = 1;
+        for (int i = 0; i <= 5; i++) {
+            int targetWidth = 100;
+            int targetHeight = 100;
+            BufferedImage resizedImage = new BufferedImage(
+                    targetWidth,
+                    targetHeight,
+                    BufferedImage.TYPE_INT_ARGB);
+            // Draw the original image onto the new BufferedImage, scaling it to the target dimensions
+            Graphics2D g = resizedImage.createGraphics();
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g.drawImage(Ressources.Assets.BLUE_TOWER_CELL, 0, 0, targetWidth, targetHeight, null);
+            g.dispose();
+            home.addItem(new ModelItem(ID++, "ItemName", "Descrption", 160, "Adidas", new ImageIcon(resizedImage)));
         }
+    }
+
+    private void initComponents() {
+
+        background1 = new com.raven.swing.Background();
+        header = new javax.swing.JPanel();
+        winButton = new com.raven.swing.win_button.WinButton();
+        mainPanel = new com.raven.swing.MainPanel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
+        header.setOpaque(false);
+
+        javax.swing.GroupLayout headerLayout = new javax.swing.GroupLayout(header);
+        header.setLayout(headerLayout);
+        headerLayout.setHorizontalGroup(
+                headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, headerLayout.createSequentialGroup()
+                                .addContainerGap(1101, Short.MAX_VALUE)
+                                .addComponent(winButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, 0))
+        );
+        headerLayout.setVerticalGroup(
+                headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(headerLayout.createSequentialGroup()
+                                .addGap(0, 0, 0)
+                                .addComponent(winButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(82, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+        mainPanelLayout.setHorizontalGroup(
+                mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
+        );
+        mainPanelLayout.setVerticalGroup(
+                mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 517, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout background1Layout = new javax.swing.GroupLayout(background1);
+        background1.setLayout(background1Layout);
+        background1Layout.setHorizontalGroup(
+                background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(background1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(header, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap())
+        );
+        background1Layout.setVerticalGroup(
+                background1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(background1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(header, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(background1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(background1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        pack();
+        setLocationRelativeTo(null);
     }
 }
