@@ -5,6 +5,7 @@ import model.Corporation;
 import model.Player;
 import model.Board;
 import model.Cell;
+import tools.Point;
 import view.Form;
 import view.GameFrame;
 
@@ -98,10 +99,11 @@ public class GameView extends Form {
     }
 
     /**
-     * Ask the player to choice into a Corporations list
+     * Ask the player to choice into a Corporations list and return his choice.
+     * Use in {@link GameController#handleCellPlacing(Point, Player)}.
      *
      * @apiNote call this method will freeze the current thread, so do not call it in the EDT
-     * @param unplacedCorps
+     * @param unplacedCorps list of possible choice
      * @return the choice of the Player
      */
     public Corporation getCorporationChoice(List<Corporation> unplacedCorps) {
