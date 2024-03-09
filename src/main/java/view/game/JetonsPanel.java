@@ -52,6 +52,8 @@ public class JetonsPanel extends JPanel {
 
     @Override
     public void repaint() {
+        if (!isVisible()) return;
+
         try {
             super.setVisible(g.getController().getCurrentPlayer().equals(g.getPlayer()));
             super.repaint();
@@ -60,7 +62,7 @@ public class JetonsPanel extends JPanel {
             new Thread(() -> {
                 try {
                     Thread.sleep(100); // We wait a little time for the end of the initialisation of the game and we repaint
-                    repaint();
+                    SwingUtilities.invokeLater(this::repaint);
                 } catch (InterruptedException e2) {
                     g.showError(e2, this::repaint);
                 }

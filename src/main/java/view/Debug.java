@@ -40,7 +40,7 @@ public class Debug extends JFrame {
         l.add(Player.createHumanPlayer("caca3"));
         l.add(Player.createHumanPlayer("caca4"));
         l.add(Player.createHumanPlayer("caca5"));
-        GameController c = new GameController(l, l.get(1));
+        GameController c = new GameController(l, l.get(0));
         c.getGameView().setVisible(true);
 
         GameView g = c.getGameView();
@@ -49,12 +49,16 @@ public class Debug extends JFrame {
         g.setOn(frame);
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
 
-        //c.handleCellPlacing(new tools.Point(0,0), l.get(0));
-
+//        c.handleCellPlacing(new tools.Point(0,0), l.get(0));
         HashMap<Corporation, Integer> map = new HashMap<>();
         map.put(Corporation.CONTINENTAL, 1);
         map.put(Corporation.WORLDWIDE, 2);
+
+        g.getCorporationChoice(new ArrayList<>(map.keySet()));
+        System.out.println("finif 1");
+
         g.chooseSellingKeepingOrTradingStocks(map);
+        System.out.println("finif 2");
 
 
 //        java.awt.EventQueue.invokeLater(new Runnable() {

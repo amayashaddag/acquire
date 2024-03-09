@@ -106,7 +106,7 @@ public class GameView extends Form {
     public Corporation getCorporationChoice(List<Corporation> unplacedCorps) {
         setEnabled(false);
         jetonsPanel.setVisible(false);
-        tools.Box<Corporation> monitor = new tools.Box<>(unplacedCorps.get(0));
+        tools.Box<Corporation> monitor = new tools.Box<>(null);
         ChoiceCorpPane c = new ChoiceCorpPane(unplacedCorps, monitor);
         add(c, BorderLayout.CENTER);
 
@@ -154,6 +154,7 @@ public class GameView extends Form {
     public void chooseSellingKeepingOrTradingStocks(Map<Corporation, Integer> stocks) {
         setEnabled(false);
         jetonsPanel.setVisible(false);
+
         Object monitor = new Object();
 
         class Pane extends JPanel {
@@ -216,8 +217,13 @@ public class GameView extends Form {
         }
 
         JButton confirmBtn = new JButton("confirm");
+        confirmBtn.addActionListener((e) -> {
+            synchronized (monitor) {
+                monitor.notify();
+            }
+        });
 
-        jp.add(confirmBtn, "w 30, h 20, dock south, al center, gapbottom 30");
+        jp.add(confirmBtn, "dock south, al center, gapbottom 30");
         add(jp, BorderLayout.CENTER);
 
         SwingUtilities.invokeLater(() -> {
@@ -251,10 +257,10 @@ public class GameView extends Form {
     public void repaint() {
         super.repaint();
 
-        if (playerBoard != null)
+        if (playerBoard != null && playerBoard.isVisible())
             playerBoard.repaint();
 
-        if (jetonsPanel != null)
+        if (jetonsPanel != null && jetonsPanel.isVisible())
             jetonsPanel.repaint();
     }
 
