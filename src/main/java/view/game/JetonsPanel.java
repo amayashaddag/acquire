@@ -61,8 +61,9 @@ public class JetonsPanel extends JPanel {
             // Don't worry it's normal. This arrives at the initialisation of JetonPanel.
             new Thread(() -> {
                 try {
-                    Thread.sleep(100); // We wait a little time for the end of the initialisation of the game and we repaint
-                    SwingUtilities.invokeLater(this::repaint);
+                    Thread.sleep(10); // We wait a little time for the end of the initialisation of the game and we repaint
+                    if (isVisible())
+                        SwingUtilities.invokeLater(this::repaint);
                 } catch (InterruptedException e2) {
                     g.showError(e2, this::repaint);
                 }

@@ -15,6 +15,7 @@ import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.*;
@@ -158,10 +159,14 @@ public class GameView extends Form {
         Object monitor = new Object();
 
         class Pane extends JPanel {
+            final Map.Entry<Corporation, Integer> entry;
             SKT choice;
+
             Pane(Map.Entry<Corporation, Integer> entry) {
                 super();
                 choice = SKT.KEEP;
+                this.entry = entry;
+
                 setOpaque(false);
                 setLayout(new MigLayout("al center, filly, ins 0, wrap 1"));
 
@@ -201,6 +206,14 @@ public class GameView extends Form {
                 add(jlChoice, "w 30%, h 5%, align center");
             }
 
+            public Map.Entry<Corporation, Integer> getEntry() {
+                return entry;
+            }
+
+            public SKT getChoice() {
+                return choice;
+            }
+
             enum SKT {
                 SELL,
                 KEEP,
@@ -238,6 +251,21 @@ public class GameView extends Form {
                 showError(e, () -> System.exit(1));
             }
         }
+
+        Map<Corporation, Integer> toSell = new HashMap<>();
+        Map<Corporation, Integer> toTrade = new HashMap<>();
+
+        for (Component comp : jp.getComponents())
+            if (comp instanceof Pane) {
+                Map.Entry<Corporation, Integer> entry = ((Pane) comp).getEntry();
+                switch (((Pane) comp).getChoice()) {
+                    case SELL -> toSell.put(entry.getKey(), entry.getValue());
+                    case TRADE -> toTrade.put(entry.getKey(), entry.getValue());
+                }
+            }
+
+        controller.sellStocks(toSell);
+        controller.tradeStocks(toTrade);
 
         remove(jp);
         jetonsPanel.setVisible(true);
