@@ -236,8 +236,11 @@ public class GameView extends Form {
     public void showError(Exception e, Runnable task) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
+        pw.println(e.getMessage());
         e.printStackTrace(pw);
         JOptionPane.showMessageDialog(this, sw.toString(), "Error", JOptionPane.ERROR_MESSAGE);
         task.run();
     }
+
+    public void showError(Exception e) {showError(e, ()->{});}
 }

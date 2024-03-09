@@ -378,6 +378,11 @@ public class GameController {
      * @param player represents the player that is about to place a new cell.
      */
     public synchronized void handleCellPlacing(Point cellPosition, Player player) {
+        if (!player.equals(getCurrentPlayer())) {
+            gameView.showError(new IllegalArgumentException("It's not your turn!"));
+            return;
+        }
+
         resetNets();
         placeCell(cellPosition, player);
         buyStocks(player);
@@ -389,8 +394,8 @@ public class GameController {
 
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
         gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
-        gameView.repaint();
         // FIXME : si c'est le joueur courant qui place une case cela devrait marquer "your cell have been placed" pas "pseudo place a cell"
+        gameView.repaint();
     }
 
     public void sellStocks(Map<Corporation, Integer> stocks) {
