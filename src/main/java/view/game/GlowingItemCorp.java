@@ -6,6 +6,12 @@ import model.Corporation;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * A pane which show a Tower.
+ *
+ * @author Arthur Deck
+ * @version 1
+ */
 public class GlowingItemCorp extends PanelGlowingGradient {
     private final Corporation corp;
     private final Image img;

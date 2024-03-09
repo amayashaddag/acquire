@@ -1,7 +1,6 @@
 package view.game;
 
 import control.GameController;
-import javaswingdev.pggb.PanelGlowingGradient;
 import model.Corporation;
 import model.Player;
 import model.Board;
@@ -10,17 +9,15 @@ import net.miginfocom.swing.MigLayout;
 import tools.Point;
 import view.Form;
 import view.GameFrame;
-
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.swing.*;
-
 import raven.toast.Notifications;
 
 /**
@@ -155,9 +152,12 @@ public class GameView extends Form {
      * the 2 functions that will sell and trade stocks in {@link GameController}
      */
     public void chooseSellingKeepingOrTradingStocks(Map<Corporation, Integer> stocks) {
+        setEnabled(false);
+        jetonsPanel.setVisible(false);
+        Object monitor = new Object();
+
         class Pane extends JPanel {
             SKT choice;
-
             Pane(Map.Entry<Corporation, Integer> entry) {
                 super();
                 choice = SKT.KEEP;
@@ -179,6 +179,23 @@ public class GameView extends Form {
                 jlChoice.setFont(jlChoice.getFont().deriveFont(Font.BOLD));
                 jlChoice.setForeground(gli.getColor().brighter());
 
+                gli.addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent mouseEvent) {
+                        choice = switch (choice) {
+                            case SELL -> SKT.KEEP;
+                            case KEEP -> SKT.TRADE;
+                            case TRADE -> SKT.SELL;
+                        };
+                        jlChoice.setText(choice.toString());
+                        jlChoice.repaint();
+                    }
+                    public void mousePressed(MouseEvent mouseEvent) {}
+                    public void mouseReleased(MouseEvent mouseEvent) {}
+                    public void mouseEntered(MouseEvent mouseEvent) {}
+                    public void mouseExited(MouseEvent mouseEvent) {}
+                });
+
                 add(gli, "w 100%, h 100%");
                 add(jlChoice, "w 30%, h 5%, align center");
             }
@@ -188,14 +205,7 @@ public class GameView extends Form {
                 KEEP,
                 TRADE
             }
-
-            public SKT getChoice() {
-                return choice;
-            }
         }
-
-        setEnabled(false);
-        jetonsPanel.setVisible(false);
 
         JPanel jp = new JPanel();
         jp.setOpaque(false);
@@ -207,17 +217,20 @@ public class GameView extends Form {
 
         JButton confirmBtn = new JButton("confirm");
 
-//        JPanel btnPanel = new JPanel();
-//        btnPanel.setLayout(new MigLayout("al center, filly"));
-//        btnPanel.add(confirmBtn);
-
+        jp.add(confirmBtn, "w 30, h 20, dock south, al center, gapbottom 30");
         add(jp, BorderLayout.CENTER);
 
-        try {
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
             repaint();
-            Thread.sleep(30000);
-        } catch (Exception e) {
+        });
 
+        synchronized (monitor) {
+            try {
+                monitor.wait();
+            } catch (InterruptedException e) {
+                showError(e, () -> System.exit(1));
+            }
         }
 
         remove(jp);

@@ -5,7 +5,6 @@ import model.Player;
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.Map;
 
 import net.miginfocom.swing.MigLayout;
 import tools.AutoSetter;

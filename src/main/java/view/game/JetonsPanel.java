@@ -4,11 +4,9 @@ import tools.AutoSetter;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import java.awt.event.MouseEvent;
-import java.util.Map;
 
 import javax.swing.*;
 

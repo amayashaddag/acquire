@@ -1,6 +1,5 @@
 package view.game;
 
-import javaswingdev.pggb.PanelGlowingGradient;
 import model.Corporation;
 import net.miginfocom.swing.MigLayout;
 
@@ -8,10 +7,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 /**
+ * A panel used for ask what corporation the player want.
+ *
  * @see GameView#getCorporationChoice(List)
  * @author Arthur Deck
  * @version 1

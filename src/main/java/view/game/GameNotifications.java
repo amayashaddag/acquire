@@ -1,7 +1,6 @@
 package view.game;
 
 import model.Corporation;
-import tools.Point;
 
 public class GameNotifications {
     /* Error notifications */
