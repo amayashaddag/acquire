@@ -19,6 +19,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
@@ -31,28 +32,36 @@ import javax.swing.plaf.LayerUI;
 public class Debug extends JFrame {
 
     public static void main(String[] args) {
-        //FlatDarculaLaf.setup();
+        FlatDarculaLaf.setup();
 
-//        ArrayList<Player> l = new ArrayList<>();
-//        l.add(Player.createHumanPlayer("caca1"));
-//        l.add(Player.createHumanPlayer("caca2"));
-//        l.add(Player.createHumanPlayer("caca3"));
-//        l.add(Player.createHumanPlayer("caca4"));
-//        l.add(Player.createHumanPlayer("caca5"));
-//        GameController c = new GameController(l, l.get(3));
-//        c.getGameView().setVisible(true);
-//
-//        GameView g = c.getGameView();
-//        GameFrame frame = new GameFrame();
-//
-//        g.setOn(frame);
-//        SwingUtilities.invokeLater(() -> frame.setVisible(true));
+        ArrayList<Player> l = new ArrayList<>();
+        l.add(Player.createHumanPlayer("caca1"));
+        l.add(Player.createHumanPlayer("caca2"));
+        l.add(Player.createHumanPlayer("caca3"));
+        l.add(Player.createHumanPlayer("caca4"));
+        l.add(Player.createHumanPlayer("caca5"));
+        GameController c = new GameController(l, l.get(1));
+        c.getGameView().setVisible(true);
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Debug().setVisible(true);
-            }
-        });
+        GameView g = c.getGameView();
+        GameFrame frame = new GameFrame();
+
+        g.setOn(frame);
+        SwingUtilities.invokeLater(() -> frame.setVisible(true));
+
+        c.handleCellPlacing(new tools.Point(0,0), l.get(0));
+
+        HashMap<Corporation, Integer> map = new HashMap<>();
+        map.put(Corporation.CONTINENTAL, 1);
+        map.put(Corporation.WORLDWIDE, 2);
+        //g.chooseSellingKeepingOrTradingStocks(map);
+
+
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new Debug().setVisible(true);
+//            }
+//        });
 
     }
 
@@ -91,19 +100,9 @@ public class Debug extends JFrame {
         home.setEvent(new EventItem() {
             @Override
             public void itemClick(Component com, ModelItem item) {
-                if (itemSelected != null) {
-                    mainPanel.setImageOld(itemSelected.getImage());
-                }
-                if (itemSelected != item) {
-                        itemSelected = item;
-                        animatePoint = getLocationOf(com);
-                        mainPanel.setImage(item.getImage());
-                        mainPanel.setImageLocation(animatePoint);
-                        mainPanel.setImageSize(new Dimension(180, 120));
-                        mainPanel.repaint();
-                        home.setSelected(com);
-                        home.showItem(item);
-                }
+                home.setSelected(com);
+                home.showItem(item);
+                System.out.println("Voici l'item "+ item.getItemName());
             }
         });
         int ID = 1;
@@ -114,7 +113,6 @@ public class Debug extends JFrame {
                     targetWidth,
                     targetHeight,
                     BufferedImage.TYPE_INT_ARGB);
-            // Draw the original image onto the new BufferedImage, scaling it to the target dimensions
             Graphics2D g = resizedImage.createGraphics();
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                     RenderingHints.VALUE_INTERPOLATION_BILINEAR);

@@ -2,9 +2,7 @@ package view.game;
 
 import javaswingdev.pggb.PanelGlowingGradient;
 import model.Corporation;
-import net.miginfocom.layout.Grid;
 import net.miginfocom.swing.MigLayout;
-import view.Debug;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,7 +25,7 @@ public class ChoiceCorpPane extends JComponent {
         setLayout(new MigLayout("al center, filly, ins 0, wrap 4"));
 
         for (Corporation corp : corps)
-            add(new GlowingItem(corp), "w 16%, h 33%");
+            add(new ChoiceGlowingItemCorp(corp), "w 16%, h 33%");
     }
 
     private void close() {
@@ -37,18 +35,13 @@ public class ChoiceCorpPane extends JComponent {
         parent.repaint();
     }
 
-    private class GlowingItem extends PanelGlowingGradient {
-        private final Corporation corp;
-        private final Image img;
-        public GlowingItem(Corporation corp) {
-            super();
-            this.corp = corp;
-            this.img = Ressources.Assets.getCorpImage(this.corp);
-
+    private class ChoiceGlowingItemCorp extends GlowingItemCorp {
+        public ChoiceGlowingItemCorp(Corporation corp) {
+            super(corp);
             addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent mouseEvent) {
-                    monitor.set(corp);
+                    monitor.set(getCorp());
                     synchronized (monitor) {
                         monitor.notify();
                     }
@@ -59,20 +52,6 @@ public class ChoiceCorpPane extends JComponent {
                 public void mouseEntered(MouseEvent mouseEvent) {}
                 public void mouseExited(MouseEvent mouseEvent) {}
             });
-
-            BufferedImage bfi = Ressources.imageToBufferedImage(img);
-            int color = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
-            setGradientColor1(new Color(color, true).darker());
-            setGradientColor2(new Color(color, true).brighter());
-            setBackground(new Color(color,true).darker());
-            setBackgroundLight(new Color(color,true).brighter());
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            int bordShadSize = getShadowSize() + getBorderSize() + 5; // 5 for spacing
-            g.drawImage(img, bordShadSize, bordShadSize,  getWidth() - 2*bordShadSize, getHeight() - 2*bordShadSize, null);
         }
     }
 }

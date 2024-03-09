@@ -1,18 +1,18 @@
 package view.game;
 
 import control.GameController;
+import javaswingdev.pggb.PanelGlowingGradient;
 import model.Corporation;
 import model.Player;
 import model.Board;
 import model.Cell;
+import net.miginfocom.swing.MigLayout;
 import tools.Point;
 import view.Form;
 import view.GameFrame;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.BorderLayout;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
@@ -155,7 +155,33 @@ public class GameView extends Form {
      * the 2 functions that will sell and trade stocks in {@link GameController}
      */
     public void chooseSellingKeepingOrTradingStocks(Map<Corporation, Integer> stocks) {
-        // TODO : Implement this function
+        setEnabled(false);
+        jetonsPanel.setVisible(false);
+
+        JPanel jp = new JPanel();
+        jp.setOpaque(false);
+        jp.setLayout(new MigLayout("al center, filly, ins 0, wrap 4"));
+
+        for (Map.Entry<Corporation, Integer> entry :stocks.entrySet()) {
+            JPanel jd = new JPanel(new MigLayout("al center, filly, ins 0, wrap 4"));
+            jd.setOpaque(false);
+            jd.add(new GlowingItemCorp(entry.getKey()), "w 100%, h 100%");
+            jp.add(jd, "w 15%, h 30%");
+        }
+
+        add(jp, BorderLayout.CENTER);
+
+        try {
+            repaint();
+            Thread.sleep(30000);
+        } catch (Exception e) {
+
+        }
+
+        remove(jp);
+        jetonsPanel.setVisible(true);
+        setEnabled(true);
+        repaint();
     }
 
     @Override

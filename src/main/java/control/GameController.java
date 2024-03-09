@@ -389,6 +389,8 @@ public class GameController {
 
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
         gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
+        gameView.repaint();
+        // FIXME : si c'est le joueur courant qui place une case cela devrait marquer "your cell have been placed" pas "pseudo place a cell"
     }
 
     public void sellStocks(Map<Corporation, Integer> stocks) {
