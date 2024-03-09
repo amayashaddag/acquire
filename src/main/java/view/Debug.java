@@ -49,12 +49,12 @@ public class Debug extends JFrame {
         g.setOn(frame);
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
 
-        c.handleCellPlacing(new tools.Point(0,0), l.get(0));
+        //c.handleCellPlacing(new tools.Point(0,0), l.get(0));
 
         HashMap<Corporation, Integer> map = new HashMap<>();
         map.put(Corporation.CONTINENTAL, 1);
         map.put(Corporation.WORLDWIDE, 2);
-        //g.chooseSellingKeepingOrTradingStocks(map);
+        g.chooseSellingKeepingOrTradingStocks(map);
 
 
 //        java.awt.EventQueue.invokeLater(new Runnable() {

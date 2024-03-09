@@ -155,19 +155,61 @@ public class GameView extends Form {
      * the 2 functions that will sell and trade stocks in {@link GameController}
      */
     public void chooseSellingKeepingOrTradingStocks(Map<Corporation, Integer> stocks) {
+        class Pane extends JPanel {
+            SKT choice;
+
+            Pane(Map.Entry<Corporation, Integer> entry) {
+                super();
+                choice = SKT.KEEP;
+                setOpaque(false);
+                setLayout(new MigLayout("al center, filly, ins 0, wrap 1"));
+
+                GlowingItemCorp gli = new GlowingItemCorp(entry.getKey()) {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        super.paintComponent(g);
+                        g.setFont(g.getFont().deriveFont(Font.BOLD));
+                        g.drawString(entry.getValue().toString(),
+                                getShadowSize() + getBorderSize() + 5,
+                                2*getShadowSize());
+                    }
+                };
+
+                JLabel jlChoice = new JLabel(choice.toString());
+                jlChoice.setFont(jlChoice.getFont().deriveFont(Font.BOLD));
+                jlChoice.setForeground(gli.getColor().brighter());
+
+                add(gli, "w 100%, h 100%");
+                add(jlChoice, "w 30%, h 5%, align center");
+            }
+
+            enum SKT {
+                SELL,
+                KEEP,
+                TRADE
+            }
+
+            public SKT getChoice() {
+                return choice;
+            }
+        }
+
         setEnabled(false);
         jetonsPanel.setVisible(false);
 
         JPanel jp = new JPanel();
         jp.setOpaque(false);
-        jp.setLayout(new MigLayout("al center, filly, ins 0, wrap 4"));
+        jp.setLayout(new MigLayout("al center, filly"));
 
         for (Map.Entry<Corporation, Integer> entry :stocks.entrySet()) {
-            JPanel jd = new JPanel(new MigLayout("al center, filly, ins 0, wrap 4"));
-            jd.setOpaque(false);
-            jd.add(new GlowingItemCorp(entry.getKey()), "w 100%, h 100%");
-            jp.add(jd, "w 15%, h 30%");
+            jp.add(new Pane(entry), "w 15%, h 30%");
         }
+
+        JButton confirmBtn = new JButton("confirm");
+
+//        JPanel btnPanel = new JPanel();
+//        btnPanel.setLayout(new MigLayout("al center, filly"));
+//        btnPanel.add(confirmBtn);
 
         add(jp, BorderLayout.CENTER);
 

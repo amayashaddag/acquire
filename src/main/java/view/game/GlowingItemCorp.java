@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 public class GlowingItemCorp extends PanelGlowingGradient {
     private final Corporation corp;
     private final Image img;
+    private final Color color;
     public GlowingItemCorp(Corporation corp) {
         super();
         this.corp = corp;
@@ -16,11 +17,13 @@ public class GlowingItemCorp extends PanelGlowingGradient {
 
 
         BufferedImage bfi = Ressources.imageToBufferedImage(img);
-        int color = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
-        setGradientColor1(new Color(color, true).darker());
-        setGradientColor2(new Color(color, true).brighter());
-        setBackground(new Color(color,true).darker());
-        setBackgroundLight(new Color(color,true).brighter());
+        int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
+        this.color = new Color(clr, true);
+
+        setGradientColor1(color.darker());
+        setGradientColor2(color.brighter());
+        setBackground(color.darker());
+        setBackgroundLight(color.brighter());
     }
 
     public Corporation getCorp() {
@@ -29,6 +32,10 @@ public class GlowingItemCorp extends PanelGlowingGradient {
 
     public Image getImg() {
         return img;
+    }
+
+    public Color getColor() {
+        return color;
     }
 
     @Override
