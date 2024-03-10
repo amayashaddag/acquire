@@ -111,6 +111,11 @@ public class PlayerBoard extends javax.swing.JPanel {
                                   $</td>
                                   </tr>
                                   <tr>
+                                     <td><b>Net</td>
+                                     <td>"""+player.getNet()+"""
+                                  $</td>
+                                  </tr>
+                                  <tr>
                                     """+getPlayersActionsHTMLString(player)+"""
                                   </tr>
                                 </table>
