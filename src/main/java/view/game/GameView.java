@@ -15,6 +15,7 @@ import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +143,93 @@ public class GameView extends Form {
      * @apiNote call this method will freeze the current thread, so do not call it in the EDT
      */
     public void chooseStocksToBuy(Map<Corporation, Integer> possibleBuyingStocks) {
-        // TODO : Implement this function
+        setEnabled(false);
+        jetonsPanel.setVisible(false);
+
+        Object monitor = new Object();
+
+        class Pane extends JPanel {
+            private int choice;
+            Pane(Map.Entry<Corporation, Integer> entry) {
+                super();
+
+                setOpaque(false);
+                setLayout(new MigLayout("al center, filly, ins 0, wrap 1"));
+
+                GlowingItemCorp gli = new GlowingItemCorp(entry.getKey()) {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        super.paintComponent(g);
+                        g.setFont(g.getFont().deriveFont(Font.BOLD));
+                        g.drawString(entry.getValue().toString(),
+                                getShadowSize() + getBorderSize() + 5,
+                                2*getShadowSize());
+                    }
+                };
+
+                JLabel jlChoice = new JLabel("0");
+                jlChoice.setFont(jlChoice.getFont().deriveFont(Font.BOLD));
+                jlChoice.setForeground(gli.getColor().brighter());
+
+                gli.addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent mouseEvent) {
+                        choice++;
+                        jlChoice.setText(""+choice);
+                        jlChoice.repaint();
+                    }
+                    public void mousePressed(MouseEvent mouseEvent) {}
+                    public void mouseReleased(MouseEvent mouseEvent) {}
+                    public void mouseEntered(MouseEvent mouseEvent) {}
+                    public void mouseExited(MouseEvent mouseEvent) {}
+                });
+
+                add(gli, "w 100%, h 100%");
+                add(jlChoice, "w 5%, h 5%, align center");
+            }
+
+            public int getChoice() {
+                return choice;
+            }
+        }
+
+        JPanel jp = new JPanel();
+        jp.setOpaque(false);
+        jp.setLayout(new MigLayout("al center, filly"));
+
+        for (Map.Entry<Corporation, Integer> entry : possibleBuyingStocks.entrySet()) {
+            jp.add(new Pane(entry), "w 15%, h 30%");
+        }
+
+        JButton buyBtn = new JButton("buy");
+        buyBtn.addActionListener((e) -> {
+            synchronized (monitor) {
+                monitor.notify();
+            }
+        });
+
+        jp.add(buyBtn, "dock south, al center, gapbottom 30");
+        add(jp, BorderLayout.CENTER);
+
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
+
+        synchronized (monitor) {
+            try {
+                monitor.wait();
+            } catch (InterruptedException e) {
+                showError(e, () -> System.exit(1));
+            }
+        }
+
+        // TODO : acheter etc ...
+
+        remove(jp);
+        jetonsPanel.setVisible(true);
+        setEnabled(true);
+        repaint();
     }
 
     /**
@@ -151,6 +238,7 @@ public class GameView extends Form {
      *
      * @apiNote This function, once it knows the corporations to sell/keep/trade, calls
      * the 2 functions that will sell and trade stocks in {@link GameController}
+     * Call this method will freeze the current thread, so do not call it in the EDT.
      */
     public void chooseSellingKeepingOrTradingStocks(Map<Corporation, Integer> stocks) {
         setEnabled(false);

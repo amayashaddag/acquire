@@ -53,12 +53,16 @@ public class Debug extends JFrame {
         HashMap<Corporation, Integer> map = new HashMap<>();
         map.put(Corporation.CONTINENTAL, 1);
         map.put(Corporation.WORLDWIDE, 2);
+        map.put(Corporation.IMPERIAL, 12);
 
         g.getCorporationChoice(new ArrayList<>(map.keySet()));
         System.out.println("finif 1");
 
         g.chooseSellingKeepingOrTradingStocks(map);
         System.out.println("finif 2");
+
+        g.chooseStocksToBuy(map);
+        System.out.println("finif 3");
 
 
 //        java.awt.EventQueue.invokeLater(new Runnable() {
