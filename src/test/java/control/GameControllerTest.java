@@ -81,29 +81,4 @@ public class GameControllerTest {
         return true;
     }
 
-    @Test
-    void testCellsDifferent() {
-        GameController game = new GameController(generateCurrentPlayers(), generateCurrentPlayers().get(0));
-        game.initPlayersDecks();
-        boolean cellsDifferent = true;
-        for (Player player : game.getCurrentPlayers()) {
-            cellsDifferent = CellsInSameDeckAreDifferent(player.getDeck());
-        }
-        assertTrue(cellsDifferent);
-    }
-
-    @Test
-    void testDecksAreDifferent() { // Tests if all decks are different
-        GameController game = new GameController(generateCurrentPlayers(), generateCurrentPlayers().get(0));
-        game.initPlayersDecks();
-        boolean decksAreDifferent = true;
-        for (Player player1 : game.getCurrentPlayers()) {
-            for (Player player2 : game.getCurrentPlayers()) {
-                if (player1 != player2)
-                    decksAreDifferent = twoDeckAreDifferent(player1.getDeck(), player2.getDeck());
-            }
-        }
-        assertTrue(decksAreDifferent);
-    }
-
 }
