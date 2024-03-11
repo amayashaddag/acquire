@@ -1,6 +1,5 @@
 package control;
 
-import java.text.spi.CollatorProvider;
 import java.util.*;
 
 import model.Board;
@@ -125,10 +124,6 @@ public class GameController {
         }
     }
 
-    private void sellStocks(Player player) {
-        // TODO : Implement this function
-    }
-
     /**
      * This function is used in merging corporations process, it filters all the
      * maximal sizes of corporations.
@@ -206,7 +201,23 @@ public class GameController {
         }
 
         adjacentCorporations.remove(chosenCellCorporation);
-        // gameView.chooseSellingKeepingOrTradingStocks(adjacentCorporations);
+
+        Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(player, adjacentCorporations);
+        gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, chosenCellCorporation);
+    }
+
+    private Map<Corporation, Integer> stocksToKeepSellOrTrade(Player player, Set<Corporation> acquiredCorporations) {
+        Map<Corporation, Integer> stocks = new HashMap<>();
+        Map<Corporation, Integer> playerStocks = player.getEarnedStocks();
+
+        for (Corporation c : playerStocks.keySet()) {
+            if (acquiredCorporations.contains(c)) {
+                int amount = playerStocks.get(c);
+                stocks.put(c, amount);
+            }
+        }
+
+        return stocks;
     }
 
     /**
@@ -394,17 +405,46 @@ public class GameController {
 
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
         gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
-        // FIXME : si c'est le joueur courant qui place une case cela devrait marquer "your cell have been placed" pas "pseudo place a cell"
+        // FIXME : Notification should be personal ad not global
         gameView.repaint();
     }
 
-    // FIXME : Should pass player as a parameter
-    public void sellStocks(Map<Corporation, Integer> stocks) {
-        // TODO : To implement
+    /**
+     * This function handles the stocks selling, it is called from {@link GameView} class
+     * after the played chose the corporations he wants to sell to apply the process.
+     *
+     * @param stocks Represents the map that associates each corporation to the number of stocks
+     *               the player wants to sell.
+     */
+    public void sellStocks(Map<Corporation, Integer> stocks, Player player) {
+        for (Corporation c : stocks.keySet()) {
+            int amount = stocks.get(c);
+            int totalPriceForCorporation = board.getStockPrice(c) * amount;
+
+            board.addToRemainingStocks(c, amount);
+            player.removeFromEarnedStocks(c, amount);
+            player.addToCash(totalPriceForCorporation);
+
+            // TODO : Send notification for selling stocks
+        }
     }
 
-    // FIXME : Should pass player as a parameter
-    public void tradeStocks(Map<Corporation, Integer> stocks) {
-        // TODO : To implement
+    /**
+     * This functions handles the trading of stocks process after a major corporation acquired player's
+     * owned corporation stocks. It is called from {@link GameView} class after the player chose the amount
+     * of stocks they want to trade.
+     */
+    public void tradeStocks(Map<Corporation, Integer> stocks, Player player, Corporation major) {
+        for (Corporation c : stocks.keySet()) {
+            int amountToGive = stocks.get(c);
+            int amountToEarn = amountToGive / 2;
+
+            board.addToRemainingStocks(c, amountToGive);
+            board.removeFromRemainingStocks(major, amountToEarn);
+            player.removeFromEarnedStocks(c, amountToGive);
+            player.addToEarnedStocks(major, amountToEarn);
+
+            // TODO : Add notification for trading stocks
+        }
     }
 }

@@ -236,11 +236,15 @@ public class GameView extends Form {
      * This function displays an interface to the player to choose whether the given stocks
      * in parameter will be held, sold or traded to bank.
      *
+     * @param major This parameter refers to the major corporation that acquired all other ones.
+     *              This parameter is essential because it is used while trading to know which corporation
+     *              the controller should trade player stocks with.
+     *
      * @apiNote This function, once it knows the corporations to sell/keep/trade, calls
      * the 2 functions that will sell and trade stocks in {@link GameController}
      * Call this method will freeze the current thread, so do not call it in the EDT.
      */
-    public void chooseSellingKeepingOrTradingStocks(Map<Corporation, Integer> stocks) {
+    public void chooseSellingKeepingOrTradingStocks(Map<Corporation, Integer> stocks, Corporation major) {
         setEnabled(false);
         jetonsPanel.setVisible(false);
 
@@ -352,8 +356,8 @@ public class GameView extends Form {
                 }
             }
 
-        controller.sellStocks(toSell);
-        controller.tradeStocks(toTrade);
+        controller.sellStocks(toSell, player);
+        controller.tradeStocks(toTrade, player, major);
 
         remove(jp);
         jetonsPanel.setVisible(true);
