@@ -398,10 +398,12 @@ public class GameController {
         gameView.repaint();
     }
 
+    // FIXME : Should pass player as a parameter
     public void sellStocks(Map<Corporation, Integer> stocks) {
         // TODO : To implement
     }
 
+    // FIXME : Should pass player as a parameter
     public void tradeStocks(Map<Corporation, Integer> stocks) {
         // TODO : To implement
     }
