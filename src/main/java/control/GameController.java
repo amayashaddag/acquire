@@ -204,7 +204,9 @@ public class GameController {
         adjacentCorporations.remove(chosenCellCorporation);
 
         Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(player, adjacentCorporations);
-        gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, chosenCellCorporation);
+        if (!stocksToKeepSellOrTrade.isEmpty()) {
+            gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, chosenCellCorporation);
+        }
     }
 
     private Map<Corporation, Integer> stocksToKeepSellOrTrade(Player player, Set<Corporation> acquiredCorporations) {
@@ -397,12 +399,14 @@ public class GameController {
 
         resetNets();
         placeCell(cellPosition, player);
-        buyStocks(player);
+        if (board.thereArePlacedCorporations()) {
+            buyStocks(player);
+        }
         adjustNets();
 
         board.updateDeadCells();
         board.updatePlayerDeck(player);
-        playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
+        // playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
 
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
         gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
@@ -447,14 +451,5 @@ public class GameController {
 
             // TODO : Add notification for trading stocks
         }
-    }
-
-    public boolean playerCanBy(Map<Corporation, Integer> panier, Player acheteur) {
-        // Vérifier si le joueur peut acheter ce panier
-        return true;
-    }
-
-    public void playerBy(Map<Corporation, Integer> panier, Player acheteur) {
-        // Acheter le panier
     }
 }

@@ -216,10 +216,12 @@ public class GameView extends Form {
                     panier.put(((Pane) comp).getCorp(), ((Pane) comp).getChoice());
                 }
 
+            int totalPriceToPay = controller.calculateStocksPrice(panier);
+
             if (c > 3 || c < 0)
                 showErrorNotification("Command invalid ! You can't by more than 3 actions.");
-            else if (controller.playerCanBy(panier, player)) {
-                controller.playerBy(panier, player);
+            else if (player.hasEnoughCash(totalPriceToPay)) {
+                controller.buyChosenStocks(panier, totalPriceToPay, player);
                 synchronized (monitor) {
                     monitor.notify();
                 }

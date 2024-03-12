@@ -533,4 +533,14 @@ public class Board {
             deck[i] = newCellPosition;
         }
     }
+
+    public boolean thereArePlacedCorporations() {
+        for (Corporation c : Corporation.values()) {
+            if (getCorporationSize(c) > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
