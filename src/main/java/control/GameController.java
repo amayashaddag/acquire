@@ -447,4 +447,9 @@ public class GameController {
             // TODO : Add notification for trading stocks
         }
     }
+
+    public boolean playerCanBy(Map<Corporation, Integer> panier, Player acheteur) {
+        // Vérifier si le joueur peut acheter se panier
+        return true;
+    }
 }

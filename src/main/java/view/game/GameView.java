@@ -150,8 +150,10 @@ public class GameView extends Form {
 
         class Pane extends JPanel {
             private int choice;
+            private final Corporation corp;
             Pane(Map.Entry<Corporation, Integer> entry) {
                 super();
+                corp = entry.getKey();
 
                 setOpaque(false);
                 setLayout(new MigLayout("al center, filly, ins 0, wrap 1"));
@@ -174,7 +176,7 @@ public class GameView extends Form {
                 gli.addMouseListener(new MouseListener() {
                     @Override
                     public void mouseClicked(MouseEvent mouseEvent) {
-                        choice++;
+                        choice = (choice+1)%(entry.getValue()+1);
                         jlChoice.setText(""+choice);
                         jlChoice.repaint();
                     }
@@ -191,6 +193,8 @@ public class GameView extends Form {
             public int getChoice() {
                 return choice;
             }
+
+            public Corporation getCorp() {return corp;}
         }
 
         JPanel jp = new JPanel();
@@ -203,9 +207,24 @@ public class GameView extends Form {
 
         JButton buyBtn = new JButton("buy");
         buyBtn.addActionListener((e) -> {
-            synchronized (monitor) {
-                monitor.notify();
-            }
+            int c = 0;
+            HashMap<Corporation, Integer> panier = new HashMap<>();
+
+            for (Component comp : jp.getComponents())
+                if (comp instanceof Pane) {
+                    c += ((Pane) comp).getChoice();
+                    panier.put(((Pane) comp).getCorp(), ((Pane) comp).getChoice());
+                }
+
+            if (c > 3)
+                showErrorNotification("Command invalid ! You can't by more than 3 actions.");
+            else if (true) { // TODO: tester si le joueur peut acheter dans le controleur
+                controller.sellStocks(panier);
+                synchronized (monitor) {
+                    monitor.notify();
+                }
+            } else
+                showErrorNotification("Command invalid ! You haven't enough money.");
         });
 
         jp.add(buyBtn, "dock south, al center, gapbottom 30");
