@@ -8,6 +8,8 @@ public class GameNotifications {
     public final static String NOT_ENOUGH_CASH = "You don't have enough cash to buy this.";
     public final static String NOT_ENOUGH_STOCKS_PLAYER = "You don't have enough stocks.";
 
+    public final static String CANNOT_BUY_MORE_THAN_THREE = "You can't by more than 3 actions.";
+
     /* Success notifications */
     public static String boughtStocksNotification(int amount, Corporation corporation) {
         return "You successfully bought " + amount + " stocks of the company " + corporation + ".";

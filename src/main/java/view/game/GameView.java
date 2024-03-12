@@ -219,14 +219,14 @@ public class GameView extends Form {
             int totalPriceToPay = controller.calculateStocksPrice(panier);
 
             if (c > 3 || c < 0)
-                showErrorNotification("Command invalid ! You can't by more than 3 actions.");
+                showErrorNotification(GameNotifications.CANNOT_BUY_MORE_THAN_THREE);
             else if (player.hasEnoughCash(totalPriceToPay)) {
                 controller.buyChosenStocks(panier, totalPriceToPay, player);
                 synchronized (monitor) {
                     monitor.notify();
                 }
             } else
-                showErrorNotification("Command invalid ! You haven't enough money.");
+                showErrorNotification(GameNotifications.NOT_ENOUGH_CASH);
         });
 
         JPanel btnPanel = new JPanel();
