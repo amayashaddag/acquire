@@ -78,7 +78,8 @@ public class GameController {
     private void buyStocks(Player player) {
         // TODO : Add if statement for available stocks to buy
         Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
-        gameView.chooseStocksToBuy(possibleBuyingStocks);
+        if (possibleBuyingStocks.size() > 0)
+            gameView.chooseStocksToBuy(possibleBuyingStocks);
     }
 
     /**
@@ -449,7 +450,11 @@ public class GameController {
     }
 
     public boolean playerCanBy(Map<Corporation, Integer> panier, Player acheteur) {
-        // Vérifier si le joueur peut acheter se panier
+        // Vérifier si le joueur peut acheter ce panier
         return true;
+    }
+
+    public void playerBy(Map<Corporation, Integer> panier, Player acheteur) {
+        // Acheter le panier
     }
 }

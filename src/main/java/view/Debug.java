@@ -58,7 +58,7 @@ public class Debug extends JFrame {
         g.getCorporationChoice(new ArrayList<>(map.keySet()));
         System.out.println("finif 1");
 
-        g.chooseSellingKeepingOrTradingStocks(map);
+        g.chooseSellingKeepingOrTradingStocks(map, Corporation.AMERICAN);
         System.out.println("finif 2");
 
         g.chooseStocksToBuy(map);

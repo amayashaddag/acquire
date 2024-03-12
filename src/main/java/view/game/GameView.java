@@ -216,10 +216,10 @@ public class GameView extends Form {
                     panier.put(((Pane) comp).getCorp(), ((Pane) comp).getChoice());
                 }
 
-            if (c > 3)
+            if (c > 3 || c < 0)
                 showErrorNotification("Command invalid ! You can't by more than 3 actions.");
-            else if (true) { // TODO: tester si le joueur peut acheter dans le controleur
-                controller.sellStocks(panier);
+            else if (controller.playerCanBy(panier, player)) {
+                controller.playerBy(panier, player);
                 synchronized (monitor) {
                     monitor.notify();
                 }
@@ -242,8 +242,6 @@ public class GameView extends Form {
                 showError(e, () -> System.exit(1));
             }
         }
-
-        // TODO : acheter etc ...
 
         remove(jp);
         jetonsPanel.setVisible(true);
