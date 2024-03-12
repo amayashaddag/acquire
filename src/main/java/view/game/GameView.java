@@ -227,7 +227,11 @@ public class GameView extends Form {
                 showErrorNotification("Command invalid ! You haven't enough money.");
         });
 
-        jp.add(buyBtn, "dock south, al center, gapbottom 30");
+        JPanel btnPanel = new JPanel();
+        btnPanel.setOpaque(false);
+        btnPanel.add(buyBtn);
+
+        jp.add(btnPanel, "dock south, al center, gapbottom 30");
         add(jp, BorderLayout.CENTER);
 
         SwingUtilities.invokeLater(() -> {
@@ -345,7 +349,11 @@ public class GameView extends Form {
             }
         });
 
-        jp.add(confirmBtn, "dock south, al center, gapbottom 30");
+        JPanel btnPanel = new JPanel();
+        btnPanel.setOpaque(false);
+        btnPanel.add(confirmBtn);
+
+        jp.add(btnPanel, "dock south, al center, gapbottom 30");
         add(jp, BorderLayout.CENTER);
 
         SwingUtilities.invokeLater(() -> {

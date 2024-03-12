@@ -78,7 +78,7 @@ public class GameController {
     private void buyStocks(Player player) {
         // TODO : Add if statement for available stocks to buy
         Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
-        if (possibleBuyingStocks.size() > 0)
+        if (!possibleBuyingStocks.isEmpty())
             gameView.chooseStocksToBuy(possibleBuyingStocks);
     }
 
