@@ -205,7 +205,7 @@ public class GameView extends Form {
             jp.add(new Pane(entry), "w 15%, h 30%");
         }
 
-        JButton buyBtn = new JButton("buy");
+        JButton buyBtn = new JButton("Buy");
         buyBtn.addActionListener((e) -> {
             int c = 0;
             HashMap<Corporation, Integer> panier = new HashMap<>();
@@ -344,7 +344,7 @@ public class GameView extends Form {
             jp.add(new Pane(entry), "w 15%, h 30%");
         }
 
-        JButton confirmBtn = new JButton("confirm");
+        JButton confirmBtn = new JButton("Confirm");
         confirmBtn.addActionListener((e) -> {
             synchronized (monitor) {
                 monitor.notify();
