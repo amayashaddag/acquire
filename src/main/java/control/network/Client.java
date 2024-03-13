@@ -3,6 +3,7 @@ package control.network;
 import java.io.*;
 import java.net.Socket;
 
+@Deprecated
 public class Client {
 private static boolean LEAVE = false;
     public static void main(String[] args)throws IOException {

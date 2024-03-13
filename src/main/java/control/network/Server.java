@@ -4,6 +4,7 @@ import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
+@Deprecated
 public class Server {
     public static void main(String[] args)throws IOException{
         ServerSocket listener = null;
