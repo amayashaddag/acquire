@@ -136,7 +136,8 @@ public class Player {
      * @param2 number of stocks to add
      */
     public void addToEarnedStocks(Corporation corp, int amount) {
-        this.earnedStocks.put(corp, amount);
+        int oldAmountOfEarnedStocks = earnedStocks.get(corp);
+        this.earnedStocks.put(corp, amount + oldAmountOfEarnedStocks);
     }
 
     /**
@@ -146,7 +147,8 @@ public class Player {
      * @param2 number of stocks to remove
      */
     public void removeFromEarnedStocks(Corporation corp, int amount) {
-        this.cash -= amount;
+        int oldAmountOfEarnedStocks = earnedStocks.get(corp);
+        this.earnedStocks.put(corp, oldAmountOfEarnedStocks - amount);
     }
 
     /**

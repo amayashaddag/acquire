@@ -48,12 +48,14 @@ public class Debug extends JFrame {
 
         g.setOn(frame);
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
+        /*
 
 //        c.handleCellPlacing(new tools.Point(0,0), l.get(0));
         HashMap<Corporation, Integer> map = new HashMap<>();
         map.put(Corporation.CONTINENTAL, 1);
         map.put(Corporation.WORLDWIDE, 2);
         map.put(Corporation.IMPERIAL, 12);
+
 
         g.getCorporationChoice(new ArrayList<>(map.keySet()));
         System.out.println("finif 1");
@@ -63,6 +65,7 @@ public class Debug extends JFrame {
 
         g.chooseStocksToBuy(map);
         System.out.println("finif 3");
+        */
 
 
 //        java.awt.EventQueue.invokeLater(new Runnable() {
