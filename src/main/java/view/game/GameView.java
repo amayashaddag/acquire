@@ -163,6 +163,7 @@ public class GameView extends Form {
                     protected void paintComponent(Graphics g) {
                         super.paintComponent(g);
                         g.setFont(g.getFont().deriveFont(Font.BOLD));
+                        g.setColor(getColor().darker());
                         g.drawString(entry.getValue().toString(),
                                 getShadowSize() + getBorderSize() + 5,
                                 2*getShadowSize());
@@ -290,6 +291,7 @@ public class GameView extends Form {
                     protected void paintComponent(Graphics g) {
                         super.paintComponent(g);
                         g.setFont(g.getFont().deriveFont(Font.BOLD));
+                        g.setColor(getColor().darker());
                         g.drawString(entry.getValue().toString(),
                                 getShadowSize() + getBorderSize() + 5,
                                 2*getShadowSize());
@@ -441,14 +443,14 @@ public class GameView extends Form {
      * @param task : the task you want to execute (example :  System.exit(1))
      * @apiNote example : GameFrame.showError(new Exception(), () -> System.exit(1))
      */
-    public void showError(Exception e, Runnable task) {
+    public static void showError(Exception e, Runnable task) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         pw.println(e.getMessage());
         e.printStackTrace(pw);
-        JOptionPane.showMessageDialog(this, sw.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, sw.toString(), "Error", JOptionPane.ERROR_MESSAGE);
         task.run();
     }
 
-    public void showError(Exception e) {showError(e, ()->{});}
+    public static void showError(Exception e) {showError(e, ()->{});}
 }
