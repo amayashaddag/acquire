@@ -1,17 +1,21 @@
 package app;
 
-import control.auth.FirebaseInitializer;
+import control.auth.FirebaseClient;
 import frame.GameFrame;
 import login.LoginView;
 
 public class Debug {
     public static void main(String[] args) {
-        GameFrame frame = new GameFrame();
-        LoginView loginView = new LoginView();
-        FirebaseInitializer.initialize();
+        try {
+            GameFrame frame = new GameFrame();
+            LoginView loginView = new LoginView();
+            FirebaseClient.initialize();
 
-        frame.setContentPane(loginView);
-        frame.setVisible(true);
+            frame.setContentPane(loginView);
+            frame.setVisible(true);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
 
