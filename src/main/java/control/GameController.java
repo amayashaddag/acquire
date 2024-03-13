@@ -442,7 +442,7 @@ public class GameController {
     public void tradeStocks(Map<Corporation, Integer> stocks, Player player, Corporation major) {
         for (Corporation c : stocks.keySet()) {
             int amountToGive = stocks.get(c);
-            int amountToEarn = amountToGive / 2;
+            int amountToEarn = amountToGive == 1 ? 1 : amountToGive / 2;
 
             board.addToRemainingStocks(c, amountToGive);
             board.removeFromRemainingStocks(major, amountToEarn);

@@ -491,9 +491,10 @@ public class Board {
 
         for (Corporation corporation : corporationSizes.keySet()) {
             int corporationSize = corporationSizes.get(corporation);
+            int remainingStocks = this.remainingStocks.get(corporation);
 
             if (corporationSize != 0) {
-                int possibleBuyingAmount = Math.min(corporationSize, MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
+                int possibleBuyingAmount = Math.min(remainingStocks, MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
                 possibleBuyingStocks.put(corporation, possibleBuyingAmount);
             }
         }
