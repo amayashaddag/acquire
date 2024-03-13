@@ -34,12 +34,12 @@ all : clean compile test run
 PROCESS:=processor
 
 processor:
-	javac -cp "$(JAVA_MAIN):$(LIB)/*" -d $(OUT) $(JAVA_MAIN)/$(PROCESS)/*
+	@javac -cp "$(JAVA_MAIN):$(LIB)/*" -d $(OUT) $(JAVA_MAIN)/$(PROCESS)/*
 
 debug: clean processor
-	javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -processor $(PROCESS).AutoSetterProcessor -d $(OUT) src/main/java/view/Debug.java
-	java -cp "$(OUT):$(LIB)/*" view.Debug
+	@javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -processor $(PROCESS).AutoSetterProcessor -d $(OUT) src/main/java/view/Debug.java
+	@java -cp "$(OUT):$(LIB)/*" view.Debug
 
 quickdeb: clean
-	javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -d $(OUT) src/main/java/view/Debug.java
-	java -cp "$(OUT):$(LIB)/*" view.Debug
+	@javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -d $(OUT) src/main/java/view/Debug.java
+	@java -cp "$(OUT):$(LIB)/*" view.Debug
