@@ -36,6 +36,9 @@ public class Debug extends JFrame {
 
         ArrayList<Player> l = new ArrayList<>();
         l.add(Player.createHumanPlayer("Max"));
+        l.add(Player.createHumanPlayer("Xi"));
+        l.add(Player.createHumanPlayer("Best"));
+        l.add(Player.createHumanPlayer("Of"));
         GameController c = new GameController(l, l.get(0));
         c.getGameView().setVisible(true);
 

@@ -23,7 +23,7 @@ import javax.swing.*;
 public class PlayerBoard extends javax.swing.JPanel {
     private final GameView g;
     private final Dimension INITIAL_DIMENSION = new Dimension(80, 80);
-    private final Dimension ZOOM_DIMENSION = new Dimension(200, 120);
+    private final Dimension ZOOM_DIMENSION = new Dimension(140, 100);
     private final MigLayout mig;
 
     public PlayerBoard(GameView g) {
@@ -34,8 +34,10 @@ public class PlayerBoard extends javax.swing.JPanel {
 
         for (Player p : g.getController().getCurrentPlayers()) {
             PlayerItem item = new PlayerItem(p);
-            if (p.equals(g.getController().getCurrentPlayer()))
+            if (p.equals(g.getController().getCurrentPlayer())) {
+                item = new PlayerItem(p, INITIAL_DIMENSION, new Dimension(200, 120));
                 item.setBorder(new ColorableArcableFlatBorder(Color.GREEN));
+            }
             else if (p.equals(g.getPlayer()))
                 item.setBorder(new ColorableArcableFlatBorder(Color.BLUE));
             this.add(item, "w " + INITIAL_DIMENSION.width + ", h " + INITIAL_DIMENSION.height);
@@ -57,14 +59,18 @@ public class PlayerBoard extends javax.swing.JPanel {
         final ColorableArcableFlatBorder playingBorder;    // The player who is actually his turn
         final ColorableArcableFlatBorder currentPlayerBorder;   // The player who is behind his computer
 
-        public PlayerItem(Player p) {
-            super(PlayerBoard.this.mig, INITIAL_DIMENSION, ZOOM_DIMENSION);
+        public PlayerItem(Player p, Dimension initial, Dimension zoom) {
+            super(PlayerBoard.this.mig, initial, zoom);
             this.player = p;
             this.arc = 10;
             this.playingBorder = new ColorableArcableFlatBorder(Color.RED, this.arc);
             this.currentPlayerBorder = new ColorableArcableFlatBorder(Color.GREEN, this.arc);
             this.setHorizontalAlignment(SwingConstants.CENTER);
             this.setVerticalAlignment(SwingConstants.CENTER);
+        }
+
+        public PlayerItem(Player p) {
+            this(p, INITIAL_DIMENSION, ZOOM_DIMENSION);
         }
 
         private String getPlayersActionsHTMLString(Player p) {

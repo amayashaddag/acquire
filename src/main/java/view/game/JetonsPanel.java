@@ -89,7 +89,7 @@ public class JetonsPanel extends JPanel {
             super();
             this.p = p;
             this.setFocusPainted(false);
-            this.setText(p.toString());
+            this.setText(" ");
             this.addActionListener((e) -> {
                 new Thread(() -> {
                     g.getController().handleCellPlacing(p, g.getPlayer());
