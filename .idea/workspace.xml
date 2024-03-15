@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-<<<<<<< HEAD
-    <list default="true" id="1f98e992-bb50-44ef-b846-dd677b344d7b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-=======
-    <list default="true" id="1f98e992-bb50-44ef-b846-dd677b344d7b" name="Changes" comment="#19 First version of server and client class">
+    <list default="true" id="1b7ebb7f-81d4-44a6-b355-cc1d916b8bd2" name="Changes" comment="-">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/app/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/control/network/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/control/network/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/control/network/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/control/network/Server.java" afterDir="false" />
->>>>>>> iss19
+      <change beforePath="$PROJECT_DIR$/src/main/java/control/database/DatabaseConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/control/database/DatabaseConnection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/model/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/model/Player.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,169 +18,48 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-<<<<<<< HEAD
-=======
-        <option value="module-info" />
->>>>>>> iss19
         <option value="Class" />
       </list>
     </option>
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="iss10" />
-      </map>
-    </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
-  </component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
-  </component>
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 1
-}</component>
-  <component name="ProjectId" id="2ce7YRNikB1wbqUNbRfomIRVfGf" />
-  <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showLibraryContents" value="true" />
-  </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Application.Debug.executor&quot;: &quot;Run&quot;,
-    &quot;Application.FirebaseInitializer.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-<<<<<<< HEAD
-    &quot;git-widget-placeholder&quot;: &quot;iss16&quot;,
-=======
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;iss19&quot;,
->>>>>>> iss19
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/amayas/S4/PI4/acquire&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "git-widget-placeholder": "iss25",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm"
   }
-}</component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="jdk-17.0.9-corretto-17.0.9-4caba194b151-3c5dfc45" />
-      </set>
-    </attachedChunks>
-  </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+}]]></component>
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="1f98e992-bb50-44ef-b846-dd677b344d7b" name="Changes" comment="" />
-      <created>1708460241764</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1708460241764</updated>
-      <workItem from="1708460244570" duration="959000" />
-      <workItem from="1708461284171" duration="86000" />
-      <workItem from="1708461394029" duration="151000" />
-      <workItem from="1708461557931" duration="48000" />
-<<<<<<< HEAD
-      <workItem from="1709234306157" duration="1381000" />
-      <workItem from="1709235696226" duration="2338000" />
-=======
-      <workItem from="1709200818195" duration="9804000" />
-      <workItem from="1709308949893" duration="379000" />
->>>>>>> iss19
-    </task>
-    <task id="LOCAL-00001" summary="Refactoring needed due to MR conflicts">
+    <task id="LOCAL-00001" summary="Conflict resolution">
       <option name="closed" value="true" />
-      <created>1708460765319</created>
+      <created>1709659570350</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1708460765320</updated>
+      <updated>1709659570350</updated>
     </task>
-    <task id="LOCAL-00002" summary="#19 Server and Client class creation">
+    <task id="LOCAL-00002" summary="Conflict resolution">
       <option name="closed" value="true" />
-      <created>1709201102562</created>
+      <created>1709659627072</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1709201102562</updated>
+      <updated>1709659627072</updated>
     </task>
-    <task id="LOCAL-00003" summary="#19 Server class beginning of implementation">
+    <task id="LOCAL-00003" summary="-">
       <option name="closed" value="true" />
-      <created>1709300035739</created>
+      <created>1710316776574</created>
       <option name="number" value="00003" />
       <option name="presentableId" value="LOCAL-00003" />
       <option name="project" value="LOCAL" />
-      <updated>1709300035739</updated>
+      <updated>1710316776575</updated>
     </task>
-    <task id="LOCAL-00004" summary="#19 first version of Server Class">
-      <option name="closed" value="true" />
-      <created>1709303831471</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1709303831471</updated>
-    </task>
-    <task id="LOCAL-00005" summary="#19 Beginnong of implementation of Client class">
-      <option name="closed" value="true" />
-      <created>1709305317087</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1709305317087</updated>
-    </task>
-    <task id="LOCAL-00006" summary="#19 First version of server and client class">
-      <option name="closed" value="true" />
-      <created>1709306450395</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1709306450395</updated>
-    </task>
-    <option name="localTasksCounter" value="7" />
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
-  </component>
-  <component name="UnknownFeatures">
-    <option featureType="com.intellij.fileTypeFactory" implementationName="Makefile" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactoring needed due to MR conflicts" />
-<<<<<<< HEAD
-    <option name="LAST_COMMIT_MESSAGE" value="" />
-=======
-    <MESSAGE value="#19 Server and Client class creation" />
-    <MESSAGE value="#19 Server class beginning of implementation" />
-    <MESSAGE value="#19 first version of Server Class" />
-    <MESSAGE value="#19 Beginnong of implementation of Client class" />
-    <MESSAGE value="#19 First version of server and client class" />
-    <option name="LAST_COMMIT_MESSAGE" value="#19 First version of server and client class" />
->>>>>>> iss19
+    <MESSAGE value="Conflict resolution" />
+    <MESSAGE value="-" />
+    <option name="LAST_COMMIT_MESSAGE" value="-" />
   </component>
 </project>

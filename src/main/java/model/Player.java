@@ -9,12 +9,40 @@ import tools.Point;
 
 public class Player {
     private int cash;
+
+    private int net;
     private HashMap<Corporation,Integer> earnedStocks;
     private Point[] deck;
     private String uid;
 
+    private String pseudo;
+
     public String getUID() {
         return uid;
+    }
+
+    public String getPseudo(){
+        return pseudo;
+    }
+
+    public int getCash() {
+        return cash;
+    }
+
+    public int getNet() {
+        return net;
+    }
+
+    public void setCash(int cash) {
+        this.cash = cash;
+    }
+
+    public void setNet(int net) {
+        this.net = net;
+    }
+
+    public void setPseudo(String pseudo) {
+        this.pseudo = pseudo;
     }
 
     /**
