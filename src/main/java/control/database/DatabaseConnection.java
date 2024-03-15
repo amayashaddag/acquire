@@ -2,10 +2,17 @@ package control.database;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
+import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import model.Board;
+import model.Cell;
+import model.Corporation;
 import model.Player;
+import tools.Point;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DatabaseConnection {
     private static final Firestore database = FirestoreClient.getFirestore();
@@ -26,6 +33,14 @@ public class DatabaseConnection {
     public static String GAME_MAX_PLAYERS_FIELD = "max-players";
 
     public static String GAME_STATE_FIELD = "state";
+
+    public static String CORPORATION_FIELD = "corporation";
+
+
+    public static String PLACED_CELLS_TABLE_NAME = "placed-cells";
+
+    public static String X_POSITION_FIELD = "x-position";
+    public static String Y_POSITION_FIELD = "y-position";
 
     public static void addPlayer(String gameId, Player player) throws Exception {
         HashMap<String, Object> newPlayer = new HashMap<>();
@@ -76,6 +91,37 @@ public class DatabaseConnection {
                 .whereEqualTo(GAME_ID_FIELD,gameId)
                 .whereEqualTo(PLAYER_CASH_FIELD,newCash).get();
 
+    }
+
+    public static Map<Corporation, Point> getNewPlacedCells(String gameId, Board currentBoard) throws Exception {
+        Map<Corporation, Point> newPlacedCells = new HashMap<>();
+        ApiFuture<QuerySnapshot> future = database.collection(PLACED_CELLS_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        for (QueryDocumentSnapshot doc : documents) {
+            String corp = (String) doc.get(CORPORATION_FIELD);
+            Corporation c = null;
+            if (corp != null && !corp.isEmpty()) {
+                c = Corporation.getCorporationFromName(corp);
+            }
+            Long x = (Long) doc.get(X_POSITION_FIELD);
+            Long y = (Long) doc.get(Y_POSITION_FIELD);
+
+            if (x == null || y == null) {
+                throw new Exception();
+            }
+
+            Point cellPosition = new Point(x.intValue(), y.intValue());
+            Cell oldPlacedCell = currentBoard.getCell(cellPosition);
+
+            if (oldPlacedCell.getCorporation() == null || !oldPlacedCell.getCorporation().equals(c)) {
+                newPlacedCells.put(c, cellPosition);
+            }
+        }
+
+        return newPlacedCells;
     }
 
 }
