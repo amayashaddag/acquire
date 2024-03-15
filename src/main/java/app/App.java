@@ -20,8 +20,12 @@ public class App {
         Player player = new Player();
         player.setCash(34);
         player.setNet(4564);
-        player.setPseudo("Igor");
-        DatabaseConnection.addPlayer("lejnvel",player);
+        player.setPseudo("ARthir");
+        player.setUID("gtfcdtrdxfdr");
+        DatabaseConnection.addPlayer("nouveau joueur ATHURRRRR",player);
+        DatabaseConnection.createGame(26);
+        DatabaseConnection.removePlayer(player);
+
 
     }
 }

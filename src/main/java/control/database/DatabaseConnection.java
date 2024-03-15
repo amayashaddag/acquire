@@ -1,9 +1,7 @@
 package control.database;
 
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import model.Player;
 
@@ -17,10 +15,17 @@ public class DatabaseConnection {
 
     public static String GAME_ID_FIELD = "game-id";
 
+
     public static String PLAYER_CASH_FIELD = "cash";
     public static String PLAYER_NET_FIELD = "net";
 
     public static String PLAYER_TABLE_NAME = "players";
+
+    public static String GAME_TABLE_NAME = "games";
+
+    public static String GAME_MAX_PLAYERS_FIELD = "max-players";
+
+    public static String GAME_STATE_FIELD = "state";
 
     public static void addPlayer(String gameId, Player player) throws Exception {
         HashMap<String, Object> newPlayer = new HashMap<>();
@@ -35,6 +40,28 @@ public class DatabaseConnection {
     }
 
     public static void removePlayer(Player player) throws Exception{
+        CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
+        ApiFuture<QuerySnapshot> future = collection.whereEqualTo(UID_PLAYER_FIELD, player.getUID()).get();
+        QuerySnapshot snapshot = future.get();
+
+        for (QueryDocumentSnapshot doc : snapshot) {
+            ApiFuture<WriteResult> deleteFuture = doc.getReference().delete();
+            deleteFuture.get();
+        }
+    }
+
+    public static void createGame(int maxPlayers) throws Exception{
+        DocumentReference doc = database.collection(GAME_TABLE_NAME).document();
+        String gameId = doc.getId();
+        HashMap<String,Object> newGame = new HashMap<>();
+        newGame.put(GAME_ID_FIELD,gameId);
+        newGame.put(GAME_STATE_FIELD,0);
+        newGame.put(GAME_MAX_PLAYERS_FIELD,maxPlayers);
+        ApiFuture<WriteResult> future = doc.set(newGame);
+        future.get();
+    }
+
+    public static void removeGame(String gameId){
 
     }
 

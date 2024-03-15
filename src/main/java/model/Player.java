@@ -45,6 +45,10 @@ public class Player {
         this.pseudo = pseudo;
     }
 
+    public void setUID(String uid) {
+        this.uid = uid;
+    }
+
     /**
      * 
      * getter for player's earnedStock
