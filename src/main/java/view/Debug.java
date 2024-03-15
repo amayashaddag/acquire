@@ -35,11 +35,7 @@ public class Debug extends JFrame {
         FlatDarculaLaf.setup();
 
         ArrayList<Player> l = new ArrayList<>();
-        l.add(Player.createHumanPlayer("caca1"));
-        l.add(Player.createHumanPlayer("caca2"));
-        l.add(Player.createHumanPlayer("caca3"));
-        l.add(Player.createHumanPlayer("caca4"));
-        l.add(Player.createHumanPlayer("caca5"));
+        l.add(Player.createHumanPlayer("Max"));
         GameController c = new GameController(l, l.get(0));
         c.getGameView().setVisible(true);
 

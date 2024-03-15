@@ -1,5 +1,7 @@
 package control;
 
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.*;
 
 import model.Board;
@@ -9,6 +11,8 @@ import model.Player;
 import tools.Point;
 import view.game.GameNotifications;
 import view.game.GameView;
+
+import javax.swing.*;
 
 /**
  * @author Amayas HADDAG
@@ -392,11 +396,6 @@ public class GameController {
      * @param player represents the player that is about to place a new cell.
      */
     public synchronized void handleCellPlacing(Point cellPosition, Player player) {
-        if (!player.equals(getCurrentPlayer())) {
-            gameView.showError(new IllegalArgumentException("It's not your turn!"));
-            return;
-        }
-
         resetNets();
         placeCell(cellPosition, player);
         if (board.thereArePlacedCorporations()) {
@@ -406,6 +405,9 @@ public class GameController {
 
         board.updateDeadCells();
         board.updatePlayerDeck(player);
+        if (board.isGameOver()) {
+            gameOver = true;
+        }
         // playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
 
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
