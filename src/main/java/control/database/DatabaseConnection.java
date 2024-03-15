@@ -61,7 +61,20 @@ public class DatabaseConnection {
         future.get();
     }
 
-    public static void removeGame(String gameId){
+    public static void removeGame(String gameId) throws Exception{
+        CollectionReference gameTable = database.collection(GAME_TABLE_NAME);
+        ApiFuture<QuerySnapshot> future = gameTable.whereEqualTo(GAME_ID_FIELD,gameId).get();
+        QuerySnapshot gameToRemove = future.get();
+        for (QueryDocumentSnapshot doc : gameToRemove) {
+            ApiFuture<WriteResult> deleteFuture = doc.getReference().delete();
+            deleteFuture.get();
+        }
+    }
+    public static void updateCash(int newCash,Player player,String gameId) throws Exception{
+        CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
+        ApiFuture<QuerySnapshot> snapshot = collection
+                .whereEqualTo(GAME_ID_FIELD,gameId)
+                .whereEqualTo(PLAYER_CASH_FIELD,newCash).get();
 
     }
 

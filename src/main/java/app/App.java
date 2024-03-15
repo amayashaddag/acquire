@@ -24,7 +24,10 @@ public class App {
         player.setUID("gtfcdtrdxfdr");
         DatabaseConnection.addPlayer("nouveau joueur ATHURRRRR",player);
         DatabaseConnection.createGame(26);
+        DatabaseConnection.removeGame("hUdqrlxIUbDP0IBI45Oa");
         DatabaseConnection.removePlayer(player);
+
+
 
 
     }
