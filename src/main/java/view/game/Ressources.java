@@ -107,5 +107,12 @@ public class Ressources {
                 case CONTINENTAL -> Ressources.Assets.PURPLE_TOWER_CELL;
             };
         }
+
+        public static Color getCorpColor(Corporation c) {
+            Image img = getCorpImage(c);
+            BufferedImage bfi = Ressources.imageToBufferedImage(img);
+            int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
+            return new Color(clr, true);
+        }
     }
 }

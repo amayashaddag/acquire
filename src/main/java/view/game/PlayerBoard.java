@@ -72,18 +72,15 @@ public class PlayerBoard extends javax.swing.JPanel {
             HashMap<Corporation, Integer> earnedStocks = p.getEarnedStocks();
 
             for (HashMap.Entry<Corporation, Integer> entry : earnedStocks.entrySet()) {
-                if (entry.getValue() > 0)
-                    res += "<span style='color: " + switch (entry.getKey()) {
-                        case CONTINENTAL -> "PURPLE";
-                        case WORLDWIDE -> "ORANGE";
-                        case TOWER -> "GREEN";
-                        case SACKSON -> "BLUE";
-                        case AMERICAN -> "RED";
-                        case FESTIVAL -> "YELLOW";
-                        case IMPERIAL -> "CYAN";
-                    } +";'> " + entry.getValue() + "</span>";
+                if (entry.getValue() > 0) {
+                    int rgb = Ressources.Assets.getCorpColor(entry.getKey()).getRGB();
+                    int red = (rgb >> 16) & 0xFF;
+                    int green = (rgb >> 8) & 0xFF;
+                    int blue = rgb & 0xFF;
+                    res += "<td style='color: rgb(" + red + " " + green + " " + blue + "); display: block; margin: 0 auto;'> " +
+                            + entry.getValue() + "</td>";
+                }
             }
-
             return res;
         }
 
@@ -97,30 +94,51 @@ public class PlayerBoard extends javax.swing.JPanel {
                 // TODO : afficher pp joueur
                 this.setText(player.getPseudo());
             } else if (this.getSize().equals(this.zoomingDimension)) {
-                this.setText("""
-                                <html>
-                                  <table>
-                                  <tr>
-                                    <td><b>Name</td>
-                                    <td>"""+player.getPseudo()+"""
-                                  </td>
-                                  </tr>
-                                  <tr>
-                                    <td><b>Cash</td>
-                                    <td>"""+player.getCash()+"""
-                                  $</td>
-                                  </tr>
-                                  <tr>
-                                     <td><b>Net</td>
-                                     <td>"""+player.getNet()+"""
-                                  $</td>
-                                  </tr>
-                                  <tr>
-                                    """+getPlayersActionsHTMLString(player)+"""
-                                  </tr>
-                                </table>
-                                </html>
-                                """);
+                if (player.equals(PlayerBoard.this.g.getPlayer()))
+                    this.setText("""
+                                    <html>
+                                      <table>
+                                      <tr>
+                                        <td><b>Name</td>
+                                        <td>"""+player.getPseudo()+"""
+                                      </td>
+                                      </tr>
+                                      <tr>
+                                        <td><b>Cash</td>
+                                        <td>"""+player.getCash()+"""
+                                      $</td>
+                                      </tr>
+                                      <tr>
+                                         <td><b>Net</td>
+                                         <td>"""+player.getNet()+"""
+                                      $</td>
+                                      </tr>
+                                      <tr>
+                                        <center>
+                                          """+getPlayersActionsHTMLString(player)+"""
+                                        </center>
+                                      </tr>
+                                    </table>
+                                    </html>
+                                    """);
+                else
+                    this.setText("""
+                                    <html>
+                                      <table>
+                                      <tr>
+                                        <td><b>Name</td>
+                                        <td>"""+player.getPseudo()+"""
+                                      </td>
+                                      </tr>
+                                      </tr>
+                                      <tr>
+                                         <td><b>Net</td>
+                                         <td>"""+player.getNet()+"""
+                                      $</td>
+                                      </tr>
+                                    </table>
+                                    </html>
+                                    """);
             } else {
                 this.setText("loading...");
             }

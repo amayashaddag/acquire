@@ -20,11 +20,7 @@ public class GlowingItemCorp extends PanelGlowingGradient {
         super();
         this.corp = corp;
         this.img = Ressources.Assets.getCorpImage(this.corp);
-
-
-        BufferedImage bfi = Ressources.imageToBufferedImage(img);
-        int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
-        this.color = new Color(clr, true);
+        this.color = Ressources.Assets.getCorpColor(corp);
 
         setGradientColor1(color.darker());
         setGradientColor2(color.brighter());
