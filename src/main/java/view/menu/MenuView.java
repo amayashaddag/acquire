@@ -1,19 +1,21 @@
 package view.menu;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
+import app.launcher.App;
+import control.game.GameController;
+import model.game.Player;
 import view.assets.Fonts;
 import view.frame.Form;
 import view.frame.GameFrame;
+import view.game.GameView;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MenuView extends Form {
     public final static int BUTTON_WIDTH = 700;
@@ -44,6 +46,16 @@ public class MenuView extends Form {
         playButton.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         playButton.setMaximumSize(buttonSize);
         buttonPanel.add(playButton);
+
+        JButton offlineMode = new JButton(MenuInterfaceMessages.OFFLINE_BUTTON_TEXT);
+        offlineMode.setAlignmentX(Component.CENTER_ALIGNMENT);
+        offlineMode.setFont(Fonts.BOLD_PARAGRAPH_FONT);
+        offlineMode.setMaximumSize(buttonSize);
+        offlineMode.addActionListener((ActionListener) -> {
+            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(MenuView.this);
+            App.launchOfflineGame(parent);
+        });
+        buttonPanel.add(offlineMode);
 
         JButton optionsButton = new JButton(MenuInterfaceMessages.OPTIONS);
         optionsButton.setAlignmentX(Component.CENTER_ALIGNMENT);

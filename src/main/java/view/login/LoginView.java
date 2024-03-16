@@ -4,13 +4,15 @@ import view.assets.Fonts;
 import com.formdev.flatlaf.extras.components.FlatButton;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
-import control.auth.FirebaseClient;
+import control.firebaseinit.FirebaseClient;
 import view.frame.Form;
 import view.frame.GameFrame;
+import view.menu.MenuView;
 
 public class LoginView extends JPanel {
 
@@ -66,6 +68,15 @@ public class LoginView extends JPanel {
         comeBackToLoginButton.addActionListener((ActionListener) -> fromSignInMenuToLoginMenu());
         comeBackToLoginButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
+        FlatButton offlineModeButton = new FlatButton();
+        offlineModeButton.setText(LoginInterfaceResources.OFFLINE_BUTTON_TEXT);
+        offlineModeButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
+        offlineModeButton.addActionListener((ActionListener) -> {
+            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(LoginView.this);
+            MenuView menuView = new MenuView();
+            parent.setPanel(menuView);
+        });
+
 
         EmailField emailArea = new EmailField();
         emailArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
@@ -104,6 +115,12 @@ public class LoginView extends JPanel {
             }
         });
 
+        JPanel offlineModeContainer = new JPanel();
+        offlineModeContainer.add(offlineModeButton);
+        offlineModeContainer.setPreferredSize(
+                new Dimension(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4)
+        );
+
         loginAndSignUpButtonContainer.add(loginButton);
         loginAndSignUpButtonContainer.add(signInButton);
 
@@ -120,6 +137,8 @@ public class LoginView extends JPanel {
         loginComponentContainer.add(passwordArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/7));
         loginComponentContainer.add(loginAndSignUpButtonContainer);
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
+        loginComponentContainer.add(offlineModeContainer);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
 
         this.setLayout(new GridBagLayout());
