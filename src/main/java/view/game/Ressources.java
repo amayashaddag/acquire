@@ -1,6 +1,6 @@
 package view.game;
 
-import model.Corporation;
+import model.game.Corporation;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

@@ -1,10 +1,10 @@
-package model;
+package model.game;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.BiFunction;
 
-import tools.Point;
+import model.tools.Point;
 
 public class Board {
     public final static int BOARD_WIDTH = 9, BOARD_HEIGHT = 9;

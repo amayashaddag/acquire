@@ -1,4 +1,4 @@
-package tools;
+package model.tools;
 
 public class Point {
 

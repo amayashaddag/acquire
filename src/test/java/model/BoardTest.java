@@ -7,9 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import model.game.Board;
+import model.game.Corporation;
 import org.junit.jupiter.api.Test;
 
-import tools.Point;
+import model.tools.Point;
 
 public class BoardTest {
     @Test

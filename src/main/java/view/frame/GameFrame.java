@@ -1,4 +1,4 @@
-package view;
+package view.frame;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -8,8 +8,8 @@ import javax.swing.JOptionPane;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
-import control.GameController;
-import model.Player;
+import control.game.GameController;
+import model.game.Player;
 import raven.toast.Notifications;
 import view.game.GameView;
 

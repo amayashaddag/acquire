@@ -1,13 +1,13 @@
 package view.game;
 
-import model.Corporation;
-import model.Player;
+import model.game.Corporation;
+import model.game.Player;
 
 import java.awt.*;
 import java.util.HashMap;
 
 import net.miginfocom.swing.MigLayout;
-import tools.AutoSetter;
+import model.tools.AutoSetter;
 
 import javax.swing.*;
 

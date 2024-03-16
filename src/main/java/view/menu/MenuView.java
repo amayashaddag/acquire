@@ -1,4 +1,4 @@
-package menu;
+package view.menu;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -7,9 +7,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import assets.Fonts;
-import view.Form;
-import view.GameFrame;
+import view.assets.Fonts;
+import view.frame.Form;
+import view.frame.GameFrame;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

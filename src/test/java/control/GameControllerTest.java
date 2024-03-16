@@ -4,12 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.LinkedList;
 import java.util.List;
-import org.junit.jupiter.api.Test;
 
-import model.Board;
-import model.Corporation;
-import model.Player;
-import tools.Point;
+import model.game.Board;
+import model.game.Corporation;
+import model.game.Player;
+import model.tools.Point;
 
 public class GameControllerTest {
 

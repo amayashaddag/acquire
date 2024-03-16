@@ -1,4 +1,4 @@
-package app;
+package app.launcher;
 import control.network.*;
 
 import javax.imageio.IIOException;

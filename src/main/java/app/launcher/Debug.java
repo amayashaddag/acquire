@@ -1,33 +1,25 @@
-package view;
+package app.launcher;
 
 import com.raven.event.EventItem;
 import com.raven.model.ModelItem;
 import com.raven.swing.Background;
 import com.raven.swing.MainPanel;
 import com.raven.swing.win_button.WinButton;
-import org.jdesktop.animation.timing.TimingTargetAdapter;
-import org.jdesktop.animation.timing.interpolation.PropertySetter;
 import com.raven.form.FormHome;
 
-import javaswingdev.pggb.PanelGlowingGradient;
-import model.Corporation;
-import net.miginfocom.swing.MigLayout;
+import view.frame.GameFrame;
 import view.game.*;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+
 import com.formdev.flatlaf.FlatDarculaLaf;
 
-import control.GameController;
-import model.Player;
+import control.game.GameController;
+import model.game.Player;
 
 import javax.swing.*;
-import javax.swing.plaf.LayerUI;
 
 public class Debug extends JFrame {
 

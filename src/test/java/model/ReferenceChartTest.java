@@ -1,6 +1,9 @@
 package model;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import model.game.Corporation;
+import model.game.ReferenceChart;
 import org.junit.jupiter.api.Test;
 
 public class ReferenceChartTest {

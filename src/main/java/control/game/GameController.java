@@ -1,18 +1,14 @@
-package control;
+package control.game;
 
-import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.*;
 
-import model.Board;
-import model.Cell;
-import model.Corporation;
-import model.Player;
-import tools.Point;
+import model.game.Board;
+import model.game.Cell;
+import model.game.Corporation;
+import model.game.Player;
+import model.tools.Point;
 import view.game.GameNotifications;
 import view.game.GameView;
-
-import javax.swing.*;
 
 /**
  * @author Amayas HADDAG

@@ -1,21 +1,20 @@
 package view.game;
 
-import control.GameController;
-import model.Corporation;
-import model.Player;
-import model.Board;
-import model.Cell;
+import control.game.GameController;
+import model.game.Corporation;
+import model.game.Player;
+import model.game.Board;
+import model.game.Cell;
 import net.miginfocom.swing.MigLayout;
-import tools.Point;
-import view.Form;
-import view.GameFrame;
+import model.tools.Point;
+import view.frame.Form;
+import view.frame.GameFrame;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ import raven.toast.Notifications;
  * 
  * @author Arthur Deck
  * @version 0.1
- * @see view.Form
+ * @see Form
  */
 public class GameView extends Form {
 
@@ -83,7 +82,7 @@ public class GameView extends Form {
                 x += cellWidth / 2;
                 y += (cellHeight / 3);
 
-                if (new tools.Point(row, col).equals(jetonsPanel.getSelection()))
+                if (new Point(row, col).equals(jetonsPanel.getSelection()))
                     g2d.drawImage(Ressources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOwned())
                     g2d.drawImage(Ressources.Assets.getCorpImage(currentCell.getCorporation()), x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
@@ -108,7 +107,7 @@ public class GameView extends Form {
     public Corporation getCorporationChoice(List<Corporation> unplacedCorps) {
         setEnabled(false);
         jetonsPanel.setVisible(false);
-        tools.Box<Corporation> monitor = new tools.Box<>(null);
+        model.tools.Box<Corporation> monitor = new model.tools.Box<>(null);
         ChoiceCorpPane c = new ChoiceCorpPane(unplacedCorps, monitor);
         add(c, BorderLayout.CENTER);
 
@@ -414,7 +413,7 @@ public class GameView extends Form {
     }
 
     /**
-     * {@link view.Form#setOn(GameFrame)}
+     * {@link Form#setOn(GameFrame)}
      */
     public void setOn(GameFrame g) {
         this.setSize(g.getWidth(), g.getHeight());

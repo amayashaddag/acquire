@@ -1,4 +1,4 @@
-package model;
+package model.game;
 
 public class ReferenceChart {
     public static final int FIRST_CATEGORY_STARTING_STOCK_PRICE = 200;

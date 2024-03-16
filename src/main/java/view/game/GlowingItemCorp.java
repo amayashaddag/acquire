@@ -1,10 +1,9 @@
 package view.game;
 
 import javaswingdev.pggb.PanelGlowingGradient;
-import model.Corporation;
+import model.game.Corporation;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 /**
  * A pane which show a Tower.

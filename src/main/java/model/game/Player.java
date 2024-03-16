@@ -1,11 +1,11 @@
-package model;
+package model.game;
 
 import java.util.HashMap;
 /** @author Igor Ait Ali Braham
  * @version 1.0
  */
 
-import tools.Point;
+import model.tools.Point;
 
 public class Player {
 

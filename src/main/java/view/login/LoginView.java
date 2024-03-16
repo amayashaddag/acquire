@@ -1,6 +1,6 @@
-package login;
+package view.login;
 
-import assets.Fonts;
+import view.assets.Fonts;
 import com.formdev.flatlaf.extras.components.FlatButton;
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +9,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import control.auth.FirebaseClient;
-import view.Form;
-import view.GameFrame;
+import view.frame.Form;
+import view.frame.GameFrame;
 
 public class LoginView extends JPanel {
 

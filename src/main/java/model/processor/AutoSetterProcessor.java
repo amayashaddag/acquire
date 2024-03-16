@@ -1,7 +1,7 @@
 // javac -cp "lib/*:src/main/java" -d build src/main/java/processor/AutoSetterProcessor.java
 // javac -cp "lib/*:src/main/java:build" -processor processor.AutoSetterProcessor -d build src/main/java/view/Debug.java
 
-package processor;
+package model.processor;
 
 import java.util.*;
 
@@ -13,7 +13,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic.Kind;
 
-import tools.AutoSetter;
+import model.tools.AutoSetter;
 
 @SupportedAnnotationTypes("tools.AutoSetter")
 @SupportedSourceVersion(SourceVersion.RELEASE_17)

@@ -1,6 +1,7 @@
 package view.game;
 
-import tools.AutoSetter;
+import model.tools.AutoSetter;
+import model.tools.Point;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -19,7 +20,7 @@ import javax.swing.*;
 @AutoSetter(typeParam = GameView.class)
 public class JetonsPanel extends JPanel {
     final private GameView g;
-    private tools.Point selection = null;
+    private Point selection = null;
     private final JPanel buttonPanel;
 
     JetonsPanel(GameView g) {
@@ -39,14 +40,14 @@ public class JetonsPanel extends JPanel {
         buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new GridLayout(1, 6));
 
-        for (tools.Point p : g.player.getDeck()) {
+        for (Point p : g.player.getDeck()) {
             buttonPanel.add(new JetonButton(p));
         }
 
         return buttonPanel;
     }
 
-    public tools.Point getSelection() {
+    public Point getSelection() {
         return selection;
     }
 
@@ -83,9 +84,9 @@ public class JetonsPanel extends JPanel {
     }
 
     private class JetonButton extends JButton {
-        tools.Point p;
+        Point p;
 
-        JetonButton(tools.Point p) {
+        JetonButton(Point p) {
             super();
             this.p = p;
             this.setFocusPainted(false);
@@ -94,7 +95,7 @@ public class JetonsPanel extends JPanel {
                 new Thread(() -> {
                     g.getController().handleCellPlacing(p, g.getPlayer());
 
-                    tools.Point[] playerDeck = g.getPlayer().getDeck();
+                    Point[] playerDeck = g.getPlayer().getDeck();
                     if (playerDeck.length == 0) {
                         buttonPanel.removeAll();
                         g.repaint();
@@ -139,7 +140,7 @@ public class JetonsPanel extends JPanel {
             });
         }
 
-        private void setPoint(tools.Point p) {
+        private void setPoint(Point p) {
             this.p.setX(p.getX());
             this.p.setY(p.getY());
         }

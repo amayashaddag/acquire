@@ -1,4 +1,4 @@
-package assets;
+package view.assets;
 
 import java.awt.Font;
 import java.io.File;

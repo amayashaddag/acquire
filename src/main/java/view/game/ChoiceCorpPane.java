@@ -1,6 +1,7 @@
 package view.game;
 
-import model.Corporation;
+import model.game.Corporation;
+import model.tools.Box;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -17,8 +18,8 @@ import java.util.List;
  * @version 1
  */
 public class ChoiceCorpPane extends JComponent {
-    private tools.Box<Corporation> monitor;
-    public ChoiceCorpPane(List<Corporation> corps, tools.Box<Corporation> monitor) {
+    private Box<Corporation> monitor;
+    public ChoiceCorpPane(List<Corporation> corps, Box<Corporation> monitor) {
         this.monitor = monitor;
 
         setOpaque(false);
