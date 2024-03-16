@@ -11,7 +11,12 @@ public class Player {
     private int cash;
     private HashMap<Corporation,Integer> earnedStocks;
     private Point[] deck;
-     
+    private String uid;
+
+    public String getUID() {
+        return uid;
+    }
+
     /**
      * 
      * getter for player's earnedStock
@@ -33,7 +38,7 @@ public class Player {
     /**
      * change player's deck with the deck in argument
      * 
-     * @param new deck of the player type: Point[]
+     * @param newDeck of the player type: Point[]
      */
     public void setDeck(Point[] newDeck){
         this.deck = newDeck;
@@ -92,7 +97,7 @@ public class Player {
     /**
      * get the Point of player's deck at index gave in argument
      * 
-     * @param position of the point to get in tghe deck
+     * @param index of the point to get in tghe deck
      * @return position in the map of deck[index]
      */
     public Point getCell(int index){

@@ -1,5 +1,9 @@
 build/
-debug/
+.vscode/
+out/
+*.iml
 .idea/
+debug/
 *.class
 *.xml
+

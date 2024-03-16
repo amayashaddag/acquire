@@ -1,15 +1,10 @@
 package control.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import com.google.cloud.firestore.Firestore;
+import com.google.firebase.cloud.FirestoreClient;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/acquire";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "";
+    private static final Firestore database = FirestoreClient.getFirestore();
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USERNAME, PASSWORD);
-    }
+
 }
