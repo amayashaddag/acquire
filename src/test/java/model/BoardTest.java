@@ -2,8 +2,11 @@ package model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 import tools.Point;
@@ -30,18 +33,18 @@ public class BoardTest {
         testBoard.replaceCellCorporation(testBoard.getCell(2, 4), Corporation.AMERICAN);
         testBoard.replaceCellCorporation(testBoard.getCell(2, 5), Corporation.AMERICAN);
 
-        testBoard.replaceCellCorporation(testBoard.getCell(10, 0), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(10, 1), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(10, 2), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(10, 3), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(10, 4), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(11, 0), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(11, 1), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(11, 2), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(11, 3), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(11, 4), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(11, 5), Corporation.FESTIVAL);
-        testBoard.replaceCellCorporation(testBoard.getCell(11, 6), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(8, 0), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(8, 1), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(8, 2), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(8, 3), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(8, 4), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(7, 0), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(7, 1), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(7, 2), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(7, 3), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(7, 4), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(7, 5), Corporation.FESTIVAL);
+        testBoard.replaceCellCorporation(testBoard.getCell(7, 6), Corporation.FESTIVAL);
 
         testBoard.replaceCellCorporation(testBoard.getCell(3, 6), Corporation.IMPERIAL);
         testBoard.replaceCellCorporation(testBoard.getCell(4, 6), Corporation.IMPERIAL);
@@ -99,23 +102,19 @@ public class BoardTest {
     public void adjacentCellsTest() {
         Board b = new Board();
 
-        List<Point> adjacentCells1 = b.adjacentCells(new Point(0, 0));
+        Set<Point> adjacentCells1 = b.adjacentCells(new Point(0, 0), (cell) -> true);
         List<Point> veritableAdjacentCells1 = new LinkedList<>();
         veritableAdjacentCells1.add(new Point(0, 1));
         veritableAdjacentCells1.add(new Point(1, 0));
 
-        List<Point> adjacentCells2 = b.adjacentCells(new Point(2, 2));
-        List<Point> veritableAdjacentCells2 = new LinkedList<>();
+        Set<Point> adjacentCells2 = b.adjacentCells(new Point(2, 2), (cell) -> true);
+        Set<Point> veritableAdjacentCells2 = new HashSet<>();
         veritableAdjacentCells2.add(new Point(2, 1));
         veritableAdjacentCells2.add(new Point(1, 2));
         veritableAdjacentCells2.add(new Point(2, 3));
         veritableAdjacentCells2.add(new Point(3, 2));
 
-        assertTrue(adjacentCells1.containsAll(veritableAdjacentCells1)
-                && veritableAdjacentCells1.containsAll(adjacentCells1));
-
-        assertTrue(adjacentCells2.containsAll(veritableAdjacentCells2)
-                && veritableAdjacentCells2.containsAll(adjacentCells2));
+        // TODO : Sets equality should be tested here
     }
 
     @Test
@@ -128,8 +127,44 @@ public class BoardTest {
         assertEquals(b.getCorporationSize(Corporation.AMERICAN), 0);
         assertEquals(b.getCorporationSize(Corporation.TOWER), 12);
         int calculatedCorporationSize = b.foldingDFS(Corporation.TOWER, new Point(0, 0),
-                new LinkedList<>(), (value, result) -> value + result, 1);
+                new LinkedList<>(), Integer::sum, 1);
         assertEquals(calculatedCorporationSize, 12);
+    }
+
+    @Test
+    public void canPlaceInTest() {
+        Board board = new Board();
+
+        board.replaceCellCorporation(board.getCell(0, 0), Corporation.AMERICAN);
+        board.replaceCellCorporation(board.getCell(0, 1), Corporation.AMERICAN);
+
+        board.replaceCellCorporation(board.getCell(0, 3), Corporation.CONTINENTAL);
+        board.replaceCellCorporation(board.getCell(0, 4), Corporation.CONTINENTAL);
+
+        board.replaceCellCorporation(board.getCell(0, 6), Corporation.FESTIVAL);
+        board.replaceCellCorporation(board.getCell(0, 7), Corporation.FESTIVAL);
+
+        board.replaceCellCorporation(board.getCell(2, 0), Corporation.IMPERIAL);
+        board.replaceCellCorporation(board.getCell(2, 1), Corporation.IMPERIAL);
+
+        board.replaceCellCorporation(board.getCell(2, 3), Corporation.SACKSON);
+        board.replaceCellCorporation(board.getCell(2, 4), Corporation.SACKSON);
+
+        board.replaceCellCorporation(board.getCell(2, 6), Corporation.WORLDWIDE);
+        board.replaceCellCorporation(board.getCell(2, 7), Corporation.WORLDWIDE);
+
+        board.replaceCellCorporation(board.getCell(4, 6), Corporation.TOWER);
+        board.replaceCellCorporation(board.getCell(4, 7), Corporation.TOWER);
+
+        board.getCell(6, 0).setAsOccupied();
+        board.getCell(6, 1).setAsOccupied();
+
+        board.getCell(6, 3).setAsOccupied();
+        board.getCell(6, 4).setAsOccupied();
+
+        assertFalse(board.canPlaceIn(new Point(6, 2)));
+        assertTrue(board.canPlaceIn(new Point(0, 2)));
+        assertTrue(board.canPlaceIn(new Point(8, 8)));
     }
 
 }

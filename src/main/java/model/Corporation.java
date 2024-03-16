@@ -12,13 +12,13 @@ public enum Corporation {
     @Override
     public String toString() {
         switch(this) {
-            case AMERICAN: return "A";
-            case CONTINENTAL: return "C";
-            case FESTIVAL: return "F";
-            case IMPERIAL: return "I";
-            case SACKSON: return "S";
-            case TOWER: return "T";
-            case WORLDWIDE: return "W";
+            case AMERICAN: return "American";
+            case CONTINENTAL: return "Continental";
+            case FESTIVAL: return "Festival";
+            case IMPERIAL: return "Imperial";
+            case SACKSON: return "Sackson";
+            case TOWER: return "Tower";
+            case WORLDWIDE: return "Worldwide";
             default: return "";
         }
     }

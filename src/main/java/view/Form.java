@@ -1,4 +1,4 @@
-package frame;
+package view;
 
 import javax.swing.JPanel;
 
@@ -12,8 +12,8 @@ import javax.swing.JPanel;
  * @author Arthur Deck
  * @version 1
  */
+@Deprecated
 public abstract class Form extends JPanel {
-
     /**
      * 
      * <p> This method set the form on the current GameFram.  </p>

@@ -1,4 +1,4 @@
-package frame;
+package view;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -9,8 +9,9 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 import control.GameController;
-import game.GameView;
 import model.Player;
+import raven.toast.Notifications;
+import view.game.GameView;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 
@@ -21,18 +22,13 @@ import com.formdev.flatlaf.FlatDarculaLaf;
  * @author Arthur Deck
  * @version 0.1
  */
+@Deprecated
 public class GameFrame extends JFrame {
     public final static int DEFAULT_WIDTH = 1200;
     public final static int DEFAULT_HEIGHT = 900;
 
     public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 
-    /**
-     * For inizialise the view
-     * 
-     * @param player : the player will seen this View
-     * @param controller : current game superviser
-     */
     public GameFrame() {
         super();
         FlatDarculaLaf.setup();
@@ -43,7 +39,7 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-        setGameView(null, null);
+        Notifications.getInstance().setJFrame(this);
     }
 
     public void setGameView(GameController controller, Player player) {
@@ -61,7 +57,6 @@ public class GameFrame extends JFrame {
     private void setForm(Form form) {
         this.getContentPane().removeAll();
         form.setOn(this);
-        this.getContentPane().add(form);
         this.repaint();
         this.revalidate();
     }

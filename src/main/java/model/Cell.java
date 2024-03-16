@@ -46,6 +46,10 @@ public class Cell {
         this.cellState = CellState.OCCUPIED;
     }
 
+    public void setAsDead() {
+        this.cellState = CellState.DEAD;
+    }
+
     public String toString() {
         switch (cellState) {
             case EMPTY: return ".";

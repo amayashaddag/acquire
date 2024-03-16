@@ -8,8 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import assets.Fonts;
-import frame.Form;
-import frame.GameFrame;
+import view.Form;
+import view.GameFrame;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

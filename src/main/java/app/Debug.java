@@ -1,13 +1,14 @@
 package app;
 
+import javax.swing.JFrame;
+import login.*;
+
 import control.auth.FirebaseClient;
-import frame.GameFrame;
-import login.LoginView;
 
 public class Debug {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         try {
-            GameFrame frame = new GameFrame();
+            JFrame frame = new JFrame();
             LoginView loginView = new LoginView();
             FirebaseClient.initialize();
 

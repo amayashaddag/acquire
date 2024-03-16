@@ -9,8 +9,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import control.auth.FirebaseClient;
-import frame.Form;
-import frame.GameFrame;
+import view.Form;
+import view.GameFrame;
 
 public class LoginView extends JPanel {
 
