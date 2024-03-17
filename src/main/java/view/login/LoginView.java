@@ -1,10 +1,21 @@
 package view.login;
 
+import control.game.GameController;
+import model.game.Player;
 import view.assets.Fonts;
 import com.formdev.flatlaf.extras.components.FlatButton;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -12,7 +23,7 @@ import com.google.firebase.auth.UserRecord;
 import control.firebaseinit.FirebaseClient;
 import view.frame.Form;
 import view.frame.GameFrame;
-import view.menu.MenuView;
+import view.game.GameView;
 
 public class LoginView extends JPanel {
 
@@ -73,8 +84,17 @@ public class LoginView extends JPanel {
         offlineModeButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
         offlineModeButton.addActionListener((ActionListener) -> {
             GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(LoginView.this);
-            MenuView menuView = new MenuView();
-            parent.setPanel(menuView);
+            SwingUtilities.invokeLater(() -> {
+                parent.setVisible(true);
+            });
+
+            Player p = Player.createHumanPlayer("PLAYER");
+            List<Player> players = new LinkedList<>();
+            players.add(p);
+
+            GameController controller = new GameController(players, p);
+            GameView view = controller.getGameView();
+            parent.setPanel(view);
         });
 
 

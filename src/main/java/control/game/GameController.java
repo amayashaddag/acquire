@@ -403,6 +403,7 @@ public class GameController {
         board.updatePlayerDeck(player);
         if (board.isGameOver()) {
             gameOver = true;
+            gameView.endGame();
         }
         // playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
 

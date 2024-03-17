@@ -47,16 +47,6 @@ public class MenuView extends Form {
         playButton.setMaximumSize(buttonSize);
         buttonPanel.add(playButton);
 
-        JButton offlineMode = new JButton(MenuInterfaceMessages.OFFLINE_BUTTON_TEXT);
-        offlineMode.setAlignmentX(Component.CENTER_ALIGNMENT);
-        offlineMode.setFont(Fonts.BOLD_PARAGRAPH_FONT);
-        offlineMode.setMaximumSize(buttonSize);
-        offlineMode.addActionListener((ActionListener) -> {
-            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(MenuView.this);
-            App.launchOfflineGame(parent);
-        });
-        buttonPanel.add(offlineMode);
-
         JButton optionsButton = new JButton(MenuInterfaceMessages.OPTIONS);
         optionsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         optionsButton.setFont(Fonts.BOLD_PARAGRAPH_FONT);
