@@ -72,10 +72,25 @@ public class DatabaseConnection {
     }
     public static void updateCash(int newCash,Player player,String gameId) throws Exception{
         CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
-        ApiFuture<QuerySnapshot> snapshot = collection
+        ApiFuture<QuerySnapshot> future = collection
                 .whereEqualTo(GAME_ID_FIELD,gameId)
-                .whereEqualTo(PLAYER_CASH_FIELD,newCash).get();
+                .whereEqualTo(UID_PLAYER_FIELD,player.getUID()).get();
+        QuerySnapshot snapshot = future.get();
+        for (QueryDocumentSnapshot doc : snapshot){
+            WriteResult docToUpdate = doc.getReference().update(PLAYER_CASH_FIELD,newCash).get();
+        }
 
+    }
+
+    public static void updateNet(int newNet,Player player,String gameId) throws Exception {
+        CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
+        ApiFuture<QuerySnapshot> future = collection
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .whereEqualTo(UID_PLAYER_FIELD, player.getUID()).get();
+        QuerySnapshot snapshot = future.get();
+        for (QueryDocumentSnapshot doc : snapshot) {
+            WriteResult docToUpdate = doc.getReference().update(PLAYER_NET_FIELD, newNet).get();
+        }
     }
 
 }
