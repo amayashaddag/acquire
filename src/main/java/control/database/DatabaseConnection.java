@@ -22,6 +22,7 @@ public class DatabaseConnection {
 
     public static String GAME_ID_FIELD = "game-id";
 
+    public static String STOCKS_TABLE_NAME = "stocks";
 
     public static String PLAYER_CASH_FIELD = "cash";
     public static String PLAYER_NET_FIELD = "net";
@@ -139,4 +140,17 @@ public class DatabaseConnection {
         return newPlacedCells;
     }
 
+    public void setStocks(Player player, String gameId) throws Exception{
+            CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
+            ApiFuture<QuerySnapshot> future = collection
+                    .whereEqualTo(GAME_ID_FIELD,gameId)
+                    .whereEqualTo(UID_PLAYER_FIELD,player.getUID())
+                    .get();
+            QuerySnapshot snapshot = future.get();
+            for (QueryDocumentSnapshot doc : snapshot) {
+                for (Map.Entry<Corporation,Integer> mapentry : player.getEarnedStocks().entrySet()){
+                    //WriteResult docToUpdate = doc.getReference().
+                }
+            }
+    }
 }

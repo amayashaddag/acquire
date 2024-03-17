@@ -49,6 +49,7 @@ public class Player {
         this.uid = uid;
     }
 
+
     /**
      * 
      * getter for player's earnedStock

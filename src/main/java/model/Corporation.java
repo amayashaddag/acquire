@@ -1,5 +1,8 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public enum Corporation {
     WORLDWIDE,
     SACKSON,
@@ -22,6 +25,8 @@ public enum Corporation {
             default: return "";
         }
     }
+
+
 
     public static Corporation getCorporationFromName(String c) {
         if (AMERICAN.toString().equals(c)) {
