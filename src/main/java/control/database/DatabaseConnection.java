@@ -87,25 +87,22 @@ public class DatabaseConnection {
         }
     }
     public static void updateCash(int newCash,Player player,String gameId) throws Exception{
-        CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
-        ApiFuture<QuerySnapshot> future = collection
-                .whereEqualTo(GAME_ID_FIELD,gameId)
-                .whereEqualTo(UID_PLAYER_FIELD,player.getUID()).get();
-        QuerySnapshot snapshot = future.get();
-        for (QueryDocumentSnapshot doc : snapshot){
-            WriteResult docToUpdate = doc.getReference().update(PLAYER_CASH_FIELD,newCash).get();
-        }
+        update(newCash, player, gameId, PLAYER_CASH_FIELD);
 
     }
 
     public static void updateNet(int newNet,Player player,String gameId) throws Exception {
+        update(newNet, player, gameId, PLAYER_NET_FIELD);
+    }
+
+    private static void update(int newNet, Player player, String gameId, String playerNetField) throws InterruptedException, java.util.concurrent.ExecutionException {
         CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
         ApiFuture<QuerySnapshot> future = collection
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .whereEqualTo(UID_PLAYER_FIELD, player.getUID()).get();
         QuerySnapshot snapshot = future.get();
         for (QueryDocumentSnapshot doc : snapshot) {
-            WriteResult docToUpdate = doc.getReference().update(PLAYER_NET_FIELD, newNet).get();
+            WriteResult docToUpdate = doc.getReference().update(playerNetField, newNet).get();
         }
     }
 
