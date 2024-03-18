@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import view.assets.Fonts;
+import view.assets.MenuInterfaceMessages;
 import view.frame.Form;
 import view.frame.GameFrame;
 

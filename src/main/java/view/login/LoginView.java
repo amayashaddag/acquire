@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import control.auth.FirebaseClient;
+import view.assets.LoginInterfaceResources;
 import view.frame.Form;
 import view.frame.GameFrame;
 

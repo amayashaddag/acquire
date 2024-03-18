@@ -7,6 +7,7 @@ import com.raven.swing.MainPanel;
 import com.raven.swing.win_button.WinButton;
 import com.raven.form.FormHome;
 
+import view.assets.GameResources;
 import view.frame.GameFrame;
 import view.game.*;
 
@@ -118,7 +119,7 @@ public class Debug extends JFrame {
             Graphics2D g = resizedImage.createGraphics();
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                     RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g.drawImage(Ressources.Assets.BLUE_TOWER_CELL, 0, 0, targetWidth, targetHeight, null);
+            g.drawImage(GameResources.Assets.BLUE_TOWER_CELL, 0, 0, targetWidth, targetHeight, null);
             g.dispose();
             home.addItem(new ModelItem(ID++, "ItemName", "Descrption", 160, "Adidas", new ImageIcon(resizedImage)));
         }

@@ -1,4 +1,4 @@
-package view.menu;
+package view.assets;
 
 public class MenuInterfaceMessages {
    public static final String PLAY = "Play";

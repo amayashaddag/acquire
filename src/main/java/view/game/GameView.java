@@ -7,6 +7,7 @@ import model.game.Board;
 import model.game.Cell;
 import net.miginfocom.swing.MigLayout;
 import model.tools.Point;
+import view.assets.GameResources;
 import view.frame.Form;
 import view.frame.GameFrame;
 import java.awt.*;
@@ -64,7 +65,7 @@ public class GameView extends Form {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
 
-        g2d.drawImage(Ressources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
+        g2d.drawImage(GameResources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
         g2d.setTransform(mouseListener.getAffineTransform());
 
         Board board = controller.getBoard();
@@ -83,13 +84,13 @@ public class GameView extends Form {
                 y += (cellHeight / 3);
 
                 if (new Point(row, col).equals(jetonsPanel.getSelection()))
-                    g2d.drawImage(Ressources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOwned())
-                    g2d.drawImage(Ressources.Assets.getCorpImage(currentCell.getCorporation()), x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.Assets.getCorpImage(currentCell.getCorporation()), x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOccupied())
-                    g2d.drawImage(Ressources.Assets.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.Assets.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isEmpty())
-                    g2d.drawImage(Ressources.Assets.EMPTY_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.Assets.EMPTY_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
             }
         }
 

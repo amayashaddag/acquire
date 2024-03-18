@@ -2,6 +2,7 @@ package view.game;
 
 import javaswingdev.pggb.PanelGlowingGradient;
 import model.game.Corporation;
+import view.assets.GameResources;
 
 import java.awt.*;
 
@@ -18,8 +19,8 @@ public class GlowingItemCorp extends PanelGlowingGradient {
     public GlowingItemCorp(Corporation corp) {
         super();
         this.corp = corp;
-        this.img = Ressources.Assets.getCorpImage(this.corp);
-        this.color = Ressources.Assets.getCorpColor(corp);
+        this.img = GameResources.Assets.getCorpImage(this.corp);
+        this.color = GameResources.Assets.getCorpColor(corp);
 
         setGradientColor1(color.darker());
         setGradientColor2(color.brighter());
