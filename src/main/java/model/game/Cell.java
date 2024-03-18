@@ -55,7 +55,18 @@ public class Cell {
             case EMPTY: return ".";
             case DEAD : return "*";
             case OCCUPIED : return "+";
-            case OWNED : return currentCorporation.toString();
+            case OWNED : {
+                switch (currentCorporation) {
+                    case AMERICAN: return "A";
+                    case CONTINENTAL: return "C";
+                    case FESTIVAL: return "F";
+                    case IMPERIAL: return "I";
+                    case SACKSON: return "S";
+                    case TOWER: return "T";
+                    case WORLDWIDE: return "W";
+                    default: return "";
+                }
+            }
             default : return "";
         }
     }
