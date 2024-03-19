@@ -20,6 +20,7 @@ public class Player {
     private volatile Point[] deck;
     private PlayerType playerType;
     private String pseudo;
+    private String uid;
 
     public static final int INITIAL_CASH = 6000;
     private static int botNumber = 0;
@@ -67,6 +68,10 @@ public class Player {
 
     public int getNet() {
         return net;
+    }
+
+    public String getUID() {
+        return uid;
     }
 
     public void setNet(int net) {
