@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 import raven.toast.Notifications;
+import view.assets.GameResources;
 
 /**
  * The panel which has the map
@@ -64,7 +65,7 @@ public class GameView extends Form {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
 
-        g2d.drawImage(Ressources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
+        g2d.drawImage(GameResources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
         g2d.setTransform(mouseListener.getAffineTransform());
 
         Board board = controller.getBoard();
@@ -83,13 +84,13 @@ public class GameView extends Form {
                 y += (cellHeight / 3);
 
                 if (new Point(row, col).equals(jetonsPanel.getSelection()))
-                    g2d.drawImage(Ressources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOwned())
-                    g2d.drawImage(Ressources.Assets.getCorpImage(currentCell.getCorporation()), x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.Assets.getCorpImage(currentCell.getCorporation()), x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOccupied())
-                    g2d.drawImage(Ressources.Assets.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.Assets.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isEmpty())
-                    g2d.drawImage(Ressources.Assets.EMPTY_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.Assets.EMPTY_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
             }
         }
 
@@ -378,9 +379,11 @@ public class GameView extends Form {
         for (Component comp : jp.getComponents())
             if (comp instanceof Pane) {
                 Map.Entry<Corporation, Integer> entry = ((Pane) comp).getEntry();
-                switch (((Pane) comp).getChoice()) {
-                    case SELL -> toSell.put(entry.getKey(), entry.getValue());
-                    case TRADE -> toTrade.put(entry.getKey(), entry.getValue());
+                Pane.SKT choice = ((Pane) comp).getChoice();
+                if (choice == Pane.SKT.SELL) {
+                    toSell.put(entry.getKey(), entry.getValue());
+                } else if (choice == Pane.SKT.TRADE) {
+                    toTrade.put(entry.getKey(), entry.getValue());
                 }
             }
 

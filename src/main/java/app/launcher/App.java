@@ -1,3 +1,4 @@
+
 package app.launcher;
 
 import com.formdev.flatlaf.FlatDarculaLaf;

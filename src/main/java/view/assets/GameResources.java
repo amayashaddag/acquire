@@ -1,4 +1,4 @@
-package view.game;
+package view.assets;
 
 import model.game.Corporation;
 
@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
  * @author Arthur Deck
  * @version 0.1
  */
-public class Ressources {
+public class GameResources {
     public static final String MAIN_PATH = "src/main/";
     public static final String RESSOURCES_PATH = "ressources/";
     public static final String IMAGES_PATH = "images/game/";
@@ -98,19 +98,19 @@ public class Ressources {
 
         public static Image getCorpImage(Corporation c) {
             return switch (c) {
-                case IMPERIAL -> Ressources.Assets.CYAN_TOWER_CELL;
-                case FESTIVAL -> Ressources.Assets.YELLOW_TOWER_CELL;
-                case AMERICAN -> Ressources.Assets.RED_TOWER_CELL;
-                case SACKSON -> Ressources.Assets.BLUE_TOWER_CELL;
-                case TOWER -> Ressources.Assets.GREEN_TOWER_CELL;
-                case WORLDWIDE -> Ressources.Assets.ORANGE_TOWER_CELL;
-                case CONTINENTAL -> Ressources.Assets.PURPLE_TOWER_CELL;
+                case IMPERIAL -> GameResources.Assets.CYAN_TOWER_CELL;
+                case FESTIVAL -> GameResources.Assets.YELLOW_TOWER_CELL;
+                case AMERICAN -> GameResources.Assets.RED_TOWER_CELL;
+                case SACKSON -> GameResources.Assets.BLUE_TOWER_CELL;
+                case TOWER -> GameResources.Assets.GREEN_TOWER_CELL;
+                case WORLDWIDE -> GameResources.Assets.ORANGE_TOWER_CELL;
+                case CONTINENTAL -> GameResources.Assets.PURPLE_TOWER_CELL;
             };
         }
 
         public static Color getCorpColor(Corporation c) {
             Image img = getCorpImage(c);
-            BufferedImage bfi = Ressources.imageToBufferedImage(img);
+            BufferedImage bfi = GameResources.imageToBufferedImage(img);
             int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
             return new Color(clr, true);
         }

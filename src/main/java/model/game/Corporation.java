@@ -22,5 +22,37 @@ public enum Corporation {
             default: return "";
         }
     }
+
+    public static Corporation getCorporationFromName(String c) {
+        if (AMERICAN.toString().equals(c)) {
+            return AMERICAN;
+        }
+
+        if (CONTINENTAL.toString().equals(c)) {
+            return CONTINENTAL;
+        }
+
+        if (FESTIVAL.toString().equals(c)) {
+            return FESTIVAL;
+        }
+
+        if (IMPERIAL.toString().equals(c)) {
+            return IMPERIAL;
+        }
+
+        if (SACKSON.toString().equals(c)) {
+            return SACKSON;
+        }
+
+        if (TOWER.toString().equals(c)) {
+            return TOWER;
+        }
+
+        if (WORLDWIDE.toString().equals(c)) {
+            return WORLDWIDE;
+        }
+
+        return null;
+    }
 }
 

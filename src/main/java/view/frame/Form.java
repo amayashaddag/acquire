@@ -12,7 +12,6 @@ import javax.swing.JPanel;
  * @author Arthur Deck
  * @version 1
  */
-@Deprecated
 public abstract class Form extends JPanel {
     /**
      * 

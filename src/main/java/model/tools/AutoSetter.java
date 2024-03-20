@@ -2,8 +2,6 @@ package model.tools;
 
 import java.lang.annotation.*;
 
-import javax.swing.JPanel;
-
 /**
  * <p>For graphics components wich auto
  * set on a <? extends JPanel> </p>

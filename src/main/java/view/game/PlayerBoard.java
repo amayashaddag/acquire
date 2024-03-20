@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import net.miginfocom.swing.MigLayout;
 import model.tools.AutoSetter;
+import view.assets.GameResources;
 
 import javax.swing.*;
 
@@ -79,7 +80,7 @@ public class PlayerBoard extends javax.swing.JPanel {
 
             for (HashMap.Entry<Corporation, Integer> entry : earnedStocks.entrySet()) {
                 if (entry.getValue() > 0) {
-                    int rgb = Ressources.Assets.getCorpColor(entry.getKey()).getRGB();
+                    int rgb = GameResources.Assets.getCorpColor(entry.getKey()).getRGB();
                     int red = (rgb >> 16) & 0xFF;
                     int green = (rgb >> 8) & 0xFF;
                     int blue = rgb & 0xFF;
