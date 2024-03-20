@@ -39,7 +39,8 @@ public class Debug extends JFrame {
         GameFrame frame = new GameFrame();
 
         g.setOn(frame);
-        SwingUtilities.invokeLater(() -> frame.setVisible(true)); */
+        SwingUtilities.invokeLater(() -> frame.setVisible(true));
+
         /*
 
 //        c.handleCellPlacing(new tools.Point(0,0), l.get(0));

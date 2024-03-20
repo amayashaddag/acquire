@@ -1,13 +1,29 @@
 package view.login;
 
+import control.game.GameController;
+import model.game.Player;
 import view.assets.Fonts;
 import com.formdev.flatlaf.extras.components.FlatButton;
-import javax.swing.*;
-import java.awt.*;
 
-import view.assets.LoginInterfaceResources;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
+import control.firebaseinit.FirebaseClient;
 import view.frame.Form;
 import view.frame.GameFrame;
+import view.game.GameView;
 
 public class LoginView extends JPanel {
 
@@ -63,6 +79,24 @@ public class LoginView extends JPanel {
         comeBackToLoginButton.addActionListener((ActionListener) -> fromSignInMenuToLoginMenu());
         comeBackToLoginButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
+        FlatButton offlineModeButton = new FlatButton();
+        offlineModeButton.setText(LoginInterfaceResources.OFFLINE_BUTTON_TEXT);
+        offlineModeButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
+        offlineModeButton.addActionListener((ActionListener) -> {
+            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(LoginView.this);
+            SwingUtilities.invokeLater(() -> {
+                parent.setVisible(true);
+            });
+
+            Player p = Player.createHumanPlayer("PLAYER");
+            List<Player> players = new LinkedList<>();
+            players.add(p);
+
+            GameController controller = new GameController(players, p);
+            GameView view = controller.getGameView();
+            parent.setPanel(view);
+        });
+
 
         EmailField emailArea = new EmailField();
         emailArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
@@ -88,6 +122,12 @@ public class LoginView extends JPanel {
             }
         });
 
+        JPanel offlineModeContainer = new JPanel();
+        offlineModeContainer.add(offlineModeButton);
+        offlineModeContainer.setPreferredSize(
+                new Dimension(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4)
+        );
+
         loginAndSignUpButtonContainer.add(loginButton);
         loginAndSignUpButtonContainer.add(signInButton);
 
@@ -104,6 +144,8 @@ public class LoginView extends JPanel {
         loginComponentContainer.add(passwordArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/7));
         loginComponentContainer.add(loginAndSignUpButtonContainer);
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
+        loginComponentContainer.add(offlineModeContainer);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
 
         this.setLayout(new GridBagLayout());

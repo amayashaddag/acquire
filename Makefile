@@ -6,7 +6,7 @@ VIEW=view/*/*
 
 JAVA_TEST=src/test/java
 OUT=build
-MAIN=app.App
+MAIN=app.launcher.App
 LIB=lib
 
 

@@ -1,4 +1,4 @@
-package control.auth;
+package control.firebaseinit;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -12,7 +12,7 @@ import java.io.IOException;
 public class FirebaseClient {
 
     public static final String FIREBASE_CREDENTIALS_FILE_PATH = "src/main/ressources/auth/firebase-credentials.json";
-    public static final String FIREBASE_EXCEPTION_MESSAGE = "Failed to connect to Firebase console in initializer." +
+    public static final String FIREBASE_EXCEPTION_MESSAGE = "Failed to connect to Firebase console in initializer.\n" +
             "Please contact support.";
 
     public static void initialize() throws IOException, FirebaseException {
@@ -32,9 +32,5 @@ public class FirebaseClient {
 
     public static UserRecord.CreateRequest createRequest(String email, String password) {
         return new UserRecord.CreateRequest().setEmail(email).setPassword(password).setDisabled(false);
-    }
-
-    public static void main(String[] args) throws IOException, FirebaseException {
-        initialize();
     }
 }

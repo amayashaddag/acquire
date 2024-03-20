@@ -455,4 +455,9 @@ public class GameView extends Form {
     }
 
     public static void showError(Exception e) {showError(e, ()->{});}
+
+    public void endGame() {
+        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
+        parent.dispose();
+    }
 }
