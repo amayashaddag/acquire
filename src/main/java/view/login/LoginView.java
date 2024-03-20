@@ -5,10 +5,6 @@ import com.formdev.flatlaf.extras.components.FlatButton;
 import javax.swing.*;
 import java.awt.*;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;
-import control.auth.FirebaseClient;
 import view.assets.LoginInterfaceResources;
 import view.frame.Form;
 import view.frame.GameFrame;
@@ -76,31 +72,18 @@ public class LoginView extends JPanel {
 
 
         loginButton.addActionListener((ActionListener) -> {
-            String email = emailArea.getText();
-            String password = new String(passwordArea.getPassword());
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-            UserRecord.CreateRequest request = FirebaseClient.createRequest(email, password);
-
             try {
-                UserRecord realUser = auth.getUserByEmail(email);
                 // TODO : Implement a password verifying process
-
-                System.out.println("Successfully logged to " + email);
-            } catch (FirebaseAuthException e) {
+            } catch (Exception e) {
                 // TODO : Handle exception error showing
             }
 
         });
 
         createAccountButton.addActionListener((ActionListener) -> {
-            String email = emailArea.getText();
-            String password = new String(passwordArea.getPassword());
-            UserRecord.CreateRequest request = FirebaseClient.createRequest(email, password);
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-
             try {
-                UserRecord user = auth.createUser(request);
-            } catch (FirebaseAuthException e) {
+
+            } catch (Exception e) {
                 // TODO : Handle exception error showing
             }
         });

@@ -2,7 +2,6 @@ package control.network;
 import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.util.ArrayList;
 
 @Deprecated
 public class Server {

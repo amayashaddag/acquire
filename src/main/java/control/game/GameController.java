@@ -2,11 +2,15 @@ package control.game;
 
 import java.util.*;
 
+import javax.swing.SwingUtilities;
+
+import control.database.DatabaseConnection;
 import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
 import model.tools.Point;
+import view.frame.GameFrame;
 import view.game.GameNotifications;
 import view.game.GameView;
 
@@ -18,20 +22,38 @@ public class GameController {
     private final Board board;
     private final GameView gameView;
     private final List<Player> currentPlayers;
-    private int playerTurnIndex;
     private final int numberOfPlayers;
+    private final String gameId;
+    private final boolean online;
+
     private boolean gameOver;
+    private int playerTurnIndex;
 
     
     public final static int FOUNDING_STOCK_BONUS = 1;
 
-    public GameController(List<Player> currentPlayers, Player currentPlayer) {
+    public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online) {
         this.board = new Board();
         this.currentPlayers = currentPlayers;
         this.numberOfPlayers = currentPlayers.size();
         this.playerTurnIndex = 0;
+        this.gameId = gameId;
         initPlayersDecks();
         this.gameView = new GameView(this, currentPlayer);
+        this.online = online;
+
+        try {
+            if (online) {
+                for (Player p : currentPlayers) {
+                    DatabaseConnection.addPlayer(gameId, p);
+                }
+            }
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+                parent.dispose();
+            });
+        }
     }
 
     public GameView getGameView() {

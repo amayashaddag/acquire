@@ -18,20 +18,21 @@ public class Player {
     private int net;
     private HashMap<Corporation, Integer> earnedStocks;
     private volatile Point[] deck;
-    private PlayerType playerType;
-    private String pseudo;
-    private String uid;
+    private final PlayerType playerType;
+    private final String pseudo;
+    private final String uid;
 
     public static final int INITIAL_CASH = 6000;
     private static int botNumber = 0;
     private final static String botPseudoPrefix = "Bot";
 
-    private Player(PlayerType playerType, String pseudo) {
+    private Player(PlayerType playerType, String pseudo, String uid) {
         this.cash = this.net = INITIAL_CASH;
         this.earnedStocks = initEarnedStocks();
         this.deck = new Point[Board.DECK_SIZE];
         this.pseudo = pseudo;
         this.playerType = playerType;
+        this.uid = uid;
     }
 
     public HashMap<Corporation, Integer> initEarnedStocks() {
@@ -177,12 +178,13 @@ public class Player {
         return playerType == PlayerType.BOT;
     }
 
-    public static Player createHumanPlayer(String pseudo) {
-        return new Player(PlayerType.HUMAN, pseudo);
+    public static Player createHumanPlayer(String pseudo, String uid) {
+        return new Player(PlayerType.HUMAN, pseudo, uid);
     }
 
     public static Player createBotPlayer() {
-        return new Player(PlayerType.BOT, botPseudoPrefix + (botNumber++));
+        String uid = botPseudoPrefix + (botNumber++);
+        return new Player(PlayerType.BOT, uid, uid);
     }
 
     public int getCash() {

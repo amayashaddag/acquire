@@ -379,9 +379,11 @@ public class GameView extends Form {
         for (Component comp : jp.getComponents())
             if (comp instanceof Pane) {
                 Map.Entry<Corporation, Integer> entry = ((Pane) comp).getEntry();
-                switch (((Pane) comp).getChoice()) {
-                    case SELL -> toSell.put(entry.getKey(), entry.getValue());
-                    case TRADE -> toTrade.put(entry.getKey(), entry.getValue());
+                Pane.SKT choice = ((Pane) comp).getChoice();
+                if (choice == Pane.SKT.SELL) {
+                    toSell.put(entry.getKey(), entry.getValue());
+                } else if (choice == Pane.SKT.TRADE) {
+                    toTrade.put(entry.getKey(), entry.getValue());
                 }
             }
 

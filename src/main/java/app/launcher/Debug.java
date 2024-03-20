@@ -25,7 +25,7 @@ import javax.swing.*;
 public class Debug extends JFrame {
 
     public static void main(String[] args) {
-        FlatDarculaLaf.setup();
+        /* FlatDarculaLaf.setup();
 
         ArrayList<Player> l = new ArrayList<>();
         l.add(Player.createHumanPlayer("Max"));
@@ -39,7 +39,7 @@ public class Debug extends JFrame {
         GameFrame frame = new GameFrame();
 
         g.setOn(frame);
-        SwingUtilities.invokeLater(() -> frame.setVisible(true));
+        SwingUtilities.invokeLater(() -> frame.setVisible(true)); */
         /*
 
 //        c.handleCellPlacing(new tools.Point(0,0), l.get(0));

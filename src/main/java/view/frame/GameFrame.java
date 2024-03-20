@@ -22,7 +22,6 @@ import com.formdev.flatlaf.FlatDarculaLaf;
  * @author Arthur Deck
  * @version 0.1
  */
-@Deprecated
 public class GameFrame extends JFrame {
     public final static int DEFAULT_WIDTH = 1200;
     public final static int DEFAULT_HEIGHT = 900;

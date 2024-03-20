@@ -2,6 +2,7 @@ package view.game;
 
 import model.tools.AutoSetter;
 import model.tools.Point;
+import view.frame.GameFrame;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -66,7 +67,7 @@ public class JetonsPanel extends JPanel {
                     if (isVisible())
                         SwingUtilities.invokeLater(this::repaint);
                 } catch (InterruptedException e2) {
-                    g.showError(e2, this::repaint);
+                    GameFrame.showError(e2, this::repaint);
                 }
             }).start();
         }
