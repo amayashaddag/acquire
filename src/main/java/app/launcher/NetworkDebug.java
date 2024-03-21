@@ -6,14 +6,14 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import control.auth.FirebaseClient;
+import control.firebaseinit.FirebaseClient;
 import control.database.DatabaseConnection;
 import control.game.GameController;
 import model.game.Player;
 import view.frame.GameFrame;
 import view.game.GameView;
 
-public class NetwordDebug {
+public class NetworkDebug {
     public static void main(String[] args) {        
         try {
 

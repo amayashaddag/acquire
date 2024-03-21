@@ -40,13 +40,13 @@ public class DatabaseConnection {
         newPlayer.put(UID_PLAYER_FIELD, player.getUID());
         newPlayer.put(GAME_ID_FIELD, gameId);
         newPlayer.put(PLAYER_CASH_FIELD, player.getCash());
-        newPlayer.put(PLAYER_NET_FIELD,player.getNet());
+        newPlayer.put(PLAYER_NET_FIELD, player.getNet());
         DocumentReference docRef = database.collection(PLAYER_TABLE_NAME).document();
         ApiFuture<WriteResult> future = docRef.set(newPlayer);
         future.get();
     }
 
-    public static void removePlayer(Player player) throws Exception{
+    public static void removePlayer(Player player) throws Exception {
         CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
         ApiFuture<QuerySnapshot> future = collection.whereEqualTo(UID_PLAYER_FIELD, player.getUID()).get();
         QuerySnapshot snapshot = future.get();
@@ -57,37 +57,39 @@ public class DatabaseConnection {
         }
     }
 
-    public static String createGame(int maxPlayers) throws Exception{
+    public static String createGame(int maxPlayers) throws Exception {
         DocumentReference doc = database.collection(GAME_TABLE_NAME).document();
         String gameId = doc.getId();
-        HashMap<String,Object> newGame = new HashMap<>();
-        newGame.put(GAME_ID_FIELD,gameId);
-        newGame.put(GAME_STATE_FIELD,0);
-        newGame.put(GAME_MAX_PLAYERS_FIELD,maxPlayers);
+        HashMap<String, Object> newGame = new HashMap<>();
+        newGame.put(GAME_ID_FIELD, gameId);
+        newGame.put(GAME_STATE_FIELD, 0);
+        newGame.put(GAME_MAX_PLAYERS_FIELD, maxPlayers);
         ApiFuture<WriteResult> future = doc.set(newGame);
         future.get();
         return gameId;
     }
 
-    public static void removeGame(String gameId) throws Exception{
+    public static void removeGame(String gameId) throws Exception {
         CollectionReference gameTable = database.collection(GAME_TABLE_NAME);
-        ApiFuture<QuerySnapshot> future = gameTable.whereEqualTo(GAME_ID_FIELD,gameId).get();
+        ApiFuture<QuerySnapshot> future = gameTable.whereEqualTo(GAME_ID_FIELD, gameId).get();
         QuerySnapshot gameToRemove = future.get();
         for (QueryDocumentSnapshot doc : gameToRemove) {
             ApiFuture<WriteResult> deleteFuture = doc.getReference().delete();
             deleteFuture.get();
         }
     }
-    public static void updateCash(int newCash,Player player,String gameId) throws Exception{
+
+    public static void updateCash(int newCash, Player player, String gameId) throws Exception {
         update(newCash, player, gameId, PLAYER_CASH_FIELD);
 
     }
 
-    public static void updateNet(int newNet,Player player,String gameId) throws Exception {
+    public static void updateNet(int newNet, Player player, String gameId) throws Exception {
         update(newNet, player, gameId, PLAYER_NET_FIELD);
     }
 
-    private static void update(int newNet, Player player, String gameId, @Nonnull String playerNetField) throws InterruptedException, java.util.concurrent.ExecutionException {
+    private static void update(int newNet, Player player, String gameId, @Nonnull String playerNetField)
+            throws InterruptedException, java.util.concurrent.ExecutionException {
         CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
         ApiFuture<QuerySnapshot> future = collection
                 .whereEqualTo(GAME_ID_FIELD, gameId)
@@ -98,8 +100,8 @@ public class DatabaseConnection {
         }
     }
 
-    public static Map<Corporation, Point> getNewPlacedCells(String gameId, Board currentBoard) throws Exception {
-        Map<Corporation, Point> newPlacedCells = new HashMap<>();
+    public static Map<Point, Corporation> getNewPlacedCells(String gameId, Board currentBoard) throws Exception {
+        Map<Point, Corporation> newPlacedCells = new HashMap<>();
         ApiFuture<QuerySnapshot> future = database.collection(PLACED_CELLS_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .get();
@@ -122,24 +124,24 @@ public class DatabaseConnection {
             Cell oldPlacedCell = currentBoard.getCell(cellPosition);
 
             if (oldPlacedCell.getCorporation() == null || !oldPlacedCell.getCorporation().equals(c)) {
-                newPlacedCells.put(c, cellPosition);
+                newPlacedCells.put(cellPosition, c);
             }
         }
 
         return newPlacedCells;
     }
 
-    public void setStocks(Player player, String gameId) throws Exception{
-            CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
-            ApiFuture<QuerySnapshot> future = collection
-                    .whereEqualTo(GAME_ID_FIELD,gameId)
-                    .whereEqualTo(UID_PLAYER_FIELD,player.getUID())
-                    .get();
-            QuerySnapshot snapshot = future.get();
-            for (QueryDocumentSnapshot doc : snapshot) {
-                for (Map.Entry<Corporation,Integer> mapEntry : player.getEarnedStocks().entrySet()){
-                    //WriteResult docToUpdate = doc.getReference().
-                }
+    public void setStocks(Player player, String gameId) throws Exception {
+        CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
+        ApiFuture<QuerySnapshot> future = collection
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .whereEqualTo(UID_PLAYER_FIELD, player.getUID())
+                .get();
+        QuerySnapshot snapshot = future.get();
+        for (QueryDocumentSnapshot doc : snapshot) {
+            for (Map.Entry<Corporation, Integer> mapEntry : player.getEarnedStocks().entrySet()) {
+                // WriteResult docToUpdate = doc.getReference().
             }
+        }
     }
 }

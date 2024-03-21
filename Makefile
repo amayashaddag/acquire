@@ -6,7 +6,11 @@ VIEW=view/*/*
 
 JAVA_TEST=src/test/java
 OUT=build
+<<<<<<< HEAD
 MAIN=app.launcher.App
+=======
+MAIN=app.launcher.NetworkDebug
+>>>>>>> 89f18ed (Working on game sync between players)
 LIB=lib
 
 
