@@ -3,6 +3,8 @@ package view.login;
 import control.game.GameController;
 import model.game.Player;
 import view.assets.Fonts;
+import view.assets.LoginInterfaceResources;
+
 import com.formdev.flatlaf.extras.components.FlatButton;
 
 import javax.swing.Box;
@@ -88,11 +90,11 @@ public class LoginView extends JPanel {
                 parent.setVisible(true);
             });
 
-            Player p = Player.createHumanPlayer("PLAYER");
+            Player p = Player.createHumanPlayer("PLAYER", "");
             List<Player> players = new LinkedList<>();
             players.add(p);
 
-            GameController controller = new GameController(players, p);
+            GameController controller = new GameController(players, p, "", false);
             GameView view = controller.getGameView();
             parent.setPanel(view);
         });
