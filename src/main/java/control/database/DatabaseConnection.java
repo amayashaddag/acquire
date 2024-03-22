@@ -33,6 +33,8 @@ public class DatabaseConnection {
     public static final String PLACED_CELLS_TABLE_NAME = "placed-cells";
     public static final String X_POSITION_FIELD = "x-position";
     public static final String Y_POSITION_FIELD = "y-position";
+    public static final String CURRENT_PLAYER_TABLE = "current-player";
+    public static final String UID_FIELD = "uid";
 
     public static void addPlayer(String gameId, Player player) throws Exception {
         HashMap<String, Object> newPlayer = new HashMap<>();
@@ -131,7 +133,7 @@ public class DatabaseConnection {
         return newPlacedCells;
     }
 
-    public void setStocks(Player player, String gameId) throws Exception {
+    public static void setStocks(Player player, String gameId) throws Exception {
         CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
         ApiFuture<QuerySnapshot> future = collection
                 .whereEqualTo(GAME_ID_FIELD, gameId)
@@ -143,5 +145,46 @@ public class DatabaseConnection {
                 // WriteResult docToUpdate = doc.getReference().
             }
         }
+    }
+
+    public static String getCurrentPlayer(String gameId) throws Exception {
+        ApiFuture<QuerySnapshot> future = database.collection(CURRENT_PLAYER_TABLE)
+            .whereEqualTo(GAME_ID_FIELD, gameId)
+            .get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        if (documents.isEmpty()) {
+            throw new Exception();
+        }
+
+        QueryDocumentSnapshot currentPlayerDoc = documents.get(0);
+        String uid = (String) currentPlayerDoc.get(UID_FIELD);
+
+        if (uid == null) {
+            throw new Exception();
+        }
+
+        return uid;
+    }
+
+    public static void setCurrentPlayer(String gameId, String uid) throws Exception {
+        ApiFuture<QuerySnapshot> future = database.collection(CURRENT_PLAYER_TABLE)
+            .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        if (!documents.isEmpty()) {
+            QueryDocumentSnapshot doc = documents.get(0);
+            doc.getReference().update(UID_FIELD, uid).get();
+        } else {
+            createNewCurrentPlayer(gameId, uid); 
+        }    
+    }
+
+    private static void createNewCurrentPlayer(String gameId, String uid) throws Exception {
+        DocumentReference doc = database.collection(CURRENT_PLAYER_TABLE).document();
+        Map<String, Object> newCurrentPlayer = new HashMap<>();
+        newCurrentPlayer.put(GAME_ID_FIELD, gameId);
+        newCurrentPlayer.put(UID_FIELD, uid);
+        ApiFuture<WriteResult> future = doc.set(newCurrentPlayer);
+        future.get();
     }
 }

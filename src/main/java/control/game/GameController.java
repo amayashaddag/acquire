@@ -51,15 +51,15 @@ public class GameController {
         this.onlineMode = online;
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
+                updateNewPlacedCells();
+                updateStocks();
+                updateCashNet();
+                updateCurrentPlayer();
 
-                System.out.println(gameId);
-                Map<Point, Corporation> newPlacedCells = DatabaseConnection.getNewPlacedCells(gameId, board);
-                if (!newPlacedCells.isEmpty()) {
-                    board.updateNewPlacedCells(newPlacedCells);
-                    gameView.repaint();
-                }
+                gameView.repaint();
             } catch (Exception e) {
                 errorInterrupt(e);
+                e.printStackTrace();
             }
         });
 
@@ -73,6 +73,39 @@ public class GameController {
             }
 
             startOnlineModeObserver();
+        }
+    }
+
+    private void updateNewPlacedCells() throws Exception {
+        Map<Point, Corporation> newPlacedCells = DatabaseConnection.getNewPlacedCells(gameId, board);
+
+        if (!newPlacedCells.isEmpty()) {
+            board.updateNewPlacedCells(newPlacedCells);
+            gameView.repaint();
+        }
+    }
+
+    private void updateStocks() throws Exception {
+        // TODO : A implémenter
+    }
+
+    private void updateCashNet() throws Exception {
+        // TODO : A implémenter
+    }
+
+    private void updateCurrentPlayer() throws Exception {
+        String uid = DatabaseConnection.getCurrentPlayer(gameId);
+        Player currentPlayer = currentPlayers.get(playerTurnIndex);
+        if (uid.equals(currentPlayer.getUID())) {
+            return;
+        }
+
+        for (int i = 0; i < currentPlayers.size(); i++) {
+            Player p = currentPlayers.get(i);
+
+            if (p.getUID().equals(uid)) {
+                playerTurnIndex = i;
+            }
         }
     }
 
@@ -472,7 +505,12 @@ public class GameController {
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
 
         if (onlineMode) {
-            // TODO : Send a request to update current playing person
+            try {
+                Player currentPlayer = currentPlayers.get(playerTurnIndex);
+                DatabaseConnection.setCurrentPlayer(gameId, currentPlayer.getUID());
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
         }
 
         Player nextPlayer = currentPlayers.get(playerTurnIndex);

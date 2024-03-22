@@ -1,5 +1,7 @@
 package app.launcher;
 
+import static org.junit.jupiter.api.DynamicTest.stream;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +29,11 @@ public class NetworkDebug {
 
             GameFrame f = new GameFrame();
             String gameId = DatabaseConnection.createGame(maxPlayers);
-            GameController controller = new GameController(allPlayers, joiner, gameId, true);
+
+            DatabaseConnection.setCurrentPlayer(gameId, "AMA283729382");
+
+            System.out.println(gameId);
+            GameController controller = new GameController(allPlayers, hoster, gameId, true);
             GameView view = controller.getGameView();
 
             f.setContentPane(view);
