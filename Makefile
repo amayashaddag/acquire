@@ -39,5 +39,5 @@ debug: clean processor
 	@java -cp "$(OUT):$(LIB)/*" app.launcher.Debug
 
 quickdeb: clean
-	@javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -d $(OUT) src/main/java/app/Debug.java
-	@java -cp "$(OUT):$(LIB)/*" app.Debug
+	@javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -d $(OUT) src/main/java/app/launcher/Debug.java
+	@java -cp "$(OUT):$(LIB)/*" app.launcher.Debug

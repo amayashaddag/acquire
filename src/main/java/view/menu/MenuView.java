@@ -62,15 +62,12 @@ public class MenuView extends Form {
         add(buttonPanel, BorderLayout.SOUTH);
 
         playButton.addActionListener(e -> {
-
         });
 
         optionsButton.addActionListener(e -> {
-
         });
 
         quitButton.addActionListener(e -> {
-
             System.exit(0);
         });
     }
