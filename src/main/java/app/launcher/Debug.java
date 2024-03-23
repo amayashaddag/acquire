@@ -38,7 +38,7 @@ public class Debug extends JFrame {
 //
 //        GameView g = c.getGameView();
         GameFrame frame = new GameFrame();
-        frame.add(new view.menu.Menu3D());
+        frame.add(new view.menu.PrettyMenuView());
 //        MenuView mv = new MenuView();
 //        mv.setOn(frame);
 

@@ -76,15 +76,19 @@ public class Menu3D extends JComponent {
     private int overIndex = -1;
     private int pressedIndex = -1;
 
-    public Menu3D() {
-        init();
+    public Menu3D(String ... labels) {
+        setOpaque(false);
+
+        for (String s : labels)
+            addMenuItem(s);
+
         initAnimator();
     }
 
     private void initAnimator() {
         MouseAdapter mouse = new MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {
                 int index = getOverIndex(e.getPoint());
                 if (index != pressedIndex) {
                     pressedIndex = index;
@@ -97,17 +101,6 @@ public class Menu3D extends JComponent {
             }
         };
         addMouseListener(mouse);
-    }
-
-    private void init() {
-        setForeground(new Color(238, 238, 238));
-        addMenuItem("Home");
-        addMenuItem("About");
-        addMenuItem("Profile");
-        addMenuItem("Staff");
-        addMenuItem("Setting");
-        addMenuItem("User");
-        addMenuItem("Report");
     }
 
     public void addEvent(EventMenu event) {
