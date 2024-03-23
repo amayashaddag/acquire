@@ -7,6 +7,12 @@ import net.miginfocom.swing.MigLayout;
 import java.awt.BorderLayout;
 
 
+/**
+ * The beggining menu of the Game
+ *
+ * @author Arthur Deck
+ * @version 1
+ */
 public class PrettyMenuView extends Form {
     private final Menu3D menu3d;
 
