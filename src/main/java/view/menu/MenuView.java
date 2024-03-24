@@ -16,6 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
+@Deprecated
 public class MenuView extends Form {
     public final static int BUTTON_WIDTH = 700;
     public final static int BUTTON_HEIGHT = 100;

@@ -118,6 +118,16 @@ public class Menu3D extends JComponent {
         items.add(new Menu3dItem(this, left, y, menuHeight, shadowSize, menu));
     }
 
+    public void addMenuItem(String menu, Runnable task) {
+        int size = items.size();
+        int y = size * menuHeight + left;
+        addEvent((i) -> {
+            if (i == size)
+                task.run();
+        });
+        items.add(new Menu3dItem(this, left, y, menuHeight, shadowSize, menu));
+    }
+
     private int getOverIndex(Point mouse) {
         int index = -1;
         for (Menu3dItem d : items) {
