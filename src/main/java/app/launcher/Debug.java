@@ -37,7 +37,7 @@ public class Debug extends JFrame {
 //        c.getGameView().setVisible(true);
 //
 //        GameView g = c.getGameView();
-        GameFrame frame = new GameFrame();
+        GameFrame frame = GameFrame.currentFrame;
         frame.add(new view.menu.PrettyMenuView());
 //        MenuView mv = new MenuView();
 //        mv.setOn(frame);

@@ -110,7 +110,7 @@ public class JetonsPanel extends JPanel {
                             if (playerDeck[i] != null) {
                                 l.get(i).setVisible(true);
                                 l.get(i).setPoint(playerDeck[i]);
-                                l.get(i).setText(playerDeck[i].toString());
+                                l.get(i).setText(" ");
                             } else {
                                 l.get(i).setVisible(false);
                                 buttonPanel.remove(l.get(i));

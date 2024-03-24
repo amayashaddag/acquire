@@ -22,12 +22,12 @@ import com.formdev.flatlaf.FlatDarculaLaf;
  * @author Arthur Deck
  * @version 0.1
  */
-@Deprecated
 public class GameFrame extends JFrame {
     public final static int DEFAULT_WIDTH = 1200;
     public final static int DEFAULT_HEIGHT = 900;
 
     public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
+    public final static GameFrame currentFrame = new GameFrame();
 
     public GameFrame() {
         super();
@@ -42,6 +42,8 @@ public class GameFrame extends JFrame {
         Notifications.getInstance().setJFrame(this);
     }
 
+    public static GameFrame getCurrentFrame() {return currentFrame;}
+
     public void setGameView(GameController controller, Player player) {
         this.setForm(new GameView(controller, player));
     }
@@ -54,7 +56,7 @@ public class GameFrame extends JFrame {
      * component you want to set
      * @apiNote example : setForm(new MapView())
      */
-    private void setForm(Form form) {
+    public void setForm(Form form) {
         this.getContentPane().removeAll();
         form.setOn(this);
         this.repaint();
