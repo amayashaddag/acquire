@@ -1,7 +1,5 @@
 package app.launcher;
 
-import static org.junit.jupiter.api.DynamicTest.stream;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,23 +19,25 @@ public class NetworkDebug {
 
             FirebaseClient.initialize();
 
+            GameFrame f = new GameFrame();
+
             int maxPlayers = 6;
             Player hoster = Player.createHumanPlayer("Amayas", "AMA283729382");
             Player joiner = Player.createHumanPlayer("Macron", "MAC20304I85");
             List<Player> allPlayers = new LinkedList<>();
             Collections.addAll(allPlayers, hoster, joiner);
 
-            GameFrame f = new GameFrame();
+
             String gameId = DatabaseConnection.createGame(maxPlayers);
-
-            DatabaseConnection.setCurrentPlayer(gameId, "AMA283729382");
-
+            DatabaseConnection.setCurrentPlayer(gameId, hoster.getUID());
             System.out.println(gameId);
+
             GameController controller = new GameController(allPlayers, hoster, gameId, true);
             GameView view = controller.getGameView();
 
             f.setContentPane(view);
             f.revalidate();
+            
             SwingUtilities.invokeLater(() -> {
                 f.setVisible(true);
             });

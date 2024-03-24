@@ -32,11 +32,14 @@ public class GameController {
     private final String gameId;
     private final boolean onlineMode;
     private final Timer onlineObserver;
+    private final Timer playerTurnObserver;
+    private final Map<Point, Corporation> newPlacedCells;
 
     private int playerTurnIndex;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
-    public final static int ONLINE_OBSERVER_DELAY = 50;
+    public final static int ONLINE_OBSERVER_DELAY = 2000;
+    public final static int PLAYER_TURN_OBSERVER_DELAY = 1000 / 60;
 
     public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online) {
         this.board = new Board();
@@ -44,6 +47,7 @@ public class GameController {
         this.numberOfPlayers = currentPlayers.size();
         this.playerTurnIndex = 0;
         this.gameId = gameId;
+        this.newPlacedCells = new HashMap<>();
 
         initPlayersDecks();
 
@@ -56,11 +60,21 @@ public class GameController {
                 updateCashNet();
                 updateCurrentPlayer();
 
+                gameView.revalidate();
                 gameView.repaint();
             } catch (Exception e) {
                 errorInterrupt(e);
-                e.printStackTrace();
+            } 
+        });
+
+        this.playerTurnObserver = new Timer(PLAYER_TURN_OBSERVER_DELAY, (ActionListener) -> {
+            Player playerTurn = currentPlayers.get(playerTurnIndex);
+            if (playerTurn.equals(currentPlayer)) {
+                onlineObserver.stop();
+                return;
             }
+
+            onlineObserver.start();
         });
 
         if (online) {
@@ -72,7 +86,8 @@ public class GameController {
                 errorInterrupt(e);
             }
 
-            startOnlineModeObserver();
+            onlineObserver.start();
+            playerTurnObserver.start();
         }
     }
 
@@ -90,7 +105,43 @@ public class GameController {
     }
 
     private void updateCashNet() throws Exception {
-        // TODO : A implémenter
+        Map<String, int[]> playersCashNet = DatabaseConnection.getPlayersCashNet(gameId);
+
+        for (String uid : playersCashNet.keySet()) {
+            int[] income = playersCashNet.get(uid);
+            int cash = income[0], net = income[1];
+
+            Player p = getPlayerFromUid(uid);
+            p.setCash(cash);
+            p.setNet(net);
+        }
+    }
+
+    private Player getPlayerFromUid(String uid) {
+        for (Player p : currentPlayers) {
+            if (p.getUID().equals(uid)) {
+                return p;
+            }
+        }
+
+        return null;
+    }
+
+    private void setCurrentPlayer() throws Exception {
+        Player currentPlayer = currentPlayers.get(playerTurnIndex);
+        System.out.println(currentPlayer.getPseudo());
+        DatabaseConnection.setCurrentPlayer(gameId, currentPlayer.getUID());
+    }
+
+    private void setCashNet() throws Exception {
+        for (Player p : currentPlayers) {
+            DatabaseConnection.setCash(p.getCash(), p, gameId);
+            DatabaseConnection.setNet(p.getNet(), p, gameId);
+        }
+    }
+
+    private void setNewPlacedCells() throws Exception {
+        DatabaseConnection.setNewPlacedCells(newPlacedCells, gameId);
     }
 
     private void updateCurrentPlayer() throws Exception {
@@ -105,14 +156,15 @@ public class GameController {
 
             if (p.getUID().equals(uid)) {
                 playerTurnIndex = i;
+                return;
             }
         }
     }
 
     private void errorInterrupt(Exception e) {
         GameFrame.showError(e, () -> {
+            endGame();
             GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
-            onlineObserver.stop();
             parent.dispose();
         });
     }
@@ -159,10 +211,10 @@ public class GameController {
     }
 
     private void buyStocks(Player player) {
-        // TODO : Add if statement for available stocks to buy
         Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
-        if (!possibleBuyingStocks.isEmpty())
+        if (!possibleBuyingStocks.isEmpty()) {
             gameView.chooseStocksToBuy(possibleBuyingStocks);
+        }
     }
 
     /**
@@ -279,10 +331,17 @@ public class GameController {
         }
 
         board.replaceCellCorporation(currentCell, chosenCellCorporation);
+        if (onlineMode) {
+            newPlacedCells.put(cellPosition, chosenCellCorporation);
+        }
         for (Point adj : cellsToMerge) {
             Cell adjacentCell = board.getCell(adj);
             if (!adjacentCell.isOwned() || !(adjacentCell.getCorporation() == chosenCellCorporation)) {
                 board.replaceCorporationFrom(chosenCellCorporation, adj);
+
+                if (onlineMode) {
+                    newPlacedCells.put(adj, chosenCellCorporation);
+                }
             }
         }
 
@@ -330,6 +389,11 @@ public class GameController {
         Corporation placedCorporation;
 
         currentCell.setAsOccupied();
+
+        if (onlineMode) {
+            newPlacedCells.put(cellPosition, null);
+        }
+
         gameView.showSuccessNotification(
                 GameNotifications.cellPlacingNotification(currentPlayer.getPseudo()));
 
@@ -353,6 +417,10 @@ public class GameController {
 
             board.replaceCellCorporation(currentCell, placedCorporation);
 
+            if (onlineMode) {
+                newPlacedCells.put(cellPosition, placedCorporation);
+            }
+
             gameView.showInfoNotification(
                     GameNotifications.corporationFoundingNotification(
                             currentPlayer.getPseudo(),
@@ -365,6 +433,10 @@ public class GameController {
         for (Point adj : adjacentOccupiedCells) {
             Cell adjacentOccupiedCell = board.getCell(adj);
             board.replaceCellCorporation(adjacentOccupiedCell, placedCorporation);
+
+            if (onlineMode) {
+                newPlacedCells.put(adj, placedCorporation);
+            }
         }
     }
 
@@ -498,25 +570,30 @@ public class GameController {
 
         board.updateDeadCells();
         board.updatePlayerDeck(player);
+
         if (board.isGameOver()) {
-            stopOnlineModeObserver();
+            endGame();
+            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+            parent.dispose();
         }
 
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
+        Player nextPlayer = currentPlayers.get(playerTurnIndex);
+
+        // FIXME : Notifications should be global
+        gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
 
         if (onlineMode) {
+            onlineObserver.start();
+            
             try {
-                Player currentPlayer = currentPlayers.get(playerTurnIndex);
-                DatabaseConnection.setCurrentPlayer(gameId, currentPlayer.getUID());
+                setCurrentPlayer();
+                setCashNet();
+                setNewPlacedCells();
             } catch (Exception e) {
                 errorInterrupt(e);
             }
         }
-
-        Player nextPlayer = currentPlayers.get(playerTurnIndex);
-        gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
-        // FIXME : Notification should be personal ad not global
-        gameView.repaint();
     }
 
     /**
@@ -542,14 +619,6 @@ public class GameController {
         }
     }
 
-    private void startOnlineModeObserver() {
-        this.onlineObserver.start();
-    }
-
-    private void stopOnlineModeObserver() {
-        this.onlineObserver.stop();
-    }
-
     /**
      * This functions handles the trading of stocks process after a major
      * corporation acquired player's
@@ -569,5 +638,12 @@ public class GameController {
 
             // TODO : Add notification for trading stocks
         }
+    }
+
+    private void endGame() {
+        onlineObserver.stop();
+        playerTurnObserver.stop();
+
+        // TODO : set game state as "2" in database
     }
 }

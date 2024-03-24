@@ -79,6 +79,10 @@ public class Player {
         this.net = net;
     }
 
+    public void setCash(int cash) {
+        this.cash = cash;
+    }
+
     /**
      * change player's deck with the deck in argument
      *
