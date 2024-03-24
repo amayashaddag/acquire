@@ -62,6 +62,7 @@ public class GameController {
 
                 gameView.revalidate();
                 gameView.repaint();
+
             } catch (Exception e) {
                 errorInterrupt(e);
             } 
@@ -73,7 +74,6 @@ public class GameController {
                 onlineObserver.stop();
                 return;
             }
-
             onlineObserver.start();
         });
 
@@ -146,10 +146,6 @@ public class GameController {
 
     private void updateCurrentPlayer() throws Exception {
         String uid = DatabaseConnection.getCurrentPlayer(gameId);
-        Player currentPlayer = currentPlayers.get(playerTurnIndex);
-        if (uid.equals(currentPlayer.getUID())) {
-            return;
-        }
 
         for (int i = 0; i < currentPlayers.size(); i++) {
             Player p = currentPlayers.get(i);
