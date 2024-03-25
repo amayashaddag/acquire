@@ -235,4 +235,10 @@ public class DatabaseConnection {
 
         return playersCashNet;
     }
+
+    public static Map<Corporation, Point> getNewPlacedCellsInDatabase(String gameId, Board currentBoard){
+        HashMap<Corporation,Point> newPlacedCells = new HashMap<>();
+        CollectionReference collectionReference = database.collection(PLACED_CELLS_TABLE_NAME);
+        return null;
+    }
 }
