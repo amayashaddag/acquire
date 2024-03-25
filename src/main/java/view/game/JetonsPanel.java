@@ -58,6 +58,7 @@ public class JetonsPanel extends JPanel {
         try {
             super.setVisible(g.getController().getCurrentPlayer().equals(g.getPlayer()));
             super.repaint();
+            buttonPanel.repaint();
         } catch (NullPointerException e) {
             // Don't worry it's normal. This arrives at the initialisation of JetonPanel.
             new Thread(() -> {
@@ -110,7 +111,7 @@ public class JetonsPanel extends JPanel {
                             if (playerDeck[i] != null) {
                                 l.get(i).setVisible(true);
                                 l.get(i).setPoint(playerDeck[i]);
-                                l.get(i).setText(" ");
+                                // l.get(i).setText(playerDeck[i].toString());
                             } else {
                                 l.get(i).setVisible(false);
                                 buttonPanel.remove(l.get(i));
