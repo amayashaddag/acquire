@@ -22,17 +22,18 @@ import java.awt.event.MouseEvent;
  */
 public class PrettyMenuView extends Form {
     private final Menu3D menu3d = new Menu3D();
-    private JPanel panel = new JPanel();
+    private final JPanel panel = new JPanel();
+    private final MigLayout mig = new MigLayout("al center, filly");
 
     public PrettyMenuView() {
         super();
-        setLayout(new MigLayout("al center, filly"));
+        setLayout(mig);
 
         menu3d.addMenuItem("SinglePlayer", () -> singlePlayer());
-        menu3d.addMenuItem("MultiPlayer", () -> System.out.println("Wait it's to soon !"));
-        menu3d.addMenuItem("Classement", () -> System.out.println("Classement"));
-        menu3d.addMenuItem("Profile", () -> System.out.println("Profile"));
-        menu3d.addMenuItem("Setting", () -> System.out.println("Setting"));
+        menu3d.addMenuItem("MultiPlayer", () -> multiPlayer());
+        menu3d.addMenuItem("Classement", () -> classement());
+        menu3d.addMenuItem("Profile", () -> profile());
+        menu3d.addMenuItem("Setting", () -> settings());
         menu3d.addMenuItem("Exit", () -> exit());
 
         panel.setVisible(false);
@@ -58,69 +59,27 @@ public class PrettyMenuView extends Form {
                 view.frame.GameFrame.currentFrame.setForm(c.getGameView());
             }
         }).start();
+    }
 
-//        panel.removeAll();
-//        panel.setOpaque(false);
-//        panel.setVisible(true);
-//        panel.setLayout(new MigLayout("al center, filly, ins 3, wrap 1"));
-//
-//
-//        Color colorEz = Color.GREEN;
-//        PanelGlowingGradient ez = new PanelGlowingGradient() {
-//            @Override
-//            protected void paintComponent (Graphics g){
-//                super.paintComponent(g);
-//                g.setFont(g.getFont().deriveFont(Font.BOLD));
-//                g.setColor(Color.BLACK);
-//                g.drawString("EASY",
-//                        getWidth()/2 - 5,
-//                        getHeight()/2 - 5);
-//            }
-//        };
-//        ez.setGradientColor1(colorEz.darker());
-//        ez.setGradientColor2(colorEz.brighter());
-//        ez.setBackground(colorEz.darker());
-//        ez.setBackgroundLight(colorEz.brighter());
-//
-//        Color colorMed = Color.ORANGE;
-//        PanelGlowingGradient medium = new PanelGlowingGradient() {
-//            @Override
-//            protected void paintComponent (Graphics g){
-//                super.paintComponent(g);
-//                g.setFont(g.getFont().deriveFont(Font.BOLD));
-//                g.setColor(Color.BLACK);
-//                g.drawString("MEDIUM",
-//                        getWidth()/2 - 5,
-//                        getHeight()/2 - 5);
-//            }
-//        };
-//        medium.setGradientColor1(colorMed.darker());
-//        medium.setGradientColor2(colorMed.brighter());
-//        medium.setBackground(colorMed.darker());
-//        medium.setBackgroundLight(colorMed.brighter());
-//
-//
-//        MouseAdapter ma = new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                ArrayList<Player> l = new ArrayList<>();
-//                l.add(Player.createHumanPlayer("Max"));
-//                l.add(Player.createHumanPlayer("Xi"));
-//                l.add(Player.createHumanPlayer("Best"));
-//                l.add(Player.createHumanPlayer("Of"));
-//                GameController c = new GameController(l, l.get(0));
-//                view.frame.GameFrame.currentFrame.setForm(c.getGameView());
-//            }
-//        };
-//
-//        ez.addMouseListener(ma);
-//        medium.addMouseListener(ma);
-//
-//        panel.add(ez, "w 40%, h 20%");
-//        panel.add(medium, "w 30%, h 15%, wrap");
-//
-//        revalidate();
-//        repaint();
+    private void multiPlayer() {
+
+    }
+
+    private void classement() {
+
+    }
+
+    private void profile() {
+        mig.setComponentConstraints(panel, "x 50%, w 40%, h 70%");
+        revalidate();
+        panel.removeAll();
+        panel.add(new view.login.LoginView());
+        panel.setVisible(true);
+        repaint();
+    }
+
+    private void settings() {
+
     }
 
     private void exit() {
