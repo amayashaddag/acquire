@@ -32,7 +32,6 @@ public class GameController {
     private final String gameId;
     private final boolean onlineMode;
     private final Timer onlineObserver;
-    private final Timer playerTurnObserver;
     private final Map<Point, Corporation> newPlacedCells;
 
     private int playerTurnIndex;
@@ -62,28 +61,13 @@ public class GameController {
                 updateCashNet();
                 updateCurrentPlayer();
 
+                gameView.revalidate();
+                gameView.repaint();
+
                 board.updatePlayerDeck(currentPlayer);
             } catch (Exception e) {
                 errorInterrupt(e);
             } 
-        });
-
-        this.playerTurnObserver = new Timer(PLAYER_TURN_OBSERVER_DELAY, (ActionListener) -> {
-
-            gameView.revalidate();
-            gameView.repaint();
-
-            Player playerTurn = currentPlayers.get(playerTurnIndex);
-
-            if (playerTurn.equals(currentPlayer) && onlineObserver.isRunning()) {
-                onlineObserver.stop();
-                return;
-            }
-            
-            if (!onlineObserver.isRunning()) {
-                onlineObserver.start();
-                return;
-            }
         });
 
         if (online) {
@@ -96,7 +80,6 @@ public class GameController {
             }
 
             onlineObserver.start();
-            playerTurnObserver.start();
         }
     }
 
@@ -573,7 +556,7 @@ public class GameController {
     public synchronized void handleCellPlacing(Point cellPosition, Player player) {
 
         if (onlineMode) {
-            playerTurnObserver.stop();
+            onlineObserver.stop();
         }
 
         resetNets();
@@ -607,7 +590,7 @@ public class GameController {
                 errorInterrupt(e);
             }
 
-            playerTurnObserver.start();
+            onlineObserver.start();
         }
     }
 
@@ -657,7 +640,6 @@ public class GameController {
 
     private void endGame() {
         onlineObserver.stop();
-        playerTurnObserver.stop();
 
         // TODO : set game state as "2" in database
     }
