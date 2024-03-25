@@ -24,6 +24,8 @@ public class DatabaseConnection {
     private static final String PSEUDO_PLAYER_FIELD = "pseudo";
     private static final String GAME_ID_FIELD = "game-id";
     private static final String STOCKS_TABLE_NAME = "stocks";
+
+    private static final String STOCKS_AMOUNT_FIELD = "amount";
     private static final String PLAYER_CASH_FIELD = "cash";
     private static final String PLAYER_NET_FIELD = "net";
     private static final String PLAYER_TABLE_NAME = "players";
@@ -143,10 +145,13 @@ public class DatabaseConnection {
                 .whereEqualTo(UID_PLAYER_FIELD, player.getUID())
                 .get();
         QuerySnapshot snapshot = future.get();
+        HashMap<Corporation,Integer> newStocks = player.getEarnedStocks();
         for (QueryDocumentSnapshot doc : snapshot) {
-            for (Map.Entry<Corporation, Integer> mapEntry : player.getEarnedStocks().entrySet()) {
-                // WriteResult docToUpdate = doc.getReference().
-            }
+            DocumentReference docToUpdate = doc.getReference();
+            ApiFuture<DocumentSnapshot> future2 = docToUpdate.get();
+            DocumentSnapshot data = future2.get();
+            String corp = data.getString(CORPORATION_FIELD);
+            docToUpdate.update(STOCKS_AMOUNT_FIELD,newStocks.get(Corporation.getCorporationFromName(corp))).get();
         }
     }
 
