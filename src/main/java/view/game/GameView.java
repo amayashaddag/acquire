@@ -407,12 +407,13 @@ public class GameView extends Form {
     @Override
     public void repaint() {
         super.repaint();
-
-        if (playerBoard != null && playerBoard.isVisible())
+        if (playerBoard != null) {
             playerBoard.repaint();
-
-        if (jetonsPanel != null && jetonsPanel.isVisible())
+        }
+        
+        if (jetonsPanel != null) {
             jetonsPanel.repaint();
+        }
     }
 
     /**

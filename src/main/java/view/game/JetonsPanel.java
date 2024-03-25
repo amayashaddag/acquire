@@ -54,8 +54,6 @@ public class JetonsPanel extends JPanel {
 
     @Override
     public void repaint() {
-        if (!isVisible()) return;
-
         try {
             super.setVisible(g.getController().getCurrentPlayer().equals(g.getPlayer()));
             super.repaint();

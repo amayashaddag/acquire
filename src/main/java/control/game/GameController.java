@@ -127,9 +127,13 @@ public class GameController {
         return null;
     }
 
+    public void incPlayerTurnIndex() {
+        playerTurnIndex++;
+    }
+
     private void setCurrentPlayer() throws Exception {
         Player currentPlayer = currentPlayers.get(playerTurnIndex);
-        System.out.println(currentPlayer.getPseudo());
+
         DatabaseConnection.setCurrentPlayer(gameId, currentPlayer.getUID());
     }
 
