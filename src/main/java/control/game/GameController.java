@@ -38,7 +38,7 @@ public class GameController {
     private int playerTurnIndex;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
-    public final static int ONLINE_OBSERVER_DELAY = 2000;
+    public final static int ONLINE_OBSERVER_DELAY = 5000;
     public final static int PLAYER_TURN_OBSERVER_DELAY = 1000 / 60;
 
     public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online) {

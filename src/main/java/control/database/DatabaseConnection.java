@@ -198,18 +198,35 @@ public class DatabaseConnection {
 
     public static void setNewPlacedCells(Map<Point, Corporation> newPlacedCells, String gameId)
             throws Exception {
+        ApiFuture<WriteResult> future;
         for (Map.Entry<Point, Corporation> cell : newPlacedCells.entrySet()) {
+
+            ApiFuture<QuerySnapshot> existingDocumentsRequest = database.collection(PLACED_CELLS_TABLE_NAME)
+                    .whereEqualTo(GAME_ID_FIELD, gameId)
+                    .whereEqualTo(X_POSITION_FIELD, cell.getKey().getX())
+                    .whereEqualTo(Y_POSITION_FIELD, cell.getKey().getY())
+                    .get();
+            List<QueryDocumentSnapshot> existingDocuments = existingDocumentsRequest.get().getDocuments();
+
             Point cellPosition = cell.getKey();
             Corporation cellCorporation = cell.getValue();
             Integer x = cellPosition.getX(), y = cellPosition.getY();
-            DocumentReference doc = database.collection(PLACED_CELLS_TABLE_NAME).document();
             Map<String, Object> newPlacedCell = new HashMap<>();
+
             newPlacedCell.put(CORPORATION_FIELD, cellCorporation == null ? null : cellCorporation.toString());
             newPlacedCell.put(GAME_ID_FIELD, gameId);
             newPlacedCell.put(X_POSITION_FIELD, x);
             newPlacedCell.put(Y_POSITION_FIELD, y);
-            ApiFuture<WriteResult> future = doc.set(newPlacedCell);
-            future.get();
+
+            if (existingDocuments.isEmpty()) {
+                DocumentReference doc = database.collection(PLACED_CELLS_TABLE_NAME).document();
+
+                future = doc.set(newPlacedCell);
+                future.get();
+            } else {
+                QueryDocumentSnapshot existingDocument = existingDocuments.get(0);
+                future = existingDocument.getReference().set(newPlacedCell);
+            }
         }
     }
 
