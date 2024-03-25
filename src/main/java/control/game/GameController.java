@@ -55,28 +55,35 @@ public class GameController {
         this.onlineMode = online;
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
+                System.out.println("Observer running");
+
                 updateNewPlacedCells();
                 updateStocks();
                 updateCashNet();
                 updateCurrentPlayer();
 
                 board.updatePlayerDeck(currentPlayer);
-
-                gameView.revalidate();
-                gameView.repaint();
-
             } catch (Exception e) {
                 errorInterrupt(e);
             } 
         });
 
         this.playerTurnObserver = new Timer(PLAYER_TURN_OBSERVER_DELAY, (ActionListener) -> {
+
+            gameView.revalidate();
+            gameView.repaint();
+
             Player playerTurn = currentPlayers.get(playerTurnIndex);
-            if (playerTurn.equals(currentPlayer)) {
+
+            if (playerTurn.equals(currentPlayer) && onlineObserver.isRunning()) {
                 onlineObserver.stop();
                 return;
             }
-            onlineObserver.start();
+            
+            if (!onlineObserver.isRunning()) {
+                onlineObserver.start();
+                return;
+            }
         });
 
         if (online) {
@@ -148,6 +155,7 @@ public class GameController {
 
     private void setNewPlacedCells() throws Exception {
         DatabaseConnection.setNewPlacedCells(newPlacedCells, gameId);
+        newPlacedCells.clear();
     }
 
     private void updateCurrentPlayer() throws Exception {
