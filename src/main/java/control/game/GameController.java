@@ -38,7 +38,7 @@ public class GameController {
     private int playerTurnIndex;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
-    public final static int ONLINE_OBSERVER_DELAY = 5000;
+    public final static int ONLINE_OBSERVER_DELAY = 100;
     public final static int PLAYER_TURN_OBSERVER_DELAY = 1000 / 60;
 
     public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online) {
@@ -59,6 +59,8 @@ public class GameController {
                 updateStocks();
                 updateCashNet();
                 updateCurrentPlayer();
+
+                board.updatePlayerDeck(currentPlayer);
 
                 gameView.revalidate();
                 gameView.repaint();
@@ -561,6 +563,11 @@ public class GameController {
      * @param player       represents the player that is about to place a new cell.
      */
     public synchronized void handleCellPlacing(Point cellPosition, Player player) {
+
+        if (onlineMode) {
+            playerTurnObserver.stop();
+        }
+
         resetNets();
         placeCell(cellPosition, player);
         if (board.thereArePlacedCorporations()) {
@@ -584,8 +591,6 @@ public class GameController {
         gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
 
         if (onlineMode) {
-            onlineObserver.start();
-            
             try {
                 setCurrentPlayer();
                 setCashNet();
@@ -593,6 +598,8 @@ public class GameController {
             } catch (Exception e) {
                 errorInterrupt(e);
             }
+
+            playerTurnObserver.start();
         }
     }
 
