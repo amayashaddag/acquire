@@ -7,6 +7,7 @@ import model.game.Corporation;
 import model.game.Player;
 import model.game.Board;
 import model.game.Cell;
+import model.tools.PlayerAnalytics;
 import model.tools.Point;
 
 import java.util.HashMap;
@@ -136,7 +137,7 @@ public class DatabaseConnection {
         return newPlacedCells;
     }
 
-    public void setStocks(Player player, String gameId) throws Exception{
+    public static void setStocks(Player player, String gameId) throws Exception{
             CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
             ApiFuture<QuerySnapshot> future = collection
                     .whereEqualTo(GAME_ID_FIELD,gameId)
@@ -148,5 +149,20 @@ public class DatabaseConnection {
                     //WriteResult docToUpdate = doc.getReference().
                 }
             }
+    }
+
+    public static PlayerAnalytics getPlayerAnalytics(String uid) {
+        // TODO : Should implement this one
+        return null;
+    }
+
+    public static List<PlayerAnalytics> getRanking() {
+        // TODO : Implement
+        return null;
+    }
+
+    public static Map<String, Integer> getAvailableGames() {
+        // TODO : Implement
+        return null;
     }
 }

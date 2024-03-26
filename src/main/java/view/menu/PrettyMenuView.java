@@ -6,6 +6,8 @@ import java.awt.*;
 import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
 import java.awt.BorderLayout;
+
+import view.assets.Fonts;
 import view.assets.MenuRessources;
 import javaswingdev.pggb.PanelGlowingGradient;
 import control.game.GameController;
@@ -28,6 +30,7 @@ public class PrettyMenuView extends Form {
     public PrettyMenuView() {
         super();
         setLayout(mig);
+        menu3d.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
         menu3d.addMenuItem("SinglePlayer", () -> singlePlayer());
         menu3d.addMenuItem("MultiPlayer", () -> multiPlayer());
