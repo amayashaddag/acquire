@@ -1,21 +1,29 @@
 package control.database;
 
-import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.*;
-import com.google.firebase.cloud.FirestoreClient;
-
-import io.opencensus.metrics.LongCumulative;
-import model.game.Corporation;
-import model.game.Player;
-import model.game.Board;
-import model.game.Cell;
-import model.tools.Point;
-
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.CollectionReference;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.WriteBatch;
+import com.google.cloud.firestore.WriteResult;
+import com.google.firebase.cloud.FirestoreClient;
+
+import model.game.Board;
+import model.game.Cell;
+import model.game.Corporation;
+import model.game.Player;
+import model.tools.Point;
 
 public class DatabaseConnection {
     private static final Firestore database = FirestoreClient.getFirestore();
@@ -23,25 +31,47 @@ public class DatabaseConnection {
     private static final String UID_PLAYER_FIELD = "uid";
     private static final String PSEUDO_PLAYER_FIELD = "pseudo";
     private static final String GAME_ID_FIELD = "game-id";
-    private static final String STOCKS_TABLE_NAME = "stocks";
-
+    private static final String GAME_STATE_FIELD = "state";
     private static final String STOCKS_AMOUNT_FIELD = "amount";
     private static final String PLAYER_CASH_FIELD = "cash";
     private static final String PLAYER_NET_FIELD = "net";
-    private static final String PLAYER_TABLE_NAME = "players";
-    private static final String GAME_TABLE_NAME = "games";
     private static final String GAME_MAX_PLAYERS_FIELD = "max-players";
-    private static final String GAME_STATE_FIELD = "state";
     private static final String CORPORATION_FIELD = "corporation";
-    private static final String PLACED_CELLS_TABLE_NAME = "placed-cells";
     private static final String X_POSITION_FIELD = "x-position";
     private static final String Y_POSITION_FIELD = "y-position";
-    private static final String CURRENT_PLAYER_TABLE = "current-player";
     private static final String UID_FIELD = "uid";
     private static final String CASH_FIELD = "cash";
     private static final String NET_FIELD = "net";
+    private static final String NOTIFICATION_MESSAGE_FIELD = "message";
+    private static final String NOTIFICATION_TIME_FIELD = "message";
+    
+    private static final String STOCKS_TABLE_NAME = "stocks";
+    private static final String PLAYER_TABLE_NAME = "players";
+    private static final String GAME_TABLE_NAME = "games";
+    private static final String PLACED_CELLS_TABLE_NAME = "placed-cells";
+    private static final String CURRENT_PLAYER_TABLE = "current-player";
+    private static final String NOTIFICATIONS_TABLE = "notifications";
+
+    private static final List<String> ALL_TABLES = new LinkedList<>();
+    static {
+        Collections.addAll(ALL_TABLES,
+            STOCKS_TABLE_NAME,
+            PLAYER_TABLE_NAME,
+            GAME_TABLE_NAME,
+            PLACED_CELLS_TABLE_NAME,
+            CURRENT_PLAYER_TABLE,
+            NOTIFICATIONS_TABLE
+        );
+    }
 
     public static void addPlayer(String gameId, Player player) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(PLAYER_TABLE_NAME)
+                .whereEqualTo(UID_FIELD, player.getUID()).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+        if (!docs.isEmpty()) {
+            throw new Exception();
+        }
+
         HashMap<String, Object> newPlayer = new HashMap<>();
         newPlayer.put(PSEUDO_PLAYER_FIELD, player.getPseudo());
         newPlayer.put(UID_PLAYER_FIELD, player.getUID());
@@ -74,16 +104,6 @@ public class DatabaseConnection {
         ApiFuture<WriteResult> future = doc.set(newGame);
         future.get();
         return gameId;
-    }
-
-    public static void removeGame(String gameId) throws Exception {
-        CollectionReference gameTable = database.collection(GAME_TABLE_NAME);
-        ApiFuture<QuerySnapshot> future = gameTable.whereEqualTo(GAME_ID_FIELD, gameId).get();
-        QuerySnapshot gameToRemove = future.get();
-        for (QueryDocumentSnapshot doc : gameToRemove) {
-            ApiFuture<WriteResult> deleteFuture = doc.getReference().delete();
-            deleteFuture.get();
-        }
     }
 
     public static void setCash(int newCash, Player player, String gameId) throws Exception {
@@ -137,6 +157,8 @@ public class DatabaseConnection {
 
         return newPlacedCells;
     }
+
+    // TODO : Should initialize stocks in addPlayer
 
     public static void setStocks(Player player, String gameId) throws Exception {
         CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
@@ -253,9 +275,86 @@ public class DatabaseConnection {
         return playersCashNet;
     }
 
-    public static Map<Corporation, Point> getNewPlacedCellsInDatabase(String gameId, Board currentBoard){
-        HashMap<Corporation,Point> newPlacedCells = new HashMap<>();
-        CollectionReference collectionReference = database.collection(PLACED_CELLS_TABLE_NAME);
-        return null;
+    public static boolean isGameEnded(String gameId) throws Exception {
+        ApiFuture<QuerySnapshot> future = database.collection(GAME_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> docs = future.get().getDocuments();
+
+        if (docs.isEmpty()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static void setGameState(@Nonnull String gameId, int gameState) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        if (docs.isEmpty()) {
+            throw new Exception();
+        }
+
+        DocumentSnapshot currentGame = docs.get(0);
+        currentGame.getReference().update(GAME_STATE_FIELD, gameState);
+
+    }
+
+    public static void removeGame(String gameId) throws Exception {
+        for (String table : ALL_TABLES) {
+            if (table == null) {
+                continue;
+            }
+
+            CollectionReference collection = database.collection(table);
+            ApiFuture<QuerySnapshot> reader = collection.whereEqualTo(GAME_ID_FIELD, gameId).get();
+            List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+            for (QueryDocumentSnapshot doc : docs) {
+                WriteBatch batch = collection.getFirestore().batch();
+                DocumentReference ref = doc.getReference();
+                batch.delete(ref);
+                batch.commit();
+            }
+        }
+    }
+
+    public static Map.Entry<String, Integer> getLastNotification(String gameId) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(NOTIFICATIONS_TABLE)
+                .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+        DocumentSnapshot gameNotification = docs.get(0);
+
+        String notificationMessage = (String) gameNotification.get(NOTIFICATION_MESSAGE_FIELD);
+        Integer notificationTime = (Integer) gameNotification.get(NOTIFICATION_TIME_FIELD);
+
+        if (notificationMessage == null || notificationTime == null) {
+            throw new Exception();
+        }
+
+        return new Map.Entry<String,Integer>() {
+
+            private String key = notificationMessage;
+            private Integer value = notificationTime;
+
+            @Override
+            public String getKey() {
+                return key;
+            }
+
+            @Override
+            public Integer getValue() {
+                return value;
+            }
+
+            @Override
+            public Integer setValue(Integer arg0) {
+                Integer oldValue = value;
+                value = arg0;
+                return oldValue;
+            }
+            
+        };
     }
 }

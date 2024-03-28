@@ -7,8 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.swing.Timer;
+
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import control.database.DatabaseConnection;
 import model.game.Board;
@@ -33,12 +34,13 @@ public class GameController {
     private final boolean onlineMode;
     private final Timer onlineObserver;
     private final Map<Point, Corporation> newPlacedCells;
+    private Map.Entry<String, Integer> lastNotification;
 
     private int playerTurnIndex;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
-    public final static int ONLINE_OBSERVER_DELAY = 100;
-    public final static int PLAYER_TURN_OBSERVER_DELAY = 1000 / 60;
+    public final static int ONLINE_OBSERVER_DELAY = 2000;
+    public final static int GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
 
     public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online) {
         this.board = new Board();
@@ -54,12 +56,12 @@ public class GameController {
         this.onlineMode = online;
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
-                System.out.println("Observer running");
-
+                updateGameState();
                 updateNewPlacedCells();
                 updateStocks();
                 updateCashNet();
                 updateCurrentPlayer();
+                updateLastNotification();
 
                 gameView.revalidate();
                 gameView.repaint();
@@ -80,6 +82,13 @@ public class GameController {
             }
 
             onlineObserver.start();
+        }
+    }
+
+    private void updateGameState() throws Exception {
+        boolean gameEnded = DatabaseConnection.isGameEnded(gameId);
+        if (gameEnded) {
+            endGame();
         }
     }
 
@@ -154,6 +163,15 @@ public class GameController {
         }
     }
 
+    private void updateLastNotification() throws Exception {
+        Map.Entry<String, Integer> notification = DatabaseConnection.getLastNotification(gameId);
+
+        if (lastNotification == null || lastNotification.getValue() != notification.getValue()) {
+            gameView.showInfoNotification(notification.getKey());
+            lastNotification = notification;
+        }
+    }
+
     private void errorInterrupt(Exception e) {
         GameFrame.showError(e, () -> {
             endGame();
@@ -223,7 +241,7 @@ public class GameController {
      *          two stocks of Tower corporation and one of American one.
      *          The purpose of this function is to verify whether the player has
      *          enough cash to buy the wanted
-     *          combination in order to display a notification that tells him to
+     *          combination in order to display a that tells him to
      *          reconsider his choice because of
      *          lack of cash.
      */
@@ -330,7 +348,8 @@ public class GameController {
         for (Point adj : cellsToMerge) {
             Cell adjacentCell = board.getCell(adj);
             if (!adjacentCell.isOwned() || !(adjacentCell.getCorporation() == chosenCellCorporation)) {
-                board.replaceCorporationFrom(chosenCellCorporation, adj);
+                Map<Point, Corporation> replaced = board.replaceCorporationFrom(chosenCellCorporation, adj);
+                newPlacedCells.putAll(replaced);
 
                 if (onlineMode) {
                     newPlacedCells.put(adj, chosenCellCorporation);
@@ -571,8 +590,6 @@ public class GameController {
 
         if (board.isGameOver()) {
             endGame();
-            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
-            parent.dispose();
         }
 
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
@@ -639,8 +656,20 @@ public class GameController {
     }
 
     private void endGame() {
-        onlineObserver.stop();
+        if (onlineMode) {
+            try {
+                if (gameId != null) {
+                    DatabaseConnection.removeGame(gameId);
+                } else {
+                    throw new NullPointerException();
+                }      
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
 
-        // TODO : set game state as "2" in database
+            onlineObserver.stop();
+        }
+        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+        parent.dispose();
     }
 }

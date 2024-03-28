@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class FirebaseClient {
 
-    public static final String FIREBASE_CREDENTIALS_FILE_PATH = "src/main/ressources/auth/alternative.json";
+    public static final String FIREBASE_CREDENTIALS_FILE_PATH = "src/main/ressources/auth/firebase-credentials.json";
     public static final String FIREBASE_EXCEPTION_MESSAGE = "Failed to connect to Firebase console in initializer.\n" +
             "Please contact support.";
 
