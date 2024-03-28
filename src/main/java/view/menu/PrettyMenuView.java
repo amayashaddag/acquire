@@ -9,9 +9,6 @@ import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
 import view.assets.Fonts;
 import view.assets.MenuRessources;
-import control.game.GameController;
-import model.game.Player;
-import java.util.ArrayList;
 import com.formdev.flatlaf.FlatClientProperties;
 
 
@@ -55,14 +52,7 @@ public class PrettyMenuView extends Form {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                // TODO :fixIt
-                ArrayList<Player> l = new ArrayList<>();
-                l.add(Player.createHumanPlayer("Max"));
-                l.add(Player.createHumanPlayer("Xi"));
-                l.add(Player.createHumanPlayer("Best"));
-                l.add(Player.createHumanPlayer("Of"));
-                GameController c = new GameController(l, l.get(0));
-                view.frame.GameFrame.currentFrame.setForm(c.getGameView());
+                controller.startSingleGame();
             }
         }).start();
     }
@@ -72,6 +62,9 @@ public class PrettyMenuView extends Form {
     }
 
     private void ranking() {
+        mig.setComponentConstraints(panel, "x 60%, w 30%, h 50%");
+        revalidate();
+
         panel.removeAll();
         panel.setVisible(true);
 
