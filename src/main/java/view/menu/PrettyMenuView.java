@@ -1,20 +1,19 @@
 package view.menu;
 
-import view.menu.*;
+import control.menu.MenuController;
+import model.tools.PlayerAnalytics;
+import javax.swing.table.DefaultTableModel;
 import view.frame.*;
 import java.awt.*;
 import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
-import java.awt.BorderLayout;
-
 import view.assets.Fonts;
 import view.assets.MenuRessources;
-import javaswingdev.pggb.PanelGlowingGradient;
 import control.game.GameController;
 import model.game.Player;
 import java.util.ArrayList;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import com.formdev.flatlaf.FlatClientProperties;
+
 
 /**
  * The beggining menu of the Game
@@ -23,21 +22,24 @@ import java.awt.event.MouseEvent;
  * @version 1
  */
 public class PrettyMenuView extends Form {
+    private final MenuController controller;
     private final Menu3D menu3d = new Menu3D();
     private final JPanel panel = new JPanel();
     private final MigLayout mig = new MigLayout("al center, filly");
 
-    public PrettyMenuView() {
+    public PrettyMenuView(MenuController controller) {
         super();
+        this.controller = controller;
         setLayout(mig);
+        panel.setBorder(new view.game.ColorableArcableFlatBorder(Color.GREEN, 15));
         menu3d.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
-        menu3d.addMenuItem("SinglePlayer", () -> singlePlayer());
-        menu3d.addMenuItem("MultiPlayer", () -> multiPlayer());
-        menu3d.addMenuItem("Classement", () -> classement());
-        menu3d.addMenuItem("Profile", () -> profile());
-        menu3d.addMenuItem("Setting", () -> settings());
-        menu3d.addMenuItem("Exit", () -> exit());
+        menu3d.addMenuItem("SinglePlayer", this::singlePlayer);
+        menu3d.addMenuItem("MultiPlayer", this::multiPlayer);
+        menu3d.addMenuItem("Profile", this::profile);
+        menu3d.addMenuItem("Ranking", this::ranking);
+        menu3d.addMenuItem("Setting", this::settings);
+        menu3d.addMenuItem("Exit", this::exit);
 
         panel.setVisible(false);
 
@@ -53,6 +55,7 @@ public class PrettyMenuView extends Form {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
+                // TODO :fixIt
                 ArrayList<Player> l = new ArrayList<>();
                 l.add(Player.createHumanPlayer("Max"));
                 l.add(Player.createHumanPlayer("Xi"));
@@ -68,12 +71,53 @@ public class PrettyMenuView extends Form {
 
     }
 
-    private void classement() {
+    private void ranking() {
+        panel.removeAll();
+        panel.setVisible(true);
 
+        javax.swing.JTable table = new javax.swing.JTable();
+        javax.swing.JScrollPane scroll = new javax.swing.JScrollPane();
+
+        table.setModel(new javax.swing.table.DefaultTableModel(new Object[][]{},
+            new String[]{"No", "Name", "Best Score", "Region"}
+        ) {
+            boolean[] canEdit = new boolean[]{false, false, false, false, false};
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit[columnIndex];
+            }
+        });
+        scroll.setViewportView(table);
+        if (table.getColumnModel().getColumnCount() > 0) {
+            table.getColumnModel().getColumn(0).setPreferredWidth(10);
+            table.getColumnModel().getColumn(1).setPreferredWidth(150);
+            table.getColumnModel().getColumn(2).setPreferredWidth(150);
+        }
+
+        table.setDefaultRenderer(Object.class, new TableGradientCell());
+        table.getTableHeader().putClientProperty(FlatClientProperties.STYLE, ""
+                + "hoverBackground:null;"
+                + "pressedBackground:null;"
+                + "separatorColor:$TableHeader.background");
+        scroll.putClientProperty(FlatClientProperties.STYLE, "border:3,0,3,0,$Table.background,10,10");
+        scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE, "hoverTrackColor:null");
+        table.setDefaultRenderer(Object.class, new TableGradientCell());
+        DefaultTableModel model=(DefaultTableModel) table.getModel();
+        model.addRow(new Object[]{1, "John Smith", "de", "123 Main St, City", "Manager"});
+
+        int i = 0;
+        for (PlayerAnalytics pa : controller.getRanking()) {
+            i++;
+            model.addRow(new Object[]{i, pa.pseudo(), pa.bestScore(), pa.region()});
+        }
+
+        panel.add(table);
+        panel.add(scroll);
+        repaint();
     }
 
     private void profile() {
-        mig.setComponentConstraints(panel, "x 50%, w 40%, h 70%");
+        mig.setComponentConstraints(panel, "x 50%, w 45%, h 70%");
         revalidate();
         panel.removeAll();
         panel.add(new view.login.LoginView());
@@ -95,6 +139,11 @@ public class PrettyMenuView extends Form {
                 System.exit(0);
             }
         }).start();
+    }
+
+    @Override
+    public void show() {
+        GameFrame.currentFrame.add(this);
     }
 
     @Override

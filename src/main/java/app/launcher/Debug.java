@@ -7,6 +7,7 @@ import com.raven.swing.MainPanel;
 import com.raven.swing.win_button.WinButton;
 import com.raven.form.FormHome;
 
+import control.menu.MenuController;
 import view.assets.GameResources;
 import view.frame.GameFrame;
 import view.game.*;
@@ -38,11 +39,12 @@ public class Debug extends JFrame {
 //
 //        GameView g = c.getGameView();
         GameFrame frame = GameFrame.currentFrame;
-        frame.add(new view.menu.PrettyMenuView());
+//        frame.add(new view.menu.PrettyMenuView());
 //        MenuView mv = new MenuView();
 //        mv.setOn(frame);
 
-//        g.setOn(frame);
+//
+        new MenuController().start();
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
 
 

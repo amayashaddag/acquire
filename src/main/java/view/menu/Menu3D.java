@@ -13,6 +13,9 @@ import javax.swing.JComponent;
 
 import view.menu.*;
 
+/**
+ * @author RAVEN, Deck Arthur
+ */
 public class Menu3D extends JComponent {
 
     public List<Menu3dItem> getItems() {

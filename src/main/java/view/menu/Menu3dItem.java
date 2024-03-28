@@ -12,6 +12,9 @@ import java.awt.geom.Rectangle2D;
 
 import view.menu.*;
 
+/**
+ * @author RAVEN
+ */
 public class Menu3dItem {
 
     public MenuAnimator getAnimator() {

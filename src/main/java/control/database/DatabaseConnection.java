@@ -150,19 +150,4 @@ public class DatabaseConnection {
                 }
             }
     }
-
-    public static PlayerAnalytics getPlayerAnalytics(String uid) {
-        // TODO : Should implement this one
-        return null;
-    }
-
-    public static List<PlayerAnalytics> getRanking() {
-        // TODO : Implement
-        return null;
-    }
-
-    public static Map<String, Integer> getAvailableGames() {
-        // TODO : Implement
-        return null;
-    }
 }

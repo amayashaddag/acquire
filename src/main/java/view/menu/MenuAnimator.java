@@ -8,6 +8,9 @@ import org.jdesktop.animation.timing.interpolation.PropertySetter;
 
 import view.menu.*;
 
+/**
+ * @author RAVEN
+ */
 public class MenuAnimator {
 
     private final Animator animator;
