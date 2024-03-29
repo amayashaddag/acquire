@@ -73,14 +73,6 @@ public class GameController {
         });
 
         if (online) {
-            try {
-                for (Player p : currentPlayers) {
-                    DatabaseConnection.addPlayer(gameId, p);
-                }
-            } catch (Exception e) {
-                errorInterrupt(e);
-            }
-
             onlineObserver.start();
         }
     }

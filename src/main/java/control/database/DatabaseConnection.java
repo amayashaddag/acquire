@@ -43,7 +43,7 @@ public class DatabaseConnection {
     private static final String CASH_FIELD = "cash";
     private static final String NET_FIELD = "net";
     private static final String NOTIFICATION_MESSAGE_FIELD = "message";
-    private static final String NOTIFICATION_TIME_FIELD = "message";
+    private static final String NOTIFICATION_TIME_FIELD = "time";
     
     private static final String STOCKS_TABLE_NAME = "stocks";
     private static final String PLAYER_TABLE_NAME = "players";
