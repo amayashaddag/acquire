@@ -331,7 +331,7 @@ public class DatabaseConnection {
         DocumentSnapshot gameNotification = docs.get(0);
 
         String notificationMessage = (String) gameNotification.get(NOTIFICATION_MESSAGE_FIELD);
-        Integer notificationTime = (Integer) gameNotification.get(NOTIFICATION_TIME_FIELD);
+        Long notificationTime = (Long) gameNotification.get(NOTIFICATION_TIME_FIELD);
 
         if (notificationMessage == null || notificationTime == null) {
             throw new Exception();
@@ -340,7 +340,7 @@ public class DatabaseConnection {
         return new Map.Entry<String,Integer>() {
 
             private String key = notificationMessage;
-            private Integer value = notificationTime;
+            private Integer value = notificationTime.intValue();
 
             @Override
             public String getKey() {
