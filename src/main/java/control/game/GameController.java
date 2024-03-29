@@ -166,6 +166,10 @@ public class GameController {
     private void updateLastNotification() throws Exception {
         Map.Entry<String, Integer> notification = DatabaseConnection.getLastNotification(gameId);
 
+        if (notification == null) {
+            return;
+        }
+
         if (lastNotification == null || lastNotification.getValue() != notification.getValue()) {
             gameView.showInfoNotification(notification.getKey());
             lastNotification = notification;

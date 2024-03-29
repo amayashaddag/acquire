@@ -324,6 +324,10 @@ public class DatabaseConnection {
         ApiFuture<QuerySnapshot> reader = database.collection(NOTIFICATIONS_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+        if (docs.isEmpty()) {
+            return null;
+        }
+
         DocumentSnapshot gameNotification = docs.get(0);
 
         String notificationMessage = (String) gameNotification.get(NOTIFICATION_MESSAGE_FIELD);
