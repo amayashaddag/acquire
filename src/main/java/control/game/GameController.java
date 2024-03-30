@@ -162,7 +162,7 @@ public class GameController {
             return;
         }
 
-        if (lastNotification == null || lastNotification.getValue() != notification.getValue()) {
+        if (lastNotification == null || !lastNotification.getValue().equals(notification.getValue())) {
             gameView.showInfoNotification(notification.getKey());
             lastNotification = notification;
         }
