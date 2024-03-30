@@ -64,9 +64,7 @@ public class PrettyMenuView extends Form {
     private void ranking() {
         mig.setComponentConstraints(panel, "x 60%, w 30%, h 50%");
         revalidate();
-
         panel.removeAll();
-        // panel.setVisible(true); FIXME : lalalal
 
         javax.swing.JTable table = new javax.swing.JTable();
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane();
@@ -106,6 +104,7 @@ public class PrettyMenuView extends Form {
 
         panel.add(table);
         panel.add(scroll);
+        panel.setVisible(true);
         repaint();
     }
 
@@ -132,7 +131,7 @@ public class PrettyMenuView extends Form {
             panel.add(jb);
         }
 
-        // panel.setVisible(true); FIXME : lalala
+        panel.setVisible(true);
         repaint();
     }
 

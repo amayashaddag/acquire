@@ -19,7 +19,7 @@ import java.util.Map;
  * @version 1
  */
 public class MenuController implements Serializable {
-    PlayerAnalytics playerAnalyticsSession;
+    String UIDSession;
     PrettyMenuView view;
 
     public void start() {
@@ -28,11 +28,11 @@ public class MenuController implements Serializable {
     }
 
     public PlayerAnalytics getPlayerAnalyticsSession() {
-        return playerAnalyticsSession;
+        return getPlayerAnalytics(UIDSession);
     }
 
     public boolean isConnected() {
-        return playerAnalyticsSession != null;
+        return UIDSession != null && UIDSession != "";
     }
 
     public void startSingleGame() {
