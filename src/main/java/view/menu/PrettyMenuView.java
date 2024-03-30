@@ -66,7 +66,7 @@ public class PrettyMenuView extends Form {
         revalidate();
 
         panel.removeAll();
-        panel.setVisible(true);
+        // panel.setVisible(true); FIXME : lalalal
 
         javax.swing.JTable table = new javax.swing.JTable();
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane();
@@ -113,8 +113,26 @@ public class PrettyMenuView extends Form {
         mig.setComponentConstraints(panel, "x 50%, w 45%, h 70%");
         revalidate();
         panel.removeAll();
-        panel.add(new view.login.LoginView());
-        panel.setVisible(true);
+
+        if (!controller.isConnected())
+            panel.add(new view.login.LoginView());
+        else {
+            PlayerAnalytics p = controller.getPlayerAnalyticsSession();
+            panel.setLayout(new GridLayout(4,1));
+            panel.add(new JLabel("Pseudo : "+p.pseudo()));
+            panel.add(new JLabel("Email : "+p.email()));
+            panel.add(new JLabel("Won Games"+p.wonGames()));
+            panel.add(new JLabel("Played Games"+p.playedGames()));
+            JButton jb = new JButton("Change account");
+            jb.addActionListener((e) -> {
+                panel.removeAll();
+                panel.add(new view.login.LoginView());
+                repaint();
+            });
+            panel.add(jb);
+        }
+
+        // panel.setVisible(true); FIXME : lalala
         repaint();
     }
 

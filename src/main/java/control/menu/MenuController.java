@@ -27,8 +27,12 @@ public class MenuController implements Serializable {
         view.show();
     }
 
-    public PlayerAnalytics playerAnalyticsSession() {
+    public PlayerAnalytics getPlayerAnalyticsSession() {
         return playerAnalyticsSession;
+    }
+
+    public boolean isConnected() {
+        return playerAnalyticsSession != null;
     }
 
     public void startSingleGame() {
