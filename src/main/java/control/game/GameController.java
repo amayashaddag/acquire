@@ -591,8 +591,14 @@ public class GameController {
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
 
-        // FIXME : Notifications should be global
-        gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
+        if (onlineMode) {
+            try {
+                String notification = GameNotifications.playerTurnNotification(nextPlayer.getPseudo());
+                DatabaseConnection.setLastNotification(gameId, notification);
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+        }
 
         if (onlineMode) {
             try {
@@ -626,7 +632,9 @@ public class GameController {
             player.removeFromEarnedStocks(c, amount);
             player.addToCash(totalPriceForCorporation);
 
-            // TODO : Send notification for selling stocks
+            gameView.showSuccessNotification(
+                GameNotifications.soldStocksNotification(amount, c, totalPriceForCorporation)
+            );
         }
     }
 
@@ -647,7 +655,9 @@ public class GameController {
             player.removeFromEarnedStocks(c, amountToGive);
             player.addToEarnedStocks(major, amountToEarn);
 
-            // TODO : Add notification for trading stocks
+            gameView.showSuccessNotification(
+                GameNotifications.tradedStocksNotification(amountToGive, c, amountToEarn, major)
+            );
         }
     }
 

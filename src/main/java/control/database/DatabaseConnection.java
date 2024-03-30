@@ -44,7 +44,7 @@ public class DatabaseConnection {
     private static final String NET_FIELD = "net";
     private static final String NOTIFICATION_MESSAGE_FIELD = "message";
     private static final String NOTIFICATION_TIME_FIELD = "time";
-    
+
     private static final String STOCKS_TABLE_NAME = "stocks";
     private static final String PLAYER_TABLE_NAME = "players";
     private static final String GAME_TABLE_NAME = "games";
@@ -55,13 +55,12 @@ public class DatabaseConnection {
     private static final List<String> ALL_TABLES = new LinkedList<>();
     static {
         Collections.addAll(ALL_TABLES,
-            STOCKS_TABLE_NAME,
-            PLAYER_TABLE_NAME,
-            GAME_TABLE_NAME,
-            PLACED_CELLS_TABLE_NAME,
-            CURRENT_PLAYER_TABLE,
-            NOTIFICATIONS_TABLE
-        );
+                STOCKS_TABLE_NAME,
+                PLAYER_TABLE_NAME,
+                GAME_TABLE_NAME,
+                PLACED_CELLS_TABLE_NAME,
+                CURRENT_PLAYER_TABLE,
+                NOTIFICATIONS_TABLE);
     }
 
     public static void addPlayer(String gameId, Player player) throws Exception {
@@ -167,13 +166,13 @@ public class DatabaseConnection {
                 .whereEqualTo(UID_PLAYER_FIELD, player.getUID())
                 .get();
         QuerySnapshot snapshot = future.get();
-        HashMap<Corporation,Integer> newStocks = player.getEarnedStocks();
+        HashMap<Corporation, Integer> newStocks = player.getEarnedStocks();
         for (QueryDocumentSnapshot doc : snapshot) {
             DocumentReference docToUpdate = doc.getReference();
             ApiFuture<DocumentSnapshot> future2 = docToUpdate.get();
             DocumentSnapshot data = future2.get();
             String corp = data.getString(CORPORATION_FIELD);
-            docToUpdate.update(STOCKS_AMOUNT_FIELD,newStocks.get(Corporation.getCorporationFromName(corp))).get();
+            docToUpdate.update(STOCKS_AMOUNT_FIELD, newStocks.get(Corporation.getCorporationFromName(corp))).get();
         }
     }
 
@@ -267,7 +266,7 @@ public class DatabaseConnection {
                 throw new NullPointerException();
             }
 
-            int[] income = {cash.intValue(), net.intValue()};
+            int[] income = { cash.intValue(), net.intValue() };
 
             playersCashNet.put(uid, income);
         }
@@ -337,7 +336,7 @@ public class DatabaseConnection {
             throw new Exception();
         }
 
-        return new Map.Entry<String,Integer>() {
+        return new Map.Entry<String, Integer>() {
 
             private String key = notificationMessage;
             private Integer value = notificationTime.intValue();
@@ -358,7 +357,31 @@ public class DatabaseConnection {
                 value = arg0;
                 return oldValue;
             }
-            
+
         };
+    }
+
+    public static void setLastNotification(String gameId, String notificationMessage) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(NOTIFICATIONS_TABLE)
+                .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+        DocumentReference notification;
+        long currentTime = System.currentTimeMillis();
+        Map<String, Object> notificationInformation = new HashMap<>();
+        
+        notificationInformation.put(GAME_ID_FIELD, gameId);
+        notificationInformation.put(NOTIFICATION_MESSAGE_FIELD, notificationMessage);
+        notificationInformation.put(NOTIFICATION_TIME_FIELD, currentTime);
+
+        ApiFuture<WriteResult> writer;
+
+        if (docs.isEmpty()) {
+            notification = database.collection(NOTIFICATIONS_TABLE).document();
+        } else {
+            notification = docs.get(0).getReference();
+        }
+
+        writer = notification.update(notificationInformation);
+        writer.get();
     }
 }
