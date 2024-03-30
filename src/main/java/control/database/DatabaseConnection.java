@@ -319,6 +319,25 @@ public class DatabaseConnection {
         }
     }
 
+    public static void clear() throws Exception {
+        for (String table : ALL_TABLES) {
+            if (table == null) {
+                continue;
+            }
+
+            CollectionReference collection = database.collection(table);
+            ApiFuture<QuerySnapshot> reader = collection.get();
+            List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+            for (QueryDocumentSnapshot doc : docs) {
+                WriteBatch batch = collection.getFirestore().batch();
+                DocumentReference ref = doc.getReference();
+                batch.delete(ref);
+                batch.commit();
+            }
+        }
+    }
+
     public static Map.Entry<String, Integer> getLastNotification(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(NOTIFICATIONS_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
@@ -377,11 +396,12 @@ public class DatabaseConnection {
 
         if (docs.isEmpty()) {
             notification = database.collection(NOTIFICATIONS_TABLE).document();
+            writer = notification.set(notificationInformation);
         } else {
             notification = docs.get(0).getReference();
+            writer = notification.update(notificationInformation);
         }
 
-        writer = notification.update(notificationInformation);
         writer.get();
     }
 }
