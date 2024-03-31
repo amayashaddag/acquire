@@ -6,7 +6,7 @@ import model.tools.PlayerAnalytics;
 import view.frame.GameFrame;
 import view.menu.PrettyMenuView;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +18,14 @@ import java.util.Map;
  * @author Arthur Deck
  * @version 1
  */
-public class MenuController implements Serializable {
-    String UIDSession;
+public class MenuController {
+    private final String FILE_OUTPUT = "A remplir";
+    PlayerAnalytics session;
     PrettyMenuView view;
+
+    public MenuController() {
+        loadSession();
+    }
 
     public void start() {
         view = new PrettyMenuView(this);
@@ -28,11 +33,11 @@ public class MenuController implements Serializable {
     }
 
     public PlayerAnalytics getPlayerAnalyticsSession() {
-        return getPlayerAnalytics(UIDSession);
+        return session;
     }
 
     public boolean isConnected() {
-        return UIDSession != null && UIDSession != "";
+        return session == null;
     }
 
     public void startSingleGame() {
@@ -59,5 +64,40 @@ public class MenuController implements Serializable {
     public Map<String, Integer> getAvailableGames() {
         // TODO : Implement
         return null;
+    }
+
+    public void saveSession() {
+        try {
+            FileOutputStream fos = new FileOutputStream(FILE_OUTPUT);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(session);
+            oos.close();
+            fos.close();
+        } catch (IOException e) {
+            System.err.println("Error during the save of the Players Session");
+            GameFrame.showError(e, ()->{});
+        }
+    }
+
+    public void loadSession() {
+        try {
+            FileInputStream fis = new FileInputStream(FILE_OUTPUT);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            session = (PlayerAnalytics) ois.readObject();
+            System.out.println(session.pseudo());
+            ois.close();
+            fis.close();
+        } catch (Exception e) {
+            System.err.println("Error during the load of the Players Session");
+            GameFrame.showError(e, ()->{});
+        }
+    }
+
+    public void setSession(String UID) {
+        this.session = getPlayerAnalytics(UID);
+    }
+
+    public void setSession(PlayerAnalytics session) {
+        this.session = session;
     }
 }
