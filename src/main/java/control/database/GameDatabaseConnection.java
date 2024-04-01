@@ -26,7 +26,7 @@ import model.game.Corporation;
 import model.game.Player;
 import model.tools.Point;
 
-public class DatabaseConnection {
+public class GameDatabaseConnection {
     private static final Firestore database = FirestoreClient.getFirestore();
 
     private static final String UID_PLAYER_FIELD = "uid";

@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import control.firebaseinit.FirebaseClient;
-import control.database.DatabaseConnection;
+import control.database.GameDatabaseConnection;
 import control.game.GameController;
 import model.game.Player;
 import view.frame.GameFrame;
@@ -27,12 +27,12 @@ public class NetworkDebug {
             List<Player> allPlayers = new LinkedList<>();
             Collections.addAll(allPlayers, hoster, joiner);
 
-            String gameId = DatabaseConnection.createGame(hoster, maxPlayers);
-            DatabaseConnection.setCurrentPlayer(gameId, hoster.getUID());
+            String gameId = GameDatabaseConnection.createGame(hoster, maxPlayers);
+            GameDatabaseConnection.setCurrentPlayer(gameId, hoster.getUID());
             System.out.println(gameId);
 
             for (Player p : allPlayers) {
-                DatabaseConnection.addPlayer(gameId, p);
+                GameDatabaseConnection.addPlayer(gameId, p);
             }
 
             GameController controller = new GameController(allPlayers, hoster, gameId, true);

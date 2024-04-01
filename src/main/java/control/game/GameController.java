@@ -11,7 +11,7 @@ import java.util.Set;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-import control.database.DatabaseConnection;
+import control.database.GameDatabaseConnection;
 import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
@@ -78,14 +78,14 @@ public class GameController {
     }
 
     private void updateGameState() throws Exception {
-        boolean gameEnded = DatabaseConnection.isGameEnded(gameId);
+        boolean gameEnded = GameDatabaseConnection.isGameEnded(gameId);
         if (gameEnded) {
             endGame();
         }
     }
 
     private void updateNewPlacedCells() throws Exception {
-        Map<Point, Corporation> newPlacedCells = DatabaseConnection.getNewPlacedCells(gameId, board);
+        Map<Point, Corporation> newPlacedCells = GameDatabaseConnection.getNewPlacedCells(gameId, board);
 
         if (!newPlacedCells.isEmpty()) {
             board.updateNewPlacedCells(newPlacedCells);
@@ -98,7 +98,7 @@ public class GameController {
     }
 
     private void updateCashNet() throws Exception {
-        Map<String, int[]> playersCashNet = DatabaseConnection.getPlayersCashNet(gameId);
+        Map<String, int[]> playersCashNet = GameDatabaseConnection.getPlayersCashNet(gameId);
 
         for (String uid : playersCashNet.keySet()) {
             int[] income = playersCashNet.get(uid);
@@ -127,23 +127,23 @@ public class GameController {
     private void setCurrentPlayer() throws Exception {
         Player currentPlayer = currentPlayers.get(playerTurnIndex);
 
-        DatabaseConnection.setCurrentPlayer(gameId, currentPlayer.getUID());
+        GameDatabaseConnection.setCurrentPlayer(gameId, currentPlayer.getUID());
     }
 
     private void setCashNet() throws Exception {
         for (Player p : currentPlayers) {
-            DatabaseConnection.setCash(p.getCash(), p, gameId);
-            DatabaseConnection.setNet(p.getNet(), p, gameId);
+            GameDatabaseConnection.setCash(p.getCash(), p, gameId);
+            GameDatabaseConnection.setNet(p.getNet(), p, gameId);
         }
     }
 
     private void setNewPlacedCells() throws Exception {
-        DatabaseConnection.setNewPlacedCells(newPlacedCells, gameId);
+        GameDatabaseConnection.setNewPlacedCells(newPlacedCells, gameId);
         newPlacedCells.clear();
     }
 
     private void updateCurrentPlayer() throws Exception {
-        String uid = DatabaseConnection.getCurrentPlayer(gameId);
+        String uid = GameDatabaseConnection.getCurrentPlayer(gameId);
 
         for (int i = 0; i < currentPlayers.size(); i++) {
             Player p = currentPlayers.get(i);
@@ -156,7 +156,7 @@ public class GameController {
     }
 
     private void updateLastNotification() throws Exception {
-        Map.Entry<String, Integer> notification = DatabaseConnection.getLastNotification(gameId);
+        Map.Entry<String, Integer> notification = GameDatabaseConnection.getLastNotification(gameId);
 
         if (notification == null) {
             return;
@@ -594,7 +594,7 @@ public class GameController {
         if (onlineMode) {
             try {
                 String notification = GameNotifications.playerTurnNotification(nextPlayer.getPseudo());
-                DatabaseConnection.setLastNotification(gameId, notification);
+                GameDatabaseConnection.setLastNotification(gameId, notification);
             } catch (Exception e) {
                 errorInterrupt(e);
             }
@@ -665,7 +665,7 @@ public class GameController {
         if (onlineMode) {
             try {
                 if (gameId != null) {
-                    DatabaseConnection.removeGame(gameId);
+                    GameDatabaseConnection.removeGame(gameId);
                 } else {
                     throw new NullPointerException();
                 }      
