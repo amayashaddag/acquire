@@ -27,7 +27,7 @@ public class NetworkDebug {
             List<Player> allPlayers = new LinkedList<>();
             Collections.addAll(allPlayers, hoster, joiner);
 
-            String gameId = DatabaseConnection.createGame(maxPlayers);
+            String gameId = DatabaseConnection.createGame(hoster, maxPlayers);
             DatabaseConnection.setCurrentPlayer(gameId, hoster.getUID());
             System.out.println(gameId);
 

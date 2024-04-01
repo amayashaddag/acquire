@@ -19,6 +19,7 @@ import com.google.cloud.firestore.WriteBatch;
 import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
 
+import control.game.GameController;
 import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
@@ -36,6 +37,7 @@ public class DatabaseConnection {
     private static final String PLAYER_CASH_FIELD = "cash";
     private static final String PLAYER_NET_FIELD = "net";
     private static final String GAME_MAX_PLAYERS_FIELD = "max-players";
+    private static final String GAME_CREATOR_FIELD = "creator";
     private static final String CORPORATION_FIELD = "corporation";
     private static final String X_POSITION_FIELD = "x-position";
     private static final String Y_POSITION_FIELD = "y-position";
@@ -93,13 +95,14 @@ public class DatabaseConnection {
         }
     }
 
-    public static String createGame(int maxPlayers) throws Exception {
+    public static String createGame(Player creator, int maxPlayers) throws Exception {
         DocumentReference doc = database.collection(GAME_TABLE_NAME).document();
         String gameId = doc.getId();
         HashMap<String, Object> newGame = new HashMap<>();
         newGame.put(GAME_ID_FIELD, gameId);
         newGame.put(GAME_STATE_FIELD, 0);
         newGame.put(GAME_MAX_PLAYERS_FIELD, maxPlayers);
+        newGame.put(GAME_CREATOR_FIELD, creator.getPseudo());
         ApiFuture<WriteResult> future = doc.set(newGame);
         future.get();
         return gameId;
@@ -403,5 +406,25 @@ public class DatabaseConnection {
         }
 
         writer.get();
+    }
+
+    public static Map<String, Integer> getAvailableGames() throws Exception {
+        Map<String, Integer> availableGames = new HashMap<>();
+        ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
+                .whereEqualTo(GAME_STATE_FIELD, GameController.GAME_NOT_STARTED_STATE).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        for (QueryDocumentSnapshot doc : docs) {
+            String creator = (String) doc.get(GAME_CREATOR_FIELD);
+            Long max = (Long) doc.get(GAME_MAX_PLAYERS_FIELD);
+
+            if (max == null) {
+                throw new Exception();
+            }
+
+            availableGames.put(creator, max.intValue());
+        }
+
+        return availableGames;
     }
 }
