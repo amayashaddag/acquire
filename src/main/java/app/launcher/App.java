@@ -16,7 +16,7 @@ public class App {
             frame.setVisible(true);
         });
         LoginView loginView = new LoginView();
-        frame.setPanel(loginView);
+        frame.setContentPane(loginView);
         try {
             FirebaseClient.initialize();
         } catch (Exception e) {

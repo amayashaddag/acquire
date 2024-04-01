@@ -1,5 +1,6 @@
 package view.assets;
 
+@Deprecated
 public class MenuInterfaceMessages {
    public static final String PLAY = "Play";
 

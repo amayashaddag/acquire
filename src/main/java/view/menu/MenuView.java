@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
 
+@Deprecated
 public class MenuView extends Form {
     public final static int BUTTON_WIDTH = 700;
     public final static int BUTTON_HEIGHT = 100;
@@ -64,15 +65,12 @@ public class MenuView extends Form {
         add(buttonPanel, BorderLayout.SOUTH);
 
         playButton.addActionListener(e -> {
-
         });
 
         optionsButton.addActionListener(e -> {
-
         });
 
         quitButton.addActionListener(e -> {
-
             System.exit(0);
         });
     }

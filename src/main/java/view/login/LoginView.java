@@ -96,7 +96,7 @@ public class LoginView extends JPanel {
 
             GameController controller = new GameController(players, p, "", false);
             GameView view = controller.getGameView();
-            parent.setPanel(view);
+            parent.setContentPane(view);
         });
 
 

@@ -14,8 +14,7 @@ public class LoginInterfaceResources {
 
     public static final String OFFLINE_BUTTON_TEXT = "PLAY OFFLINE";
 
-
-    public static final String PASSWORD_SHOWING_IMAGE_PATH = "src/main/ressources/login/eye.png";
+    public static final String PASSWORD_SHOWING_IMAGE_PATH = "src/main/ressources/images/login/eye.png";
 
     public static Image PASSWORD_SHOWING_ICON = new ImageIcon(PASSWORD_SHOWING_IMAGE_PATH)
             .getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);

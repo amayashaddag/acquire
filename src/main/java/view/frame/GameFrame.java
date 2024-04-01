@@ -24,7 +24,10 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 public class GameFrame extends JFrame {
     public final static int DEFAULT_WIDTH = 1200;
     public final static int DEFAULT_HEIGHT = 900;
-    public final static String TITLE = "Acquire - Re-edition";
+    public final static String TITLE = "Acquire";
+
+    public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
+    public final static GameFrame currentFrame = new GameFrame();
 
     public GameFrame() {
         super();
@@ -39,8 +42,24 @@ public class GameFrame extends JFrame {
         Notifications.getInstance().setJFrame(this);
     }
 
-    public void setPanel(JPanel panel) {
-        this.setContentPane(panel);
+    public static GameFrame getCurrentFrame() {return currentFrame;}
+
+    public void setGameView(GameController controller, Player player) {
+        this.setForm(new GameView(controller, player));
+    }
+
+    /**
+     * <p> Set a form on the current frame 
+     * (example : option page, game page, chat page ...) </p>
+     * 
+     * @param comp : the empty constructor of the form's 
+     * component you want to set
+     * @apiNote example : setForm(new MapView())
+     */
+    public void setForm(Form form) {
+        this.getContentPane().removeAll();
+        form.setOn(this);
+        this.repaint();
         this.revalidate();
         this.repaint();
     }
