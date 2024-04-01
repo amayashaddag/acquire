@@ -1,12 +1,10 @@
 package view.assets;
 
-import model.game.Corporation;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+
 import javax.imageio.ImageIO;
 
 /**

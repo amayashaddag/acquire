@@ -19,10 +19,6 @@ import java.awt.Insets;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;
-import control.firebaseinit.FirebaseClient;
 import view.frame.Form;
 import view.frame.GameFrame;
 import view.game.GameView;

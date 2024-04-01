@@ -6,8 +6,6 @@ import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 import org.jdesktop.animation.timing.interpolation.PropertySetter;
 
-import view.menu.*;
-
 /**
  * @author RAVEN
  */
