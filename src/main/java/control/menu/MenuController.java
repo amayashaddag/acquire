@@ -1,16 +1,21 @@
 package control.menu;
 
-import control.game.GameController;
-import model.game.Player;
-import model.tools.PlayerAnalytics;
-import view.frame.GameFrame;
-import view.menu.PrettyMenuView;
-
-import java.io.*;
-import java.util.ArrayList;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.SwingUtilities;
+
+import control.database.GameDatabaseConnection;
+import control.game.GameController;
+import model.game.Player;
+import model.tools.PlayerAnalytics;
+import view.game.GameView;
+import view.menu.PrettyMenuView;
 
 /**
  * The controller for the menu
@@ -20,10 +25,11 @@ import java.util.Map;
  */
 public class MenuController {
     private final String FILE_OUTPUT = "A remplir";
-    PlayerAnalytics session;
-    PrettyMenuView view;
 
-    public MenuController() {
+    private PlayerAnalytics session;
+    private PrettyMenuView view;
+
+    public MenuController() throws Exception {
         loadSession();
     }
 
@@ -41,14 +47,14 @@ public class MenuController {
     }
 
     public void startSingleGame() {
-        // FIXME : lancer avec la session du joueur et les IA
-        ArrayList<Player> l = new ArrayList<>();
-        l.add(Player.createHumanPlayer("Max", null));
-        l.add(Player.createHumanPlayer("Xi", null));
-        l.add(Player.createHumanPlayer("Best", null));
-        l.add(Player.createHumanPlayer("Of", null));
-        GameController c = new GameController(l, l.get(0), null, true);
-        GameFrame.currentFrame.setForm(c.getGameView());
+        List<Player> players = new LinkedList<>();
+        Player p = Player.createHumanPlayer("Player", null);
+        GameController controller = new GameController(players, p, null, false);
+        GameView view = controller.getGameView();
+
+        SwingUtilities.invokeLater(() -> {
+            view.setVisible(true);
+        });
     }
 
     public PlayerAnalytics getPlayerAnalytics(String uid) {
@@ -61,36 +67,25 @@ public class MenuController {
         return null;
     }
 
-    public Map<String, Integer> getAvailableGames() {
-        // TODO : Implement
-        return null;
+    public Map<String, Integer> getAvailableGames() throws Exception {
+        return GameDatabaseConnection.getAvailableGames();
     }
 
-    public void saveSession() {
-        try {
-            FileOutputStream fos = new FileOutputStream(FILE_OUTPUT);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(session);
-            oos.close();
-            fos.close();
-        } catch (IOException e) {
-            System.err.println("Error during the save of the Players Session");
-            GameFrame.showError(e, ()->{});
-        }
+    public void saveSession() throws Exception {
+        FileOutputStream fos = new FileOutputStream(FILE_OUTPUT);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(session);
+        oos.close();
+        fos.close();
     }
 
-    public void loadSession() {
-        try {
-            FileInputStream fis = new FileInputStream(FILE_OUTPUT);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            session = (PlayerAnalytics) ois.readObject();
-            System.out.println(session.pseudo());
-            ois.close();
-            fis.close();
-        } catch (Exception e) {
-            System.err.println("Error during the load of the Players Session");
-            GameFrame.showError(e, ()->{});
-        }
+    public void loadSession() throws Exception {
+        FileInputStream fis = new FileInputStream(FILE_OUTPUT);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        session = (PlayerAnalytics) ois.readObject();
+        System.out.println(session.pseudo());
+        ois.close();
+        fis.close();
     }
 
     public void setSession(String UID) {

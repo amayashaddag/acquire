@@ -94,7 +94,7 @@ public class GameController {
     }
 
     private void updateStocks() throws Exception {
-        // TODO : A implémenter
+        // TODO : Should implement
     }
 
     private void updateCashNet() throws Exception {
@@ -140,6 +140,10 @@ public class GameController {
     private void setNewPlacedCells() throws Exception {
         GameDatabaseConnection.setNewPlacedCells(newPlacedCells, gameId);
         newPlacedCells.clear();
+    }
+
+    private void setStocks(Player p) throws Exception {
+        GameDatabaseConnection.setStocks(p, gameId);
     }
 
     private void updateCurrentPlayer() throws Exception {
@@ -605,6 +609,7 @@ public class GameController {
                 setCurrentPlayer();
                 setCashNet();
                 setNewPlacedCells();
+                setStocks(player);
             } catch (Exception e) {
                 errorInterrupt(e);
             }

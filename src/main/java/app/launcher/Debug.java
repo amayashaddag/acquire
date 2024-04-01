@@ -12,8 +12,16 @@ public class Debug extends JFrame {
     public static void main(String[] args) {
         FlatDarculaLaf.setup();
         GameFrame frame = GameFrame.currentFrame;
-        new MenuController().start();
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
+
+        try {
+            MenuController menuController = new MenuController();
+            menuController.start();
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                frame.dispose();
+            });
+        }
 
     }
 }

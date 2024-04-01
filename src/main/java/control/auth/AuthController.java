@@ -15,7 +15,7 @@ import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
 
-public class UserAuthentication {
+public class AuthController {
     private final static Firestore database = FirestoreClient.getFirestore();
 
     private final static String EMAIL_FIELD = "email";

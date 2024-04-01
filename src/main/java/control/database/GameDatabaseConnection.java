@@ -74,14 +74,31 @@ public class GameDatabaseConnection {
         }
 
         HashMap<String, Object> newPlayer = new HashMap<>();
+
         newPlayer.put(PSEUDO_PLAYER_FIELD, player.getPseudo());
         newPlayer.put(UID_PLAYER_FIELD, player.getUID());
         newPlayer.put(GAME_ID_FIELD, gameId);
         newPlayer.put(PLAYER_CASH_FIELD, player.getCash());
         newPlayer.put(PLAYER_NET_FIELD, player.getNet());
+
         DocumentReference docRef = database.collection(PLAYER_TABLE_NAME).document();
         ApiFuture<WriteResult> future = docRef.set(newPlayer);
         future.get();
+
+        initStocks(gameId, player);
+    }
+
+    private static void initStocks(String gameId, Player player) throws Exception {
+        for (Corporation c : Corporation.values()) {
+            DocumentReference doc = database.collection(STOCKS_TABLE_NAME).document();
+            Map<String, Object> stocks = new HashMap<>();
+            stocks.put(CORPORATION_FIELD, c.toString());
+            stocks.put(STOCKS_AMOUNT_FIELD, 0);
+            stocks.put(UID_FIELD, player.getUID());
+
+            ApiFuture<WriteResult> writer = doc.set(stocks);
+            writer.get();
+        } 
     }
 
     public static void removePlayer(Player player) throws Exception {
@@ -160,8 +177,9 @@ public class GameDatabaseConnection {
         return newPlacedCells;
     }
 
-    // TODO : Should initialize stocks in addPlayer
 
+    // TODO : Should reimplement this function
+    
     public static void setStocks(Player player, String gameId) throws Exception {
         CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
         ApiFuture<QuerySnapshot> future = collection
@@ -175,7 +193,8 @@ public class GameDatabaseConnection {
             ApiFuture<DocumentSnapshot> future2 = docToUpdate.get();
             DocumentSnapshot data = future2.get();
             String corp = data.getString(CORPORATION_FIELD);
-            docToUpdate.update(STOCKS_AMOUNT_FIELD, newStocks.get(Corporation.getCorporationFromName(corp))).get();
+            ApiFuture<WriteResult> writer = docToUpdate.update(STOCKS_AMOUNT_FIELD, newStocks.get(Corporation.getCorporationFromName(corp)));
+            writer.get();
         }
     }
 
