@@ -24,8 +24,9 @@ public class NetworkDebug {
 
             int maxPlayers = 6;
             Player hoster = Player.createHumanPlayer("Amayas", "AMA283729382");
+            Player joiner = Player.createHumanPlayer("Igor", "IGO283729382");
             List<Player> allPlayers = new LinkedList<>();
-            Collections.addAll(allPlayers, hoster);
+            Collections.addAll(allPlayers, hoster, joiner);
 
             String gameId = GameDatabaseConnection.createGame(hoster, maxPlayers);
             GameDatabaseConnection.setCurrentPlayer(gameId, hoster.getUID());
