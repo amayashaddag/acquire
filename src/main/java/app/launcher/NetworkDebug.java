@@ -18,14 +18,14 @@ public class NetworkDebug {
         try {
 
             FirebaseClient.initialize();
+            GameDatabaseConnection.clear();
 
             GameFrame f = new GameFrame();
 
             int maxPlayers = 6;
             Player hoster = Player.createHumanPlayer("Amayas", "AMA283729382");
-            Player joiner = Player.createHumanPlayer("Arthur", "ART283729382");
             List<Player> allPlayers = new LinkedList<>();
-            Collections.addAll(allPlayers, hoster, joiner);
+            Collections.addAll(allPlayers, hoster);
 
             String gameId = GameDatabaseConnection.createGame(hoster, maxPlayers);
             GameDatabaseConnection.setCurrentPlayer(gameId, hoster.getUID());

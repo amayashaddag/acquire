@@ -21,15 +21,19 @@ public class AuthController {
     private final static String EMAIL_FIELD = "email";
     private final static String PSEUDO_FIELD = "pseudo";
     private final static String PASSWORD_FIELD = "password";
-    private final static String USER_ID_FIELD = "user-id";
+    private final static String USER_ID_FIELD = "uid";
+    private final static String BEST_SCORE_FIELD = "best-score";
+    private final static String PLAYED_GAMES_FIELD = "played-games";
+    private final static String WON_GAMES_FIELD = "won-games";
 
-    private final static String REGISTERED_USERS_DATABASE = "registered-users";
+    private final static String REGISTERED_USERS_TABLE = "registered-users";
+    private final static String ANALYTICS_TABLE = "analytics";
 
     private final static int MINIMUM_LENGTH_PASSWORD = 5;
     private final static String ALPHA_NUMERIC_AND_SYMBOLS_REGEX = "\"^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()-_=+\\\\\\\\|\\\\[{\\\\]};:'\\\",<.>/?]).+$\"";
 
     public static boolean alreadyRegisteredUser(String email) throws Exception {
-        ApiFuture<QuerySnapshot> reader = database.collection(REGISTERED_USERS_DATABASE)
+        ApiFuture<QuerySnapshot> reader = database.collection(REGISTERED_USERS_TABLE)
                 .whereEqualTo(EMAIL_FIELD, email).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
 
@@ -62,6 +66,8 @@ public class AuthController {
         ApiFuture<WriteResult> writer = newUser.update(userCredentials);
         writer.get();
 
+        addToAnalytics(userId);
+
         return userId;
     }
 
@@ -86,7 +92,7 @@ public class AuthController {
     }
 
     public static String loginWithEmailAndPassword(String email, String password) throws Exception {
-        ApiFuture<QuerySnapshot> reader = database.collection(REGISTERED_USERS_DATABASE)
+        ApiFuture<QuerySnapshot> reader = database.collection(REGISTERED_USERS_TABLE)
                 .whereEqualTo(EMAIL_FIELD, email).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
 
@@ -110,5 +116,29 @@ public class AuthController {
         return userId;
     }
 
+    private static void addToAnalytics(String userId) throws Exception {
+        if (alreadyExistingAnalytics(userId)) {
+            throw new Exception();
+        }
+
+        DocumentReference ref = database.collection(ANALYTICS_TABLE).document();
+        Map<String, Object> playerAnalytics = new HashMap<>();
+
+        playerAnalytics.put(USER_ID_FIELD, userId);
+        playerAnalytics.put(PLAYED_GAMES_FIELD, 0);
+        playerAnalytics.put(WON_GAMES_FIELD, 0);
+        playerAnalytics.put(BEST_SCORE_FIELD, 0);
+
+        ApiFuture<WriteResult> writer = ref.set(playerAnalytics);
+        writer.get();
+    }
+
+    private static boolean alreadyExistingAnalytics(String userId) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(ANALYTICS_TABLE)
+                .whereEqualTo(USER_ID_FIELD, userId).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        return !docs.isEmpty();
+    }
 
 }

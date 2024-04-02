@@ -4,7 +4,6 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.auth.UserRecord;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,9 +27,5 @@ public class FirebaseClient {
         if (FirebaseApp.getApps().isEmpty()) {
             throw new FirebaseException(FIREBASE_EXCEPTION_MESSAGE);
         }
-    }
-
-    public static UserRecord.CreateRequest createRequest(String email, String password) {
-        return new UserRecord.CreateRequest().setEmail(email).setPassword(password).setDisabled(false);
     }
 }
