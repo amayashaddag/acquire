@@ -5,6 +5,5 @@ import java.io.Serializable;
 public record PlayerCredentials (
     String uid,
     String email,
-    String pseudo,
-    String region
+    String pseudo
 ) implements Serializable {}

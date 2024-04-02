@@ -9,11 +9,14 @@ import javax.annotation.Nonnull;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
+
+import model.tools.PlayerCredentials;
 
 public class AuthController {
     private final static Firestore database = FirestoreClient.getFirestore();
@@ -139,6 +142,23 @@ public class AuthController {
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
 
         return !docs.isEmpty();
+    }
+
+    public static PlayerCredentials getPlayerCredentials(String userId) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(REGISTERED_USERS_TABLE)
+                .whereEqualTo(USER_ID_FIELD, userId).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        if (docs.isEmpty()) {
+            throw new Exception();
+        }
+
+        DocumentSnapshot doc = docs.get(0);
+
+        String email = (String) doc.get(EMAIL_FIELD);
+        String pseudo = (String) doc.get(PSEUDO_FIELD);
+
+        return new PlayerCredentials(userId, email, pseudo);
     }
 
 }

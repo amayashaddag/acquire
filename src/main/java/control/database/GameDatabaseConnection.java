@@ -1,6 +1,7 @@
 package control.database;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,11 +20,14 @@ import com.google.cloud.firestore.WriteBatch;
 import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
 
+import control.auth.AuthController;
 import control.game.GameController;
 import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
+import model.tools.PlayerAnalytics;
+import model.tools.PlayerCredentials;
 import model.tools.Point;
 
 public class GameDatabaseConnection {
@@ -46,6 +50,9 @@ public class GameDatabaseConnection {
     private static final String NET_FIELD = "net";
     private static final String NOTIFICATION_MESSAGE_FIELD = "message";
     private static final String NOTIFICATION_TIME_FIELD = "time";
+    private final static String BEST_SCORE_FIELD = "best-score";
+    private final static String PLAYED_GAMES_FIELD = "played-games";
+    private final static String WON_GAMES_FIELD = "won-games";
 
     private static final String STOCKS_TABLE_NAME = "stocks";
     private static final String PLAYER_TABLE_NAME = "players";
@@ -53,6 +60,7 @@ public class GameDatabaseConnection {
     private static final String PLACED_CELLS_TABLE_NAME = "placed-cells";
     private static final String CURRENT_PLAYER_TABLE = "current-player";
     private static final String NOTIFICATIONS_TABLE = "notifications";
+    private final static String ANALYTICS_TABLE = "analytics";
 
     private static final List<String> ALL_TABLES = new LinkedList<>();
     static {
@@ -98,7 +106,7 @@ public class GameDatabaseConnection {
 
             ApiFuture<WriteResult> writer = doc.set(stocks);
             writer.get();
-        } 
+        }
     }
 
     public static void removePlayer(Player player) throws Exception {
@@ -177,9 +185,8 @@ public class GameDatabaseConnection {
         return newPlacedCells;
     }
 
-
     // TODO : Should reimplement this function
-    
+
     public static void setStocks(Player player, String gameId) throws Exception {
         CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
         ApiFuture<QuerySnapshot> future = collection
@@ -193,7 +200,8 @@ public class GameDatabaseConnection {
             ApiFuture<DocumentSnapshot> future2 = docToUpdate.get();
             DocumentSnapshot data = future2.get();
             String corp = data.getString(CORPORATION_FIELD);
-            ApiFuture<WriteResult> writer = docToUpdate.update(STOCKS_AMOUNT_FIELD, newStocks.get(Corporation.getCorporationFromName(corp)));
+            ApiFuture<WriteResult> writer = docToUpdate.update(STOCKS_AMOUNT_FIELD,
+                    newStocks.get(Corporation.getCorporationFromName(corp)));
             writer.get();
         }
     }
@@ -409,7 +417,7 @@ public class GameDatabaseConnection {
         DocumentReference notification;
         long currentTime = System.currentTimeMillis();
         Map<String, Object> notificationInformation = new HashMap<>();
-        
+
         notificationInformation.put(GAME_ID_FIELD, gameId);
         notificationInformation.put(NOTIFICATION_MESSAGE_FIELD, notificationMessage);
         notificationInformation.put(NOTIFICATION_TIME_FIELD, currentTime);
@@ -447,5 +455,70 @@ public class GameDatabaseConnection {
         return availableGames;
     }
 
+    public static PlayerAnalytics getPlayerAnalytics(String userId) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(ANALYTICS_TABLE)
+                .whereEqualTo(UID_FIELD, userId).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        if (docs.isEmpty()) {
+            throw new Exception();
+        }
+
+        DocumentSnapshot doc = docs.get(0);
+        PlayerCredentials credentials = AuthController.getPlayerCredentials(userId);
+        String pseudo = credentials.pseudo();
+        Long bestScore = (Long) doc.get(BEST_SCORE_FIELD);
+        Long playedGames = (Long) doc.get(PLAYED_GAMES_FIELD);
+        Long wonGames = (Long) doc.get(WON_GAMES_FIELD);
+
+        if (pseudo == null || bestScore == null || wonGames == null || playedGames == null) {
+            throw new NullPointerException();
+        }
+
+        return new PlayerAnalytics(
+                pseudo,
+                bestScore.intValue(),
+                playedGames.intValue(),
+                wonGames.intValue(),
+                playedGames.intValue() - wonGames.intValue());
+    }
+
+    public static List<PlayerAnalytics> getRanking() throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(ANALYTICS_TABLE).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+        List<PlayerAnalytics> players = new LinkedList<>();
+
+        for (DocumentSnapshot doc : docs) {
+            String userId = (String) doc.get(UID_FIELD);
+            Long bestScore = (Long) doc.get(BEST_SCORE_FIELD);
+            Long playedGames = (Long) doc.get(PLAYED_GAMES_FIELD);
+            Long wonGames = (Long) doc.get(WON_GAMES_FIELD);
+
+            if (userId == null || bestScore == null || wonGames == null || playedGames == null) {
+                throw new NullPointerException();
+            }
+
+            String pseudo = AuthController.getPlayerCredentials(userId).pseudo();
+
+            PlayerAnalytics analytics = new PlayerAnalytics(pseudo, 
+                bestScore.intValue(), 
+                playedGames.intValue(), 
+                wonGames.intValue(), 
+                playedGames.intValue() - wonGames.intValue());
+            
+                players.add(analytics);
+        }
+
+        players.sort(new Comparator<PlayerAnalytics>() {
+
+            @Override
+            public int compare(PlayerAnalytics arg0, PlayerAnalytics arg1) {
+                return arg0.bestScore() - arg1.bestScore();
+            }
+            
+        });
+
+        return players;
+    }
 
 }

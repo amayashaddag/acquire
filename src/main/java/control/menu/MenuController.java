@@ -10,10 +10,13 @@ import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
+import control.auth.AuthController;
 import control.database.GameDatabaseConnection;
 import control.game.GameController;
 import model.game.Player;
 import model.tools.PlayerAnalytics;
+import model.tools.PlayerCredentials;
+import view.frame.GameFrame;
 import view.game.GameView;
 import view.menu.PrettyMenuView;
 
@@ -24,18 +27,20 @@ import view.menu.PrettyMenuView;
  * @version 1
  */
 public class MenuController {
-    private final String FILE_OUTPUT = "A remplir";
+    private final String FILE_OUTPUT = "src/main/ressources/session/game-session.ser";
 
     private PlayerAnalytics session;
     private PrettyMenuView view;
 
-    public MenuController() throws Exception {
+    public MenuController() {
         loadSession();
     }
 
     public void start() {
         view = new PrettyMenuView(this);
         view.show();
+        view.repaint();
+        view.revalidate();
     }
 
     public PlayerAnalytics getPlayerAnalyticsSession() {
@@ -43,7 +48,7 @@ public class MenuController {
     }
 
     public boolean isConnected() {
-        return session == null;
+        return session != null;
     }
 
     public void startSingleGame() {
@@ -58,37 +63,90 @@ public class MenuController {
     }
 
     public PlayerAnalytics getPlayerAnalytics(String uid) {
-        // TODO : Should implement this one
-        return null;
+        try {
+            return GameDatabaseConnection.getPlayerAnalytics(uid);
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+                parent.dispose();
+            });
+            return null;
+        }
+    }
+
+    public PlayerCredentials getPlayerCredentials(String uid) throws Exception {
+        try {
+            return AuthController.getPlayerCredentials(uid);
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+                parent.dispose();
+            });
+            return null;
+        }
     }
 
     public List<PlayerAnalytics> getRanking() {
-        // TODO : Implement
-        return null;
+        try {
+            return GameDatabaseConnection.getRanking();
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+                parent.dispose();
+            });
+            return null;
+        }
     }
 
-    public Map<String, Integer> getAvailableGames() throws Exception {
-        return GameDatabaseConnection.getAvailableGames();
+    public Map<String, Integer> getAvailableGames() {
+        try {
+            return GameDatabaseConnection.getAvailableGames();
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+                parent.dispose();
+            });
+            return null;
+        }
     }
 
-    public void saveSession() throws Exception {
-        FileOutputStream fos = new FileOutputStream(FILE_OUTPUT);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(session);
-        oos.close();
-        fos.close();
+    public void saveSession() {
+        try {
+            FileOutputStream fos = new FileOutputStream(FILE_OUTPUT);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(session);
+            oos.close();
+            fos.close();
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+                parent.dispose();
+            });
+        }
     }
 
-    public void loadSession() throws Exception {
-        FileInputStream fis = new FileInputStream(FILE_OUTPUT);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        session = (PlayerAnalytics) ois.readObject();
-        System.out.println(session.pseudo());
-        ois.close();
-        fis.close();
+    public void loadSession() {
+        try {
+            FileInputStream fis = new FileInputStream(FILE_OUTPUT);
+            
+            if (fis.available() > 0) {
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                session = (PlayerAnalytics) ois.readObject();
+                System.out.println(session.pseudo());
+                ois.close();
+            }
+
+            fis.close();
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+                parent.dispose();
+            });
+        }
+
     }
 
-    public void setSession(String UID) {
+    public void setSession(String UID) throws Exception {
         this.session = getPlayerAnalytics(UID);
     }
 

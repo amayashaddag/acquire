@@ -1,16 +1,27 @@
 package view.menu;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
+
+import com.formdev.flatlaf.FlatClientProperties;
+
 import control.menu.MenuController;
 import model.tools.PlayerAnalytics;
-import javax.swing.table.DefaultTableModel;
-import view.frame.*;
-import java.awt.*;
-import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
 import view.assets.Fonts;
 import view.assets.MenuRessources;
-import com.formdev.flatlaf.FlatClientProperties;
-
+import view.frame.Form;
+import view.frame.GameFrame;
+import view.login.LoginView;
 
 /**
  * The beggining menu of the Game
@@ -40,7 +51,7 @@ public class PrettyMenuView extends Form {
 
         panel.setVisible(false);
 
-        add(menu3d,"x 15%, y 30%, w 25%, h 50%");
+        add(menu3d, "x 15%, y 30%, w 25%, h 50%");
         add(panel, "x 60%, w 30%, h 50%");
         repaint();
     }
@@ -69,10 +80,9 @@ public class PrettyMenuView extends Form {
         javax.swing.JTable table = new javax.swing.JTable();
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane();
 
-        table.setModel(new javax.swing.table.DefaultTableModel(new Object[][]{},
-            new String[]{"No", "Name", "Best Score", "Region"}
-        ) {
-            boolean[] canEdit = new boolean[]{false, false, false, false, false};
+        table.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {},
+                new String[] { "No", "Name", "Best Score", "Region" }) {
+            boolean[] canEdit = new boolean[] { false, false, false, false, false };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit[columnIndex];
@@ -93,13 +103,24 @@ public class PrettyMenuView extends Form {
         scroll.putClientProperty(FlatClientProperties.STYLE, "border:3,0,3,0,$Table.background,10,10");
         scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE, "hoverTrackColor:null");
         table.setDefaultRenderer(Object.class, new TableGradientCell());
-        DefaultTableModel model=(DefaultTableModel) table.getModel();
-        model.addRow(new Object[]{1, "John Smith", "de", "123 Main St, City", "Manager"});
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.addRow(new Object[] { 1, "John Smith", "de", "123 Main St, City", "Manager" });
 
         int i = 0;
-        for (PlayerAnalytics pa : controller.getRanking()) {
+        List<PlayerAnalytics> playerRanking;
+        try {
+            playerRanking = controller.getRanking();
+        } catch (Exception e) {
+            playerRanking = new LinkedList<>();
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
+                parent.dispose();
+            });
+        }
+
+        for (PlayerAnalytics pa : playerRanking) {
             i++;
-            model.addRow(new Object[]{i, pa.pseudo(), pa.bestScore(), pa.region()});
+            model.addRow(new Object[] { i, pa.pseudo(), pa.bestScore(), null });
         }
 
         panel.add(table);
@@ -114,18 +135,18 @@ public class PrettyMenuView extends Form {
         panel.removeAll();
 
         if (!controller.isConnected())
-            panel.add(new view.login.LoginView());
+            panel.add(new LoginView());
         else {
             PlayerAnalytics p = controller.getPlayerAnalyticsSession();
-            panel.setLayout(new GridLayout(4,1));
-            panel.add(new JLabel("Pseudo : "+p.pseudo()));
-            panel.add(new JLabel("Email : "+p.email()));
-            panel.add(new JLabel("Won Games"+p.wonGames()));
-            panel.add(new JLabel("Played Games"+p.playedGames()));
+            panel.setLayout(new GridLayout(4, 1));
+            panel.add(new JLabel("Pseudo : " + p.pseudo()));
+            panel.add(new JLabel("Email : " + null));
+            panel.add(new JLabel("Won Games" + p.wonGames()));
+            panel.add(new JLabel("Played Games" + p.playedGames()));
             JButton jb = new JButton("Change account");
             jb.addActionListener((e) -> {
                 panel.removeAll();
-                panel.add(new view.login.LoginView());
+                panel.add(new LoginView());
                 repaint();
             });
             panel.add(jb);

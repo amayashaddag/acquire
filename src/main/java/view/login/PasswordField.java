@@ -1,6 +1,7 @@
 package view.login;
 
-import com.formdev.flatlaf.extras.components.*;
+import com.formdev.flatlaf.extras.components.FlatPasswordField;
+
 import view.assets.LoginInterfaceResources;
 
 public class PasswordField extends FlatPasswordField {
