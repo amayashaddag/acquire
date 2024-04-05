@@ -25,22 +25,22 @@ public class PrettyMenuView extends Form {
     private final MigLayout mig = new MigLayout("al center, filly");
 
     public PrettyMenuView(MenuController controller) {
-        super();
+        //super();
         this.controller = controller;
         setLayout(mig);
         panel.setBorder(new view.game.ColorableArcableFlatBorder(Color.GREEN, 15));
-        menu3d.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
+        menu3d.setFont(new Font("Bambino",Font.BOLD,16));
 
-        menu3d.addMenuItem("SinglePlayer", this::singlePlayer);
-        menu3d.addMenuItem("MultiPlayer", this::multiPlayer);
-        menu3d.addMenuItem("Profile", this::profile);
-        menu3d.addMenuItem("Ranking", this::ranking);
-        menu3d.addMenuItem("Setting", this::settings);
-        menu3d.addMenuItem("Exit", this::exit);
+        menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
+        menu3d.addMenuItem("MULTI PLAYER", this::multiPlayer);
+        menu3d.addMenuItem("PROFIL", this::profile);
+        menu3d.addMenuItem("RANKING", this::ranking);
+        menu3d.addMenuItem("SETTING", this::settings);
+        menu3d.addMenuItem("EXIT", this::exit);
 
         panel.setVisible(false);
 
-        add(menu3d,"x 15%, y 30%, w 25%, h 50%");
+        add(menu3d,"x 36%, y 55%, w 25%, h 50%");
         add(panel, "x 60%, w 30%, h 50%");
         repaint();
     }
