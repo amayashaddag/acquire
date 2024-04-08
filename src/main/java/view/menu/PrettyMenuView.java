@@ -158,7 +158,7 @@ public class PrettyMenuView extends Form {
             panel.add(new view.login.LoginView());
         else {
             PlayerAnalytics p = controller.getPlayerAnalyticsSession();
-            panel.setLayout(new GridLayout(4, 1));
+            /* panel.setLayout(new GridLayout(4, 1)); */
             panel.add(new JLabel("Pseudo : " + p.pseudo()));
             panel.add(new JLabel("Email : " + p.email()));
             panel.add(new JLabel("Won Games" + p.wonGames()));

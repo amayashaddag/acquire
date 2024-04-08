@@ -111,6 +111,7 @@ public class MenuController {
             ois.close();
             fis.close();
         } catch (Exception e) {
+            session = null;
             System.err.println("Error during the load of the Players Session");
             GameFrame.showError(e, () -> {
             });
