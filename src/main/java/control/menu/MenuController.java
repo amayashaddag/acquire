@@ -1,6 +1,7 @@
 package control.menu;
 
 import control.game.GameController;
+import model.tools.PreGameAnalytics;
 import model.game.Player;
 import model.tools.PlayerAnalytics;
 import view.frame.GameFrame;
@@ -10,7 +11,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * The controller for the menu
@@ -61,9 +61,31 @@ public class MenuController {
         return null;
     }
 
-    public Map<String, Integer> getAvailableGames() {
+    public List<PreGameAnalytics> getAvailableGames() {
         // TODO : Implement
         return null;
+    }
+
+    public void joinPreGame(String preGameUID) {
+        // TODO : faire rejoindre au player actuel la partie demandé
+    }
+
+    public void createMultiGame() {
+        // TODO : creer une nouvelle game multi permettant aux autres joueurs de la
+        // rejoindre (game creer par le joueur don c'est la session)
+    }
+
+    public void launchMultiGame() {
+        // TODO : lorsque le joueur a créer une game multi et qu'il décide qu'il est
+        // temps de
+        // lancer la parti, cette méthode est appelé et permet de lancer la partie
+    }
+
+    public void avortMutiGame() {
+        // TODO : le joueur à creer une parti et pour une raison ou une autre décide
+        // d'abandonner
+        // et de retourner au menu. Cette méthode doit donc supprimer la partie créer
+        // par le joueur
     }
 
     public void saveSession() {
@@ -75,7 +97,8 @@ public class MenuController {
             fos.close();
         } catch (IOException e) {
             System.err.println("Error during the save of the Players Session");
-            GameFrame.showError(e, ()->{});
+            GameFrame.showError(e, () -> {
+            });
         }
     }
 
@@ -89,7 +112,8 @@ public class MenuController {
             fis.close();
         } catch (Exception e) {
             System.err.println("Error during the load of the Players Session");
-            GameFrame.showError(e, ()->{});
+            GameFrame.showError(e, () -> {
+            });
         }
     }
 
