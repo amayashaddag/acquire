@@ -7,7 +7,7 @@ import javax.swing.table.DefaultTableModel;
 import view.frame.*;
 import java.awt.*;
 import java.security.Policy;
-
+import java.util.List;
 import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
 import view.assets.Fonts;
@@ -23,7 +23,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 public class PrettyMenuView extends Form {
     private final MenuController controller;
     private final Menu3D menu3d = new Menu3D();
-    private final JScrollPane panel = new JScrollPane();
+    private final JPanel panel = new JPanel();
     private final MigLayout mig = new MigLayout("al center, filly");
     private boolean aMultiGameIsLaunching = false;
 
@@ -31,9 +31,6 @@ public class PrettyMenuView extends Form {
         super();
         this.controller = controller;
         setLayout(mig);
-        panel.setBorder(new view.game.ColorableArcableFlatBorder(Color.GREEN, 15));
-        panel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        panel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         menu3d.setFont(new Font("Bambino", Font.BOLD, 16));
 
         menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
@@ -44,6 +41,7 @@ public class PrettyMenuView extends Form {
         menu3d.addMenuItem("EXIT", this::exit);
 
         panel.setVisible(false);
+        panel.setOpaque(false);
 
         add(menu3d, "x 36%, y 55%, w 25%, h 50%");
         add(panel, "x 60%, w 30%, h 50%");
@@ -88,16 +86,20 @@ public class PrettyMenuView extends Form {
         }
         panel.add(createGameBtn);
 
-        for (PreGameAnalytics p : controller.getAvailableGames()) {
-            JButton btn = new JButton();
-            btn.setText(p.hostName() + " : " + p.currentNumberOfPlayer()
-                    + " / " + p.maxNumberOfPlayer());
+        List<PreGameAnalytics> list = controller.getAvailableGames();
+        if (list != null && !list.isEmpty()) {
+            for (PreGameAnalytics p : list) {
+                JButton btn = new JButton();
+                btn.setText(p.hostName() + " : " + p.currentNumberOfPlayer()
+                        + " / " + p.maxNumberOfPlayer());
 
-            // TODO :ajouter action au btn pour rejoindre la game
+                // TODO :ajouter action au btn pour rejoindre la game
 
-            panel.add(btn);
+                panel.add(btn);
+            }
         }
 
+        panel.repaint();
         panel.setVisible(true);
         repaint();
     }
@@ -108,7 +110,7 @@ public class PrettyMenuView extends Form {
         panel.removeAll();
 
         javax.swing.JTable table = new javax.swing.JTable();
-        /* javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(); */
+        javax.swing.JScrollPane scroll = new javax.swing.JScrollPane();
 
         table.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {},
                 new String[] { "No", "Name", "Best Score", "Region" }) {
@@ -118,7 +120,7 @@ public class PrettyMenuView extends Form {
                 return canEdit[columnIndex];
             }
         });
-        /* scroll.setViewportView(table); */
+        scroll.setViewportView(table);
         if (table.getColumnModel().getColumnCount() > 0) {
             table.getColumnModel().getColumn(0).setPreferredWidth(10);
             table.getColumnModel().getColumn(1).setPreferredWidth(150);
@@ -130,10 +132,10 @@ public class PrettyMenuView extends Form {
                 + "hoverBackground:null;"
                 + "pressedBackground:null;"
                 + "separatorColor:$TableHeader.background");
-        // scroll.putClientProperty(FlatClientProperties.STYLE,
-        // "border:3,0,3,0,$Table.background,10,10");
-        // scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
-        // "hoverTrackColor:null");
+        scroll.putClientProperty(FlatClientProperties.STYLE,
+                "border:3,0,3,0,$Table.background,10,10");
+        scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
+                "hoverTrackColor:null");
         table.setDefaultRenderer(Object.class, new TableGradientCell());
         DefaultTableModel model = (DefaultTableModel) table.getModel();
 
@@ -144,7 +146,7 @@ public class PrettyMenuView extends Form {
         }
 
         panel.add(table);
-        /* panel.add(scroll); */
+        panel.add(scroll);
         panel.setVisible(true);
         repaint();
     }
@@ -158,7 +160,7 @@ public class PrettyMenuView extends Form {
             panel.add(new view.login.LoginView());
         else {
             PlayerAnalytics p = controller.getPlayerAnalyticsSession();
-            /* panel.setLayout(new GridLayout(4, 1)); */
+            panel.setLayout(new GridLayout(4, 1));
             panel.add(new JLabel("Pseudo : " + p.pseudo()));
             panel.add(new JLabel("Email : " + p.email()));
             panel.add(new JLabel("Won Games" + p.wonGames()));

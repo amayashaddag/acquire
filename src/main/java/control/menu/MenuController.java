@@ -19,7 +19,7 @@ import java.util.Map;
  * @version 1
  */
 public class MenuController {
-    private final String FILE_OUTPUT = "A remplir";
+    private final String FILE_OUTPUT = "src/main/ressources/auth/session";
     PlayerAnalytics session;
     PrettyMenuView view;
 
@@ -37,7 +37,7 @@ public class MenuController {
     }
 
     public boolean isConnected() {
-        return session == null;
+        return session != null;
     }
 
     public void startSingleGame() {
