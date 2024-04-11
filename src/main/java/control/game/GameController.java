@@ -95,7 +95,7 @@ public class GameController {
 
     private void updateStocks() throws Exception {
         for (Player p : currentPlayers) {
-            GameDatabaseConnection.setStocks(p, gameId);
+            GameDatabaseConnection.updateStocks(p, gameId);
         }
     }
 

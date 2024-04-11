@@ -111,6 +111,10 @@ public class Player {
         this.cash += amount;
     }
 
+    public void setStocks(Corporation c, int amount) {
+        earnedStocks.put(c, amount);
+    }
+
     public void addToNet(int amount) {
         this.net += amount;
     }

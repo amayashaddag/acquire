@@ -521,5 +521,25 @@ public class GameDatabaseConnection {
 
         return players;
     }
+    
+
+    public static void updateStocks(Player p, String gameId) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(STOCKS_TABLE_NAME)
+                .whereEqualTo(UID_FIELD, p.getUID()).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        for (QueryDocumentSnapshot doc : docs) {
+            Long amount = (Long) doc.get(STOCKS_AMOUNT_FIELD);
+            String corporationName = (String) doc.get(CORPORATION_FIELD);
+
+            if (amount == null) {
+                throw new Exception();
+            }
+
+            Corporation corporation = Corporation.getCorporationFromName(corporationName);
+
+            p.setStocks(corporation, amount.intValue());
+        }
+    }
 
 }
