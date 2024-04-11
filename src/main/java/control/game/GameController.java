@@ -144,8 +144,10 @@ public class GameController {
         newPlacedCells.clear();
     }
 
-    private void setStocks(Player p) throws Exception {
-        GameDatabaseConnection.setStocks(p, gameId);
+    private void setStocks() throws Exception {
+        for (Player p : currentPlayers) {
+            GameDatabaseConnection.setStocks(p, gameId);
+        }
     }
 
     private void updateCurrentPlayer() throws Exception {
@@ -611,7 +613,7 @@ public class GameController {
                 setCurrentPlayer();
                 setCashNet();
                 setNewPlacedCells();
-                setStocks(player);
+                setStocks();
             } catch (Exception e) {
                 errorInterrupt(e);
             }
