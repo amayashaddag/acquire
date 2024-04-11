@@ -94,7 +94,9 @@ public class GameController {
     }
 
     private void updateStocks() throws Exception {
-        // TODO : Should implement
+        for (Player p : currentPlayers) {
+            GameDatabaseConnection.setStocks(p, gameId);
+        }
     }
 
     private void updateCashNet() throws Exception {

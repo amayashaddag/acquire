@@ -185,23 +185,24 @@ public class GameDatabaseConnection {
         return newPlacedCells;
     }
 
-    // TODO : Should reimplement this function
-
     public static void setStocks(Player player, String gameId) throws Exception {
+
         CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
-        ApiFuture<QuerySnapshot> future = collection
-                .whereEqualTo(GAME_ID_FIELD, gameId)
-                .whereEqualTo(UID_PLAYER_FIELD, player.getUID())
-                .get();
-        QuerySnapshot snapshot = future.get();
-        HashMap<Corporation, Integer> newStocks = player.getEarnedStocks();
-        for (QueryDocumentSnapshot doc : snapshot) {
-            DocumentReference docToUpdate = doc.getReference();
-            ApiFuture<DocumentSnapshot> future2 = docToUpdate.get();
-            DocumentSnapshot data = future2.get();
-            String corp = data.getString(CORPORATION_FIELD);
-            ApiFuture<WriteResult> writer = docToUpdate.update(STOCKS_AMOUNT_FIELD,
-                    newStocks.get(Corporation.getCorporationFromName(corp)));
+        String uid = player.getUID();
+
+        for (Corporation c : Corporation.values()) {
+            int amount = player.getStocks(c);
+            String corporationName = c.toString();
+            ApiFuture<QuerySnapshot> reader = collection.whereEqualTo(CORPORATION_FIELD, corporationName).get();
+            QueryDocumentSnapshot doc = reader.get().getDocuments().get(0);
+            DocumentReference ref = doc.getReference();
+
+            Map<String, Object> updatedReference = new HashMap<>();
+            updatedReference.put(STOCKS_AMOUNT_FIELD, amount);
+            updatedReference.put(CORPORATION_FIELD, corporationName);
+            updatedReference.put(UID_FIELD, uid);
+
+            ApiFuture<WriteResult> writer = ref.update(updatedReference);
             writer.get();
         }
     }
@@ -500,13 +501,13 @@ public class GameDatabaseConnection {
 
             String pseudo = AuthController.getPlayerCredentials(userId).pseudo();
 
-            PlayerAnalytics analytics = new PlayerAnalytics(pseudo, 
-                bestScore.intValue(), 
-                playedGames.intValue(), 
-                wonGames.intValue(), 
-                playedGames.intValue() - wonGames.intValue());
-            
-                players.add(analytics);
+            PlayerAnalytics analytics = new PlayerAnalytics(pseudo,
+                    bestScore.intValue(),
+                    playedGames.intValue(),
+                    wonGames.intValue(),
+                    playedGames.intValue() - wonGames.intValue());
+
+            players.add(analytics);
         }
 
         players.sort(new Comparator<PlayerAnalytics>() {
@@ -515,7 +516,7 @@ public class GameDatabaseConnection {
             public int compare(PlayerAnalytics arg0, PlayerAnalytics arg1) {
                 return arg0.bestScore() - arg1.bestScore();
             }
-            
+
         });
 
         return players;
