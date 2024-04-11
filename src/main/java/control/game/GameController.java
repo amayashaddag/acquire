@@ -34,8 +34,8 @@ public class GameController {
     private final boolean onlineMode;
     private final Timer onlineObserver;
     private final Map<Point, Corporation> newPlacedCells;
-    private Map.Entry<String, Integer> lastNotification;
 
+    private Map.Entry<String, Integer> lastNotification;
     private int playerTurnIndex;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
@@ -144,9 +144,9 @@ public class GameController {
         newPlacedCells.clear();
     }
 
-    private void setStocks() throws Exception {
+    private void setNewEarnedStocks() throws Exception {
         for (Player p : currentPlayers) {
-            GameDatabaseConnection.setStocks(p, gameId);
+            GameDatabaseConnection.updateStocks(p, gameId);
         }
     }
 
@@ -610,10 +610,10 @@ public class GameController {
 
         if (onlineMode) {
             try {
-                setCurrentPlayer();
-                setCashNet();
+                setNewEarnedStocks();
                 setNewPlacedCells();
-                setStocks();
+                setCashNet();
+                setCurrentPlayer();
             } catch (Exception e) {
                 errorInterrupt(e);
             }
