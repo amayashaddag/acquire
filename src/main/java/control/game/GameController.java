@@ -58,6 +58,8 @@ public class GameController {
             try {
                 updateGameState();
                 updateNewPlacedCells();
+                board.updatePlayerDeck(currentPlayer);
+                
                 updateStocks();
                 updateCashNet();
                 updateCurrentPlayer();
@@ -66,7 +68,6 @@ public class GameController {
                 gameView.revalidate();
                 gameView.repaint();
 
-                board.updatePlayerDeck(currentPlayer);
             } catch (Exception e) {
                 errorInterrupt(e);
             } 
