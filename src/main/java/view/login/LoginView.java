@@ -114,7 +114,7 @@ public class LoginView extends JPanel {
 
         createAccountButton.addActionListener((ActionListener) -> {
             try {
-
+                // TODO : Implement user registration process
             } catch (Exception e) {
                 // TODO : Handle exception error showing
             }
