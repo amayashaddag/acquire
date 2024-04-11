@@ -58,12 +58,13 @@ public class GameController {
             try {
                 updateGameState();
                 updateNewPlacedCells();
-                board.updatePlayerDeck(currentPlayer);
-                
                 updateStocks();
                 updateCashNet();
                 updateCurrentPlayer();
                 updateLastNotification();
+
+                board.updatePlayerDeck(currentPlayer);
+                gameView.updatePlayerDeck();
 
                 gameView.revalidate();
                 gameView.repaint();

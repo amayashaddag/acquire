@@ -461,4 +461,8 @@ public class GameView extends Form {
         GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
         parent.dispose();
     }
+
+    public void updatePlayerDeck() {
+        jetonsPanel.updatePlayerDeck();
+    }
 }

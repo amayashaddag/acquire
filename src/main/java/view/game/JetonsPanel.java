@@ -83,6 +83,32 @@ public class JetonsPanel extends JPanel {
             }
     }
 
+    public void updatePlayerDeck() {
+        Point[] playerDeck = g.getPlayer().getDeck();
+        if (playerDeck.length == 0) {
+            buttonPanel.removeAll();
+        } else {
+            ArrayList<JetonButton> l = new ArrayList<>();
+            for (Component c : buttonPanel.getComponents())
+                if (c instanceof JetonButton)
+                    l.add((JetonButton) c);
+
+            int position = 0;
+            for (int i = 0; i < l.size(); i++) {
+                if (playerDeck[i] != null) {
+                    l.get(i).setVisible(true);
+                    l.get(i).setPoint(playerDeck[i]);
+                } else {
+                    l.get(i).setVisible(false);
+                    buttonPanel.remove(l.get(i));
+                    buttonPanel.revalidate();
+                    buttonPanel.add(l.get(i), position);
+                    position = (position == 0) ? buttonPanel.getComponentCount() - 1 : 0;
+                }
+            }
+        }
+    }
+
     private class JetonButton extends JButton {
         Point p;
 
@@ -90,7 +116,7 @@ public class JetonsPanel extends JPanel {
             super();
             this.p = p;
             this.setFocusPainted(false);
-            this.setText(" ");
+            this.setText("-");
             this.addActionListener((e) -> {
                 new Thread(() -> {
                     g.getController().handleCellPlacing(p, g.getPlayer());
@@ -110,7 +136,6 @@ public class JetonsPanel extends JPanel {
                             if (playerDeck[i] != null) {
                                 l.get(i).setVisible(true);
                                 l.get(i).setPoint(playerDeck[i]);
-                                // l.get(i).setText(playerDeck[i].toString());
                             } else {
                                 l.get(i).setVisible(false);
                                 buttonPanel.remove(l.get(i));
