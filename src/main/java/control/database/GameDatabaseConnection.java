@@ -103,6 +103,7 @@ public class GameDatabaseConnection {
             stocks.put(CORPORATION_FIELD, c.toString());
             stocks.put(STOCKS_AMOUNT_FIELD, 0);
             stocks.put(UID_FIELD, player.getUID());
+            stocks.put(GAME_ID_FIELD, gameId);
 
             ApiFuture<WriteResult> writer = doc.set(stocks);
             writer.get();
@@ -193,7 +194,11 @@ public class GameDatabaseConnection {
         for (Corporation c : Corporation.values()) {
             int amount = player.getStocks(c);
             String corporationName = c.toString();
-            ApiFuture<QuerySnapshot> reader = collection.whereEqualTo(CORPORATION_FIELD, corporationName).get();
+            ApiFuture<QuerySnapshot> reader = collection
+                    .whereEqualTo(GAME_ID_FIELD, gameId)
+                    .whereEqualTo(UID_FIELD, uid)
+                    .whereEqualTo(CORPORATION_FIELD, corporationName)
+                    .get();
             QueryDocumentSnapshot doc = reader.get().getDocuments().get(0);
             DocumentReference ref = doc.getReference();
 
@@ -525,7 +530,9 @@ public class GameDatabaseConnection {
 
     public static void updateStocks(Player p, String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(STOCKS_TABLE_NAME)
-                .whereEqualTo(UID_FIELD, p.getUID()).get();
+                .whereEqualTo(UID_FIELD, p.getUID())
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
 
         for (QueryDocumentSnapshot doc : docs) {

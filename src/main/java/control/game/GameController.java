@@ -146,7 +146,7 @@ public class GameController {
 
     private void setNewEarnedStocks() throws Exception {
         for (Player p : currentPlayers) {
-            GameDatabaseConnection.updateStocks(p, gameId);
+            GameDatabaseConnection.setStocks(p, gameId);
         }
     }
 
