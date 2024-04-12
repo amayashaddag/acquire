@@ -22,6 +22,6 @@ public class Debug extends JFrame {
                 frame.dispose();
             });
         }
-
+        // TODO : Igor mange ton caca
     }
 }

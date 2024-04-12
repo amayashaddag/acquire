@@ -2,6 +2,7 @@ package view.login;
 
 import control.game.GameController;
 import model.game.Player;
+import org.checkerframework.checker.units.qual.N;
 import view.assets.Fonts;
 import view.assets.LoginInterfaceResources;
 
@@ -12,10 +13,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,9 +23,20 @@ import view.game.GameView;
 
 public class LoginView extends JPanel {
 
+    private final String NOT_EXISTING_USER_MESSAGE = "Couldn't found your account. Please try again.";
+
+    private final String ALREADY_REGISTERED_USER_MESSAGE = "This account already exists.";
+
+    private final String WRONG_PASSWORD_MESSAGE = "Your password or your email is wrong. Please try again.";
+
+    private final String NOT_STRONG_ENOUGH_PASSWORD_MESSAGE = "To week password.";
+
     private final JLabel titleLabel;
 
     private final JPanel loginComponentContainer;
+
+    private final JLabel errorLabel;
+
     private final JPanel loginAndSignUpButtonContainer = new Form() {
         @Override
         public void setOn(GameFrame g) {
@@ -57,6 +66,14 @@ public class LoginView extends JPanel {
         titleLabel = new JLabel(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
         titleLabel.setFont(Fonts.TITLE_FONT);
+
+        String circle = "\u24EA"; // Unicode du caractère de cercle
+        String exclamation = "\u0021"; // Unicode du point d'exclamation
+        String circleExclamation = circle + exclamation;
+        errorLabel = new JLabel(circleExclamation+"test");
+        errorLabel.setFont(new Font("Arial Unicode MS", Font.PLAIN, 20));
+        errorLabel.setForeground(new Color(138,50,36));
+        //errorLabel.setVisible(false);
 
         FlatButton loginButton = new FlatButton();
         loginButton.setText(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
@@ -138,6 +155,7 @@ public class LoginView extends JPanel {
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/7));
         loginComponentContainer.add(emailArea);
+        loginComponentContainer.add(errorLabel);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
         loginComponentContainer.add(passwordArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/7));
