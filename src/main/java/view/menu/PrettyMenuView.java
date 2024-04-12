@@ -1,6 +1,7 @@
 package view.menu;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.util.LinkedList;
@@ -15,18 +16,13 @@ import javax.swing.table.DefaultTableModel;
 import com.formdev.flatlaf.FlatClientProperties;
 
 import control.menu.MenuController;
-import model.tools.PreGameAnalytics;
 import model.tools.PlayerAnalytics;
-import javax.swing.table.DefaultTableModel;
-import view.frame.*;
-import java.awt.*;
-import java.security.Policy;
-import java.util.List;
-import javax.swing.*;
+import model.tools.PreGameAnalytics;
 import net.miginfocom.swing.MigLayout;
-import view.assets.Fonts;
 import view.assets.MenuRessources;
-import com.formdev.flatlaf.FlatClientProperties;
+import view.frame.Form;
+import view.frame.GameFrame;
+import view.login.LoginView;
 
 /**
  * The beggining menu of the Game
@@ -101,6 +97,7 @@ public class PrettyMenuView extends Form {
         panel.add(createGameBtn);
 
         List<PreGameAnalytics> list = controller.getAvailableGames();
+        System.out.println(list);
         if (list != null && !list.isEmpty()) {
             for (PreGameAnalytics p : list) {
                 JButton btn = new JButton();
@@ -188,7 +185,7 @@ public class PrettyMenuView extends Form {
             PlayerAnalytics p = controller.getPlayerAnalyticsSession();
             panel.setLayout(new GridLayout(4, 1));
             panel.add(new JLabel("Pseudo : " + p.pseudo()));
-            panel.add(new JLabel("Email : " + p.email()));
+            panel.add(new JLabel("Email : " + null));
             panel.add(new JLabel("Won Games" + p.wonGames()));
             panel.add(new JLabel("Played Games" + p.playedGames()));
             JButton jb = new JButton("Change account");

@@ -6,25 +6,19 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
 import control.auth.AuthController;
 import control.database.GameDatabaseConnection;
 import control.game.GameController;
-import model.tools.PreGameAnalytics;
 import model.game.Player;
 import model.tools.PlayerAnalytics;
 import model.tools.PlayerCredentials;
+import model.tools.PreGameAnalytics;
 import view.frame.GameFrame;
 import view.game.GameView;
 import view.menu.PrettyMenuView;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The controller for the menu
@@ -104,7 +98,7 @@ public class MenuController {
         }
     }
 
-    public Map<String, Integer> getAvailableGames() {
+    public List<PreGameAnalytics> getAvailableGames() {
         try {
             return GameDatabaseConnection.getAvailableGames();
         } catch (Exception e) {

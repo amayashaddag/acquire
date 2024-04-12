@@ -29,6 +29,7 @@ import model.game.Player;
 import model.tools.PlayerAnalytics;
 import model.tools.PlayerCredentials;
 import model.tools.Point;
+import model.tools.PreGameAnalytics;
 
 public class GameDatabaseConnection {
     private static final Firestore database = FirestoreClient.getFirestore();
@@ -441,21 +442,32 @@ public class GameDatabaseConnection {
         writer.get();
     }
 
-    public static Map<String, Integer> getAvailableGames() throws Exception {
-        Map<String, Integer> availableGames = new HashMap<>();
+    public static List<PreGameAnalytics> getAvailableGames() throws Exception {
+        List<PreGameAnalytics> availableGames = new LinkedList<>();
         ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
                 .whereEqualTo(GAME_STATE_FIELD, GameController.GAME_NOT_STARTED_STATE).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
 
         for (QueryDocumentSnapshot doc : docs) {
             String creator = (String) doc.get(GAME_CREATOR_FIELD);
+            String gameId = (String) doc.get(GAME_ID_FIELD);
             Long max = (Long) doc.get(GAME_MAX_PLAYERS_FIELD);
 
             if (max == null) {
                 throw new Exception();
             }
 
-            availableGames.put(creator, max.intValue());
+            ApiFuture<QuerySnapshot> currentPlayersReader = database.collection(PLAYER_TABLE_NAME)
+                    .whereEqualTo(GAME_ID_FIELD, gameId).get();
+            List<QueryDocumentSnapshot> currentPlayersInGame = currentPlayersReader.get().getDocuments();
+            int currentNumberOfPlayer = currentPlayersInGame.size();
+
+            PreGameAnalytics analytics = new PreGameAnalytics(
+                creator, 
+                gameId, 
+                currentNumberOfPlayer, 
+                max.intValue());
+            availableGames.add(analytics);
         }
 
         return availableGames;

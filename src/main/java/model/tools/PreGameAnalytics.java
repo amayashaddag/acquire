@@ -11,7 +11,7 @@ package model.tools;
  */
 public record PreGameAnalytics(
         String hostName,
-        String gameUID,
+        String gameID,
         int currentNumberOfPlayer,
         int maxNumberOfPlayer) {
 }
