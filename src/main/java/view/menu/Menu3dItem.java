@@ -149,7 +149,7 @@ public class Menu3dItem {
         Path2D shadowTop = new Path2D.Double();
         shadowTop.moveTo(0, 0);
         shadowTop.lineTo(width, -height);
-        shadowTop.lineTo(cosX * shadowSize + width, sinY * shadowSize - height);
+        shadowTop.lineTo(cosX * shadowSize + width, sinY * shadowSize - height); 
         shadowTop.lineTo(cosX * shadowSize, sinY * shadowSize);
         Area area = new Area();
         area.add(new Area(p));
@@ -161,7 +161,7 @@ public class Menu3dItem {
         g2.fill(shadowLeft);
         g2.setColor(colorShadowTop);
         g2.fill(shadowTop);
-        drawText(text, g2, textAngle, com.getForeground());
+        drawText(text, g2, textAngle, new Color(255,255,255));
         g2.setTransform(tran);
     }
 
@@ -210,15 +210,15 @@ public class Menu3dItem {
     }
 
     public Color getDefaultColorShadowTop() {
-        return new Color(55, 55, 63);
+        return new Color(3, 126, 152);
     }
 
     public Color getDefaultColorShadowLeft() {
-        return new Color(46, 46, 50);
+        return new Color(3, 126, 152);
     }
 
     public Color getDefaultBackground() {
-        return new Color(63, 63, 71);
+        return new Color(85, 158, 156);
     }
 
     public Color getDefaultColorShadowTopSelected() {
@@ -230,6 +230,6 @@ public class Menu3dItem {
     }
 
     public Color getDefaultBackgroundSelected() {
-        return new Color(46, 127, 255);
+        return new Color(51, 153, 180);
     }
 }

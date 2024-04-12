@@ -13,12 +13,18 @@ import javax.swing.SwingUtilities;
 import control.auth.AuthController;
 import control.database.GameDatabaseConnection;
 import control.game.GameController;
+import model.tools.PreGameAnalytics;
 import model.game.Player;
 import model.tools.PlayerAnalytics;
 import model.tools.PlayerCredentials;
 import view.frame.GameFrame;
 import view.game.GameView;
 import view.menu.PrettyMenuView;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The controller for the menu
@@ -108,6 +114,28 @@ public class MenuController {
             });
             return null;
         }
+    }
+
+    public void joinPreGame(String preGameUID) {
+        // TODO : faire rejoindre au player actuel la partie demandé
+    }
+
+    public void createMultiGame() {
+        // TODO : creer une nouvelle game multi permettant aux autres joueurs de la
+        // rejoindre (game creer par le joueur don c'est la session)
+    }
+
+    public void launchMultiGame() {
+        // TODO : lorsque le joueur a créer une game multi et qu'il décide qu'il est
+        // temps de
+        // lancer la parti, cette méthode est appelé et permet de lancer la partie
+    }
+
+    public void avortMutiGame() {
+        // TODO : le joueur à creer une parti et pour une raison ou une autre décide
+        // d'abandonner
+        // et de retourner au menu. Cette méthode doit donc supprimer la partie créer
+        // par le joueur
     }
 
     public void saveSession() {
