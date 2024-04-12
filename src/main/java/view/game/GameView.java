@@ -379,9 +379,11 @@ public class GameView extends Form {
         for (Component comp : jp.getComponents())
             if (comp instanceof Pane) {
                 Map.Entry<Corporation, Integer> entry = ((Pane) comp).getEntry();
-                switch (((Pane) comp).getChoice()) {
-                    case SELL -> toSell.put(entry.getKey(), entry.getValue());
-                    case TRADE -> toTrade.put(entry.getKey(), entry.getValue());
+                Pane.SKT choice = ((Pane) comp).getChoice();
+                if (choice == Pane.SKT.SELL) {
+                    toSell.put(entry.getKey(), entry.getValue());
+                } else if (choice == Pane.SKT.TRADE) {
+                    toTrade.put(entry.getKey(), entry.getValue());
                 }
             }
 
@@ -405,12 +407,13 @@ public class GameView extends Form {
     @Override
     public void repaint() {
         super.repaint();
-
-        if (playerBoard != null && playerBoard.isVisible())
+        if (playerBoard != null) {
             playerBoard.repaint();
-
-        if (jetonsPanel != null && jetonsPanel.isVisible())
+        }
+        
+        if (jetonsPanel != null) {
             jetonsPanel.repaint();
+        }
     }
 
     /**
@@ -453,4 +456,13 @@ public class GameView extends Form {
     }
 
     public static void showError(Exception e) {showError(e, ()->{});}
+
+    public void endGame() {
+        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
+        parent.dispose();
+    }
+
+    public void updatePlayerDeck() {
+        jetonsPanel.updatePlayerDeck();
+    }
 }

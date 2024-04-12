@@ -1,5 +1,9 @@
 package view.menu;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -11,10 +15,6 @@ import view.assets.Fonts;
 import view.assets.MenuInterfaceMessages;
 import view.frame.Form;
 import view.frame.GameFrame;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
 
 @Deprecated
 public class MenuView extends Form {

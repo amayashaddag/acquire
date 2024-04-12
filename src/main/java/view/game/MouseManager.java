@@ -94,20 +94,6 @@ public class MouseManager implements MouseListener, MouseWheelListener, MouseMot
             g.repaint();
         }
     }
-
-    @Deprecated
-    private void wrapTranslation() {
-        double matrix[] = new double[6];
-        at.getMatrix(matrix);
-
-        if (at.getTranslateX() > 0)
-            matrix[4] = 0;
-        if (at.getTranslateY() > 0)
-            matrix[5] = 0;
-        // gérer les dépacement droite bas
-
-        at = new AffineTransform(matrix);
-    }
     
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {

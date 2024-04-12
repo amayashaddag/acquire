@@ -20,6 +20,11 @@ public class GameNotifications {
                 + " for " + moneyGained + "$.";
     }
 
+    public static String tradedStocksNotification(int amountGiven, Corporation corporation, int amountEarned, Corporation major) {
+        return "You successfully traded " + amountGiven + " stocks of the company " + corporation
+                + " for " + amountEarned + " stocks of " + major + ".";
+    }
+
     public static String playerTurnNotification(String pseudo) {
         return pseudo + " is about to play.";
     }

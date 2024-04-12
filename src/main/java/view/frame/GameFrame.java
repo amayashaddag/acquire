@@ -2,8 +2,7 @@ package view.frame;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -25,6 +24,7 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 public class GameFrame extends JFrame {
     public final static int DEFAULT_WIDTH = 1200;
     public final static int DEFAULT_HEIGHT = 900;
+    public final static String TITLE = "Acquire";
 
     public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
     public final static GameFrame currentFrame = new GameFrame();
@@ -33,7 +33,7 @@ public class GameFrame extends JFrame {
         super();
         FlatDarculaLaf.setup();
 
-        setTitle("Acquire");
+        setTitle(TITLE);
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -61,12 +61,13 @@ public class GameFrame extends JFrame {
         form.setOn(this);
         this.repaint();
         this.revalidate();
+        this.repaint();
     }
 
     /**
      * A graphical display of errors / exceptions
      * @param e : the exception you want display
-     * @param task : the task you want execute (example :  System.exit(1))
+     * @param task : the task you want to execute (example :  System.exit(1))
      * @apiNote example : GameFrame.showError(new Exception(), () -> System.exit(1))
      */
     public static void showError(Exception e, Runnable task) {

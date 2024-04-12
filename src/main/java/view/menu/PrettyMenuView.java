@@ -1,5 +1,19 @@
 package view.menu;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
+
+import com.formdev.flatlaf.FlatClientProperties;
+
 import control.menu.MenuController;
 import model.tools.PreGameAnalytics;
 import model.tools.PlayerAnalytics;
@@ -138,11 +152,23 @@ public class PrettyMenuView extends Form {
                 "hoverTrackColor:null");
         table.setDefaultRenderer(Object.class, new TableGradientCell());
         DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.addRow(new Object[] { 1, "John Smith", "de", "123 Main St, City", "Manager" });
 
         int i = 0;
-        for (PlayerAnalytics pa : controller.getRanking()) {
+        List<PlayerAnalytics> playerRanking;
+        try {
+            playerRanking = controller.getRanking();
+        } catch (Exception e) {
+            playerRanking = new LinkedList<>();
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
+                parent.dispose();
+            });
+        }
+
+        for (PlayerAnalytics pa : playerRanking) {
             i++;
-            model.addRow(new Object[] { i, pa.pseudo(), pa.bestScore(), pa.region() });
+            model.addRow(new Object[] { i, pa.pseudo(), pa.bestScore(), null });
         }
 
         panel.add(table);
@@ -157,7 +183,7 @@ public class PrettyMenuView extends Form {
         panel.removeAll();
 
         if (!controller.isConnected())
-            panel.add(new view.login.LoginView());
+            panel.add(new LoginView());
         else {
             PlayerAnalytics p = controller.getPlayerAnalyticsSession();
             panel.setLayout(new GridLayout(4, 1));
@@ -168,7 +194,7 @@ public class PrettyMenuView extends Form {
             JButton jb = new JButton("Change account");
             jb.addActionListener((e) -> {
                 panel.removeAll();
-                panel.add(new view.login.LoginView());
+                panel.add(new LoginView());
                 repaint();
             });
             panel.add(jb);
