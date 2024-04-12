@@ -16,6 +16,16 @@ public class LoginInterfaceResources {
 
     public static final String PASSWORD_SHOWING_IMAGE_PATH = "src/main/ressources/images/login/eye.png";
 
+    public static final String NOT_EXISTING_USER_MESSAGE = "Couldn't found your account. Please try again.";
+
+    public static final String ALREADY_REGISTERED_USER_MESSAGE = "This account already exists.";
+
+    public static final String WRONG_PASSWORD_MESSAGE = "Your password or your email is wrong. Please try again.";
+
+    public static final String NOT_STRONG_ENOUGH_PASSWORD_MESSAGE = "To week password.";
+
+    public static final String PSEUDO_PLACEHOLDER_TEXT = "ENTER PSEUDO";
+
     public static Image PASSWORD_SHOWING_ICON = new ImageIcon(PASSWORD_SHOWING_IMAGE_PATH)
             .getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
 

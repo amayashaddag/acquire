@@ -8,11 +8,7 @@ import view.assets.LoginInterfaceResources;
 
 import com.formdev.flatlaf.extras.components.FlatButton;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,15 +19,10 @@ import view.game.GameView;
 
 public class LoginView extends JPanel {
 
-    private final String NOT_EXISTING_USER_MESSAGE = "Couldn't found your account. Please try again.";
-
-    private final String ALREADY_REGISTERED_USER_MESSAGE = "This account already exists.";
-
-    private final String WRONG_PASSWORD_MESSAGE = "Your password or your email is wrong. Please try again.";
-
-    private final String NOT_STRONG_ENOUGH_PASSWORD_MESSAGE = "To week password.";
 
     private final JLabel titleLabel;
+
+    PseudoField pseudoArea;
 
     private final JPanel loginComponentContainer;
 
@@ -67,11 +58,8 @@ public class LoginView extends JPanel {
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
         titleLabel.setFont(Fonts.TITLE_FONT);
 
-        String circle = "\u24EA"; // Unicode du caractère de cercle
-        String exclamation = "\u0021"; // Unicode du point d'exclamation
-        String circleExclamation = circle + exclamation;
-        errorLabel = new JLabel(circleExclamation+"test");
-        errorLabel.setFont(new Font("Arial Unicode MS", Font.PLAIN, 20));
+
+        errorLabel = new JLabel(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE);
         errorLabel.setForeground(new Color(138,50,36));
         //errorLabel.setVisible(false);
 
@@ -115,6 +103,11 @@ public class LoginView extends JPanel {
 
         EmailField emailArea = new EmailField();
         emailArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
+        //emailArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
+
+        pseudoArea = new PseudoField();
+        pseudoArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
+        pseudoArea.setVisible(false);
 
         PasswordField passwordArea = new PasswordField();
         passwordArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
@@ -154,10 +147,12 @@ public class LoginView extends JPanel {
         loginComponentContainer.add(titleLabel);
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/7));
+        loginComponentContainer.add(pseudoArea);
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
         loginComponentContainer.add(emailArea);
-        loginComponentContainer.add(errorLabel);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
         loginComponentContainer.add(passwordArea);
+        //loginComponentContainer.add(errorLabel);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/7));
         loginComponentContainer.add(loginAndSignUpButtonContainer);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
@@ -172,9 +167,10 @@ public class LoginView extends JPanel {
         this.add(loginComponentContainer,gbc);
     }
     public void fromLoginMenuToSignInMenu(){
-        titleLabel.setText("SIGN IN");
+        titleLabel.setText("SIGN UP");
         loginComponentContainer.remove(loginAndSignUpButtonContainer);
         loginComponentContainer.add(createAccountAndComeBackToLoginContainer);
+        pseudoArea.setVisible(true);
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
     }
@@ -182,8 +178,11 @@ public class LoginView extends JPanel {
     public void fromSignInMenuToLoginMenu(){
         titleLabel.setText("LOGIN");
         loginComponentContainer.remove(createAccountAndComeBackToLoginContainer);
+        //loginComponentContainer.remove();
         loginComponentContainer.add(loginAndSignUpButtonContainer);
+        pseudoArea.setVisible(false);
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
     }
+
 }
