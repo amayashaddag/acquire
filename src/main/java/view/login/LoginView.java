@@ -33,6 +33,9 @@ public class LoginView extends JPanel {
     JPanel signUpButtons;
 
     JPanel loginButtons;
+    PasswordField passwordArea;
+
+    EmailField emailArea;
 
     private final JPanel loginAndSignUpButtonContainer = new Form() {
         @Override
@@ -67,7 +70,7 @@ public class LoginView extends JPanel {
 
         errorLabel = new JLabel(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE);
         errorLabel.setForeground(new Color(138,50,36));
-        //errorLabel.setVisible(false);
+        errorLabel.setVisible(false);
 
         FlatButton loginButton = new FlatButton();
         loginButton.setText(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
@@ -107,15 +110,15 @@ public class LoginView extends JPanel {
         });
 
 
-        EmailField emailArea = new EmailField();
+        emailArea = new EmailField();
         emailArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
-        //emailArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
+
 
         pseudoArea = new PseudoField();
         pseudoArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
         pseudoArea.setVisible(false);
 
-        PasswordField passwordArea = new PasswordField();
+        passwordArea = new PasswordField();
         passwordArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
 
@@ -169,7 +172,7 @@ public class LoginView extends JPanel {
         loginComponentContainer.add(emailArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
         loginComponentContainer.add(passwordArea);
-        //loginComponentContainer.add(errorLabel);
+        loginComponentContainer.add(errorLabel);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
         loginComponentContainer.add(loginButtons);
         //loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
@@ -203,5 +206,13 @@ public class LoginView extends JPanel {
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
     }
+
+    public void printError(String message){
+        errorLabel.setText(message);
+        emailArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
+        passwordArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
+        errorLabel.setVisible(true);
+    }
+
 
 }
