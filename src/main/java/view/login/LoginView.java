@@ -28,6 +28,12 @@ public class LoginView extends JPanel {
 
     private final JLabel errorLabel;
 
+    JPanel offlineModeContainer;
+
+    JPanel signUpButtons;
+
+    JPanel loginButtons;
+
     private final JPanel loginAndSignUpButtonContainer = new Form() {
         @Override
         public void setOn(GameFrame g) {
@@ -130,7 +136,7 @@ public class LoginView extends JPanel {
             }
         });
 
-        JPanel offlineModeContainer = new JPanel();
+        offlineModeContainer = new JPanel();
         offlineModeContainer.add(offlineModeButton);
         offlineModeContainer.setPreferredSize(
                 new Dimension(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4)
@@ -142,22 +148,32 @@ public class LoginView extends JPanel {
         createAccountAndComeBackToLoginContainer.add(comeBackToLoginButton);
         createAccountAndComeBackToLoginContainer.add(createAccountButton);
 
+        loginButtons = new JPanel();
+        loginButtons.add(loginAndSignUpButtonContainer);
+        loginButtons.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
+        loginButtons.add(offlineModeContainer);
+
+        signUpButtons = new JPanel();
+        signUpButtons.add(createAccountAndComeBackToLoginContainer);
+        signUpButtons.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
+
+
+
 
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(titleLabel);
         loginComponentContainer.add(Box.createHorizontalGlue());
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/7));
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
         loginComponentContainer.add(pseudoArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
         loginComponentContainer.add(emailArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
         loginComponentContainer.add(passwordArea);
         //loginComponentContainer.add(errorLabel);
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/7));
-        loginComponentContainer.add(loginAndSignUpButtonContainer);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
-        loginComponentContainer.add(offlineModeContainer);
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
+        loginComponentContainer.add(loginButtons);
+        //loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
+        loginComponentContainer.add(Box.createVerticalGlue());
 
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -168,8 +184,10 @@ public class LoginView extends JPanel {
     }
     public void fromLoginMenuToSignInMenu(){
         titleLabel.setText("SIGN UP");
-        loginComponentContainer.remove(loginAndSignUpButtonContainer);
-        loginComponentContainer.add(createAccountAndComeBackToLoginContainer);
+        loginButtons.remove(offlineModeContainer);
+        signUpButtons.add(offlineModeContainer);
+        loginComponentContainer.remove(loginButtons);
+        loginComponentContainer.add(signUpButtons);
         pseudoArea.setVisible(true);
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
@@ -177,9 +195,10 @@ public class LoginView extends JPanel {
 
     public void fromSignInMenuToLoginMenu(){
         titleLabel.setText("LOGIN");
-        loginComponentContainer.remove(createAccountAndComeBackToLoginContainer);
-        //loginComponentContainer.remove();
-        loginComponentContainer.add(loginAndSignUpButtonContainer);
+        signUpButtons.remove(offlineModeContainer);
+        loginButtons.add(offlineModeContainer);
+        loginComponentContainer.remove(signUpButtons);
+        loginComponentContainer.add(loginButtons);
         pseudoArea.setVisible(false);
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
