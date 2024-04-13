@@ -1,5 +1,6 @@
 package view.login;
 
+import control.auth.*;
 import control.game.GameController;
 import model.game.Player;
 import org.checkerframework.checker.units.qual.N;
@@ -10,6 +11,7 @@ import com.formdev.flatlaf.extras.components.FlatButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -75,6 +77,7 @@ public class LoginView extends JPanel {
         FlatButton loginButton = new FlatButton();
         loginButton.setText(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
         loginButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
+        loginButton.addActionListener((ActionListener) -> loginActionListener());
 
 
         FlatButton signInButton = new FlatButton();
@@ -85,6 +88,7 @@ public class LoginView extends JPanel {
         FlatButton createAccountButton = new FlatButton();
         createAccountButton.setText(LoginInterfaceResources.CREATE_ACCOUNT_BUTTON_TEXT);
         createAccountButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
+        createAccountButton.addActionListener((ActionListener) -> signUPActionListener());
 
         FlatButton comeBackToLoginButton = new FlatButton();
         comeBackToLoginButton.setText(LoginInterfaceResources.GO_TO_LOGIN_PAGE_BUTTON_TEXT);
@@ -212,6 +216,38 @@ public class LoginView extends JPanel {
         emailArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
         passwordArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
         errorLabel.setVisible(true);
+    }
+
+    public void signUPActionListener(){
+        try{
+            String res = AuthController.signUpWithEmailAndPassword(emailArea.getText(),pseudoArea.getText(),charArrayToString(passwordArea.getPassword()));
+        }catch (AlreadyRegisteredUserException e){
+            printError(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE);
+            return;
+        }catch (NotStrongEnoughPasswordException e){
+            printError(LoginInterfaceResources.NOT_STRONG_ENOUGH_PASSWORD_MESSAGE);
+            return;
+        }catch (Exception e){
+            return;
+        }
+    }
+
+    public void loginActionListener(){
+        try {
+            String res = AuthController.loginWithEmailAndPassword(emailArea.getText(),charArrayToString(passwordArea.getPassword()));
+        }catch (NotExistingUserException e){
+            printError(LoginInterfaceResources.NOT_EXISTING_USER_MESSAGE);
+            return;
+        }catch (WrongPasswordException e){
+            printError(LoginInterfaceResources.WRONG_PASSWORD_MESSAGE);
+            return;
+        }catch (Exception e){
+            return;
+        }
+    }
+
+    public static String charArrayToString(char[] c){
+        return "" + c;
     }
 
 
