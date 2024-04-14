@@ -4,12 +4,14 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
+import control.firebaseinit.FirebaseClient;
 import control.menu.MenuController;
 import view.frame.GameFrame;
 
 public class Debug extends JFrame {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        FirebaseClient.initialize();
         FlatDarculaLaf.setup();
         GameFrame frame = GameFrame.currentFrame;
         SwingUtilities.invokeLater(() -> frame.setVisible(true));

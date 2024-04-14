@@ -10,6 +10,7 @@ import view.assets.LoginInterfaceResources;
 import com.formdev.flatlaf.extras.components.FlatButton;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
@@ -38,6 +39,8 @@ public class LoginView extends JPanel {
     PasswordField passwordArea;
 
     EmailField emailArea;
+
+    Border originalBorder;
 
     private final JPanel loginAndSignUpButtonContainer = new Form() {
         @Override
@@ -116,6 +119,8 @@ public class LoginView extends JPanel {
 
         emailArea = new EmailField();
         emailArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
+
+        originalBorder = emailArea.getBorder();
 
 
         pseudoArea = new PseudoField();
@@ -196,9 +201,13 @@ public class LoginView extends JPanel {
         loginComponentContainer.remove(loginButtons);
         loginComponentContainer.add(signUpButtons);
         pseudoArea.setVisible(true);
+        resetPlaceHolder();
+        hideError();
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
     }
+
+
 
     public void fromSignInMenuToLoginMenu(){
         titleLabel.setText("LOGIN");
@@ -207,15 +216,24 @@ public class LoginView extends JPanel {
         loginComponentContainer.remove(signUpButtons);
         loginComponentContainer.add(loginButtons);
         pseudoArea.setVisible(false);
+        resetPlaceHolder();
+        hideError();
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
+    }
+    public void resetPlaceHolder(){
+        pseudoArea.setPlaceholderText(LoginInterfaceResources.PSEUDO_PLACEHOLDER_TEXT);
+        emailArea.setPlaceholderText(LoginInterfaceResources.EMAIL_PLACEHOLDER_TEXT);
+        passwordArea.setPlaceholderText(LoginInterfaceResources.PASSWORD_PLACEHOLDER_TEXT);
     }
 
     public void printError(String message){
         errorLabel.setText(message);
         emailArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
         passwordArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
+        pseudoArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
         errorLabel.setVisible(true);
+        loginComponentContainer.repaint();
     }
 
     public void signUPActionListener(){
@@ -248,6 +266,14 @@ public class LoginView extends JPanel {
 
     public static String charArrayToString(char[] c){
         return "" + c;
+    }
+
+    public void hideError(){
+        passwordArea.setBorder(originalBorder);
+        pseudoArea.setBorder(originalBorder);
+        emailArea.setBorder(originalBorder);
+        errorLabel.setVisible(false);
+        loginComponentContainer.repaint();
     }
 
 
