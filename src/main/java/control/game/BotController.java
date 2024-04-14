@@ -1,14 +1,22 @@
 package control.game;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Set;
 
-import io.opencensus.trace.Link;
 import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
+import model.tools.Action;
+import model.tools.MergingChoice;
 import model.tools.Point;
-import view.game.GameNotifications;
 import view.game.GameView;
 
 /**
@@ -18,9 +26,10 @@ import view.game.GameView;
 public class BotController {
     private final Board board;
     private final List<Player> currentPlayers;
-    private int playerTurnIndex;
     private final int numberOfPlayers;
     private final Player currentPlayer;
+
+    private int playerTurnIndex;
     private boolean gameOver;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
@@ -498,7 +507,7 @@ public class BotController {
      * @param cellPosition represents where to place a new cell.
      * @param player       represents the player that is about to place a new cell.
      */
-    public synchronized void handleCellPlacing(Point cellPosition, Player player) {
+    public synchronized void handlePlayerTurn(Point cellPosition, Player player) {
         resetNets();
         placeCell(cellPosition, player);
         if (board.thereArePlacedCorporations()) {
@@ -572,12 +581,12 @@ public class BotController {
                     possibleCells.add(p);
                 }
             }
-            
+
             if (!possibleCells.isEmpty()) {
                 int randomIndex = r.nextInt(possibleCells.size());
                 Point cellPosition = possibleCells.get(randomIndex);
                 System.out.println(cellPosition);
-                handleCellPlacing(cellPosition, currentPlayer);
+                handlePlayerTurn(cellPosition, currentPlayer);
             }
         }
         sc.close();
@@ -596,9 +605,90 @@ public class BotController {
         return currentPlayerIncome >= maxMoney;
     }
 
-      @Override
-      protected Object clone() throws CloneNotSupportedException {
-          // TODO Auto-generated method stub
-          return super.clone();
-      }
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        // TODO Auto-generated method stub
+        return super.clone();
+    }
+
+    /**
+     * This function generates all the possible actions that a played can play.
+     * It is used in Monte-Carlo AI algorithm
+     * 
+     * @return a list of all the possible actions.
+     */
+    public List<Action> getPossibleActions() {
+        List<Action> possibleActions = new LinkedList<>();
+
+        for (Point p : currentPlayer.getDeck()) {
+            Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
+
+            List<Map<Corporation, Integer>> combinationsOfBuyingStocks = generateCombinations(possibleBuyingStocks,
+                    Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
+
+            for (MergingChoice choice : MergingChoice.values()) {
+                for (Map<Corporation, Integer> comb : combinationsOfBuyingStocks) {
+                    Action possibleAction = new Action(p, comb, choice);
+
+                    possibleActions.add(possibleAction);
+                }
+            }
+
+            /* This part includes the cases of not buying stocks for each choice of merging choices */
+            
+            for (MergingChoice choice : MergingChoice.values()) {
+                Action emptyStockAction = new Action(p, new HashMap<>(), choice);
+
+                possibleActions.add(emptyStockAction);
+            }
+
+        }
+
+        return possibleActions;
+    }
+
+    /**
+     * This method is a "helper" for {@link #getPossibleActions()} method.
+     * It generates all the possible combinations for a given map under a given
+     * threshold
+     * 
+     * @param inputMap  the map from which it will generate the combinations
+     * @param threshold the condition (in this case it represent the maximum of
+     *                  possible buying stocks)
+     * @return all the possible combinations of values of Map<Corporation, Integer>
+     *         such as
+     *         the sum of the values are less or equal to threshold
+     */
+    private List<Map<Corporation, Integer>> generateCombinations(Map<Corporation, Integer> inputMap,
+            int threshold) {
+        List<Map<Corporation, Integer>> combinations = new LinkedList<>();
+        generateCombinationsHelper(inputMap, threshold, new HashMap<>(), combinations);
+        return combinations;
+    }
+
+    /**
+     * Just a "helper" method for {@link #generateCombinations(Map, int)}
+     */
+    private void generateCombinationsHelper(Map<Corporation, Integer> inputMap, int threshold,
+            Map<Corporation, Integer> current, List<Map<Corporation, Integer>> combinations) {
+        int sum = current.values().stream().mapToInt(Integer::intValue).sum();
+        if (sum > threshold) {
+            return;
+        }
+
+        if (!current.isEmpty()) {
+            combinations.add(new HashMap<>(current));
+        }
+
+        for (Map.Entry<Corporation, Integer> entry : inputMap.entrySet()) {
+            Corporation key = entry.getKey();
+            int value = entry.getValue();
+
+            if (!current.containsKey(key)) {
+                current.put(key, value);
+                generateCombinationsHelper(inputMap, threshold, current, combinations);
+                current.remove(key);
+            }
+        }
+    }
 }

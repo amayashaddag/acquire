@@ -3,16 +3,18 @@ package model.tools;
 import java.util.Map;
 import model.game.Corporation;
 
-
 public class Action {
-    private Point point;
-    private Map<Corporation, Integer> boughtStocks;
-    private Map<Corporation, Integer> soldStocks;
-
-    public Action(Point point, Map<Corporation, Integer> boughtStocks, Map<Corporation, Integer> soldStocks) {
+    private final Point point;
+    private final MergingChoice mergingChoice;
+    private final Map<Corporation, Integer> boughtStocks;
+    
+    public Action(
+            Point point,
+            Map<Corporation, Integer> boughtStocks,
+            MergingChoice mergingChoice) {
         this.point = point;
         this.boughtStocks = boughtStocks;
-        this.soldStocks = soldStocks;
+        this.mergingChoice = mergingChoice;
     }
 
     public Point getPoint() {
@@ -23,7 +25,7 @@ public class Action {
         return boughtStocks;
     }
 
-    public Map<Corporation, Integer> getSoldStocks() {
-        return soldStocks;
+    public MergingChoice getMergingChoice() {
+        return mergingChoice;
     }
 }
