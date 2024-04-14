@@ -74,9 +74,9 @@ public class GameDatabaseConnection {
                 NOTIFICATIONS_TABLE);
     }
 
-    public static void addPlayer(String gameId, Player player) throws Exception {
+    public static void addPlayer(String gameId, PlayerCredentials c) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(PLAYER_TABLE_NAME)
-                .whereEqualTo(UID_FIELD, player.getUID()).get();
+                .whereEqualTo(UID_FIELD, c.uid()).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
         if (!docs.isEmpty()) {
             throw new Exception();
@@ -84,26 +84,26 @@ public class GameDatabaseConnection {
 
         HashMap<String, Object> newPlayer = new HashMap<>();
 
-        newPlayer.put(PSEUDO_PLAYER_FIELD, player.getPseudo());
-        newPlayer.put(UID_PLAYER_FIELD, player.getUID());
+        newPlayer.put(PSEUDO_PLAYER_FIELD, c.pseudo());
+        newPlayer.put(UID_PLAYER_FIELD, c.uid());
         newPlayer.put(GAME_ID_FIELD, gameId);
-        newPlayer.put(PLAYER_CASH_FIELD, player.getCash());
-        newPlayer.put(PLAYER_NET_FIELD, player.getNet());
+        newPlayer.put(PLAYER_CASH_FIELD, Player.INITIAL_CASH);
+        newPlayer.put(PLAYER_NET_FIELD, Player.INITIAL_NET);
 
         DocumentReference docRef = database.collection(PLAYER_TABLE_NAME).document();
         ApiFuture<WriteResult> future = docRef.set(newPlayer);
         future.get();
 
-        initStocks(gameId, player);
+        initStocks(gameId, c);
     }
 
-    private static void initStocks(String gameId, Player player) throws Exception {
+    private static void initStocks(String gameId, PlayerCredentials credentials) throws Exception {
         for (Corporation c : Corporation.values()) {
             DocumentReference doc = database.collection(STOCKS_TABLE_NAME).document();
             Map<String, Object> stocks = new HashMap<>();
             stocks.put(CORPORATION_FIELD, c.toString());
             stocks.put(STOCKS_AMOUNT_FIELD, 0);
-            stocks.put(UID_FIELD, player.getUID());
+            stocks.put(UID_FIELD, credentials.uid());
             stocks.put(GAME_ID_FIELD, gameId);
 
             ApiFuture<WriteResult> writer = doc.set(stocks);
@@ -122,14 +122,14 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static String createGame(Player creator, int maxPlayers) throws Exception {
+    public static String createGame(PlayerCredentials creator, int maxPlayers) throws Exception {
         DocumentReference doc = database.collection(GAME_TABLE_NAME).document();
         String gameId = doc.getId();
         HashMap<String, Object> newGame = new HashMap<>();
         newGame.put(GAME_ID_FIELD, gameId);
         newGame.put(GAME_STATE_FIELD, 0);
         newGame.put(GAME_MAX_PLAYERS_FIELD, maxPlayers);
-        newGame.put(GAME_CREATOR_FIELD, creator.getPseudo());
+        newGame.put(GAME_CREATOR_FIELD, creator.pseudo());
         ApiFuture<WriteResult> future = doc.set(newGame);
         future.get();
         return gameId;
@@ -317,6 +317,50 @@ public class GameDatabaseConnection {
         List<QueryDocumentSnapshot> docs = future.get().getDocuments();
 
         if (docs.isEmpty()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isGameStarted(String gameId) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .whereEqualTo(GAME_STATE_FIELD, GameController.GAME_NOT_STARTED_STATE)
+                .get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        if (docs.isEmpty()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isGameFull(String gameId) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .whereEqualTo(GAME_STATE_FIELD, GameController.GAME_NOT_STARTED_STATE)
+                .get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        if (docs.isEmpty()) {
+            return true;
+        }
+
+        Long maxAllowedPlayers = (Long) docs.get(0).get(GAME_MAX_PLAYERS_FIELD);
+
+        if (maxAllowedPlayers == null) {
+            throw new NullPointerException();
+        }
+
+        int maxPlayers = maxAllowedPlayers.intValue();
+
+        ApiFuture<QuerySnapshot> maxPlayersReader = database.collection(PLAYER_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> listOfPlayers = maxPlayersReader.get().getDocuments();
+
+        if (listOfPlayers.size() >= maxPlayers) {
             return true;
         }
 

@@ -19,9 +19,9 @@ import java.awt.Insets;
 import java.util.LinkedList;
 import java.util.List;
 
-import view.frame.Form;
-import view.frame.GameFrame;
 import view.game.GameView;
+import view.window.Form;
+import view.window.GameFrame;
 
 public class LoginView extends JPanel {
 

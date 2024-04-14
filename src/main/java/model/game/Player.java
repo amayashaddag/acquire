@@ -23,6 +23,7 @@ public class Player {
     private final String uid;
 
     public static final int INITIAL_CASH = 6000;
+    public static final int INITIAL_NET = INITIAL_CASH;
     private static int botNumber = 0;
     private final static String botPseudoPrefix = "Bot";
 

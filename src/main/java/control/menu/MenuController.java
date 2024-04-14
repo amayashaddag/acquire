@@ -16,9 +16,9 @@ import model.game.Player;
 import model.tools.PlayerAnalytics;
 import model.tools.PlayerCredentials;
 import model.tools.PreGameAnalytics;
-import view.frame.GameFrame;
 import view.game.GameView;
 import view.menu.PrettyMenuView;
+import view.window.GameFrame;
 
 /**
  * The controller for the menu
@@ -29,8 +29,11 @@ import view.menu.PrettyMenuView;
 public class MenuController {
     private final String FILE_OUTPUT = "src/main/ressources/session/game-session.ser";
 
-    private PlayerAnalytics session;
+    // ONLY FOR TEST, // TODO : Should remove later
+    private PlayerCredentials session = new PlayerCredentials("SOME-WEIRD-UID", "amayas@icloud.dz", "my___ass");
     private PrettyMenuView view;
+
+    public static final int DEFAULT_MAX_PLAYERS = 3;
 
     public MenuController() {
         loadSession();
@@ -43,8 +46,21 @@ public class MenuController {
         view.revalidate();
     }
 
-    public PlayerAnalytics getPlayerAnalyticsSession() {
+    public PlayerCredentials getPlayerCredentials() {
         return session;
+    }
+
+    public PlayerCredentials getPlayerCredentials(String userId) {
+        try {
+            return AuthController.getPlayerCredentials(userId);
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+                parent.dispose();
+            });
+
+            return null;
+        }
     }
 
     public boolean isConnected() {
@@ -74,16 +90,8 @@ public class MenuController {
         }
     }
 
-    public PlayerCredentials getPlayerCredentials(String uid) throws Exception {
-        try {
-            return AuthController.getPlayerCredentials(uid);
-        } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
-            return null;
-        }
+    public PlayerAnalytics getPlayerAnalytics() {
+        return getPlayerAnalytics(session.uid());
     }
 
     public List<PlayerAnalytics> getRanking() {
@@ -111,12 +119,31 @@ public class MenuController {
     }
 
     public void joinPreGame(String preGameUID) {
-        // TODO : faire rejoindre au player actuel la partie demandé
+        try {
+            if (!GameDatabaseConnection.isGameStarted(preGameUID)
+                && !GameDatabaseConnection.isGameFull(preGameUID)) {
+                    GameDatabaseConnection.addPlayer(preGameUID, session);
+            } else {
+
+            }
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+                parent.dispose();
+            });
+        }
     }
 
     public void createMultiGame() {
-        // TODO : creer une nouvelle game multi permettant aux autres joueurs de la
-        // rejoindre (game creer par le joueur don c'est la session)
+        try {
+            String gameId = GameDatabaseConnection.createGame(session, DEFAULT_MAX_PLAYERS);
+            joinPreGame(gameId);
+        } catch (Exception e) {
+            GameFrame.showError(e, () -> {
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+                parent.dispose();
+            });
+        }
     }
 
     public void launchMultiGame() {
@@ -153,7 +180,7 @@ public class MenuController {
             
             if (fis.available() > 0) {
                 ObjectInputStream ois = new ObjectInputStream(fis);
-                session = (PlayerAnalytics) ois.readObject();
+                session = (PlayerCredentials) ois.readObject();
                 System.out.println(session.pseudo());
                 ois.close();
             }
@@ -169,10 +196,10 @@ public class MenuController {
     }
 
     public void setSession(String UID) throws Exception {
-        this.session = getPlayerAnalytics(UID);
+        this.session = getPlayerCredentials(UID);
     }
 
-    public void setSession(PlayerAnalytics session) {
+    public void setSession(PlayerCredentials session) {
         this.session = session;
     }
 }

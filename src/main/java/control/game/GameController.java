@@ -17,9 +17,9 @@ import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
 import model.tools.Point;
-import view.frame.GameFrame;
 import view.game.GameNotifications;
 import view.game.GameView;
+import view.window.GameFrame;
 
 /**
  * @author Amayas HADDAG

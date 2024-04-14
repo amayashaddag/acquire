@@ -1,6 +1,6 @@
 package app.launcher;
 
-import java.util.Collections;
+/* import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,11 +11,11 @@ import control.database.GameDatabaseConnection;
 import control.game.GameController;
 import model.game.Player;
 import view.frame.GameFrame;
-import view.game.GameView;
+import view.game.GameView; */
 
 public class NetworkDebug {
     public static void main(String[] args) {        
-        try {
+        /* try {
 
             FirebaseClient.initialize();
             GameDatabaseConnection.clear();
@@ -47,6 +47,6 @@ public class NetworkDebug {
             });
         } catch(Exception e) {
             System.out.println(e.getMessage());
-        }
+        } */
     }
 }

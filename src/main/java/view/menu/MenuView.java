@@ -13,8 +13,8 @@ import javax.swing.SwingConstants;
 
 import view.assets.Fonts;
 import view.assets.MenuInterfaceMessages;
-import view.frame.Form;
-import view.frame.GameFrame;
+import view.window.Form;
+import view.window.GameFrame;
 
 @Deprecated
 public class MenuView extends Form {

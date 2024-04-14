@@ -7,7 +7,7 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 
 import control.firebaseinit.FirebaseClient;
 import control.menu.MenuController;
-import view.frame.GameFrame;
+import view.window.GameFrame;
 
 public class Debug extends JFrame {
 

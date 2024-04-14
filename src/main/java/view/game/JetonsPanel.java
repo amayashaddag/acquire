@@ -2,7 +2,7 @@ package view.game;
 
 import model.tools.AutoSetter;
 import model.tools.Point;
-import view.frame.GameFrame;
+import view.window.GameFrame;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;

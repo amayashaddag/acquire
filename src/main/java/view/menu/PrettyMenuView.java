@@ -20,9 +20,9 @@ import model.tools.PlayerAnalytics;
 import model.tools.PreGameAnalytics;
 import net.miginfocom.swing.MigLayout;
 import view.assets.MenuRessources;
-import view.frame.Form;
-import view.frame.GameFrame;
 import view.login.LoginView;
+import view.window.Form;
+import view.window.GameFrame;
 
 /**
  * The beggining menu of the Game
@@ -182,7 +182,7 @@ public class PrettyMenuView extends Form {
         if (!controller.isConnected())
             panel.add(new LoginView());
         else {
-            PlayerAnalytics p = controller.getPlayerAnalyticsSession();
+            PlayerAnalytics p = controller.getPlayerAnalytics();
             panel.setLayout(new GridLayout(4, 1));
             panel.add(new JLabel("Pseudo : " + p.pseudo()));
             panel.add(new JLabel("Email : " + null));
