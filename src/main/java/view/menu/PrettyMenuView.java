@@ -19,6 +19,7 @@ import control.menu.MenuController;
 import model.tools.PlayerAnalytics;
 import model.tools.PreGameAnalytics;
 import net.miginfocom.swing.MigLayout;
+import view.assets.Fonts;
 import view.assets.MenuRessources;
 import view.login.LoginView;
 import view.window.Form;
@@ -41,7 +42,7 @@ public class PrettyMenuView extends Form {
         super();
         this.controller = controller;
         setLayout(mig);
-        menu3d.setFont(new Font("Bambino", Font.BOLD, 16));
+        menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
 
         menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
         menu3d.addMenuItem("MULTI PLAYER", this::multiPlayer);

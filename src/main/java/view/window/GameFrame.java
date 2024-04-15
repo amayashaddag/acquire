@@ -1,18 +1,19 @@
 package view.window;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import javax.swing.*;
-
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import com.formdev.flatlaf.FlatDarculaLaf;
 
 import control.game.GameController;
 import model.game.Player;
 import raven.toast.Notifications;
 import view.game.GameView;
-
-import com.formdev.flatlaf.FlatDarculaLaf;
 
 /**
  * This is the class Frame for the view of the game
