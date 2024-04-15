@@ -53,8 +53,8 @@ public class PrettyMenuView extends Form {
         panel.setVisible(false);
         panel.setOpaque(false);
 
-        add(menu3d, "x 36%, y 55%, w 25%, h 50%");
-        add(panel, "x 60%, w 30%, h 50%");
+        add(menu3d, "x 20%, y 30%, w 25%, h 50%");
+        add(panel, "x 60%, y 30%, w 30%, h 50%");
         repaint();
     }
 
@@ -71,9 +71,10 @@ public class PrettyMenuView extends Form {
     }
 
     private void multiPlayer() {
-        mig.setComponentConstraints(panel, "x 60%, w 30%, h 50%");
+        mig.setComponentConstraints(panel, "x 60%, y 40%, w 30%, h 50%");
         revalidate();
         panel.removeAll();
+        panel.setLayout(new MigLayout("al center, wrap 1"));
 
         JButton createGameBtn = new JButton();
         if (aMultiGameIsLaunching) {
@@ -103,9 +104,7 @@ public class PrettyMenuView extends Form {
                 JButton btn = new JButton();
                 btn.setText(p.hostName() + " : " + p.currentNumberOfPlayer()
                         + " / " + p.maxNumberOfPlayer());
-
-                // TODO :ajouter action au btn pour rejoindre la game
-
+                // btn.addActionListener(() -> ); TODO :mettre join
                 panel.add(btn);
             }
         }
