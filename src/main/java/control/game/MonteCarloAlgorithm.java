@@ -24,7 +24,7 @@ public class MonteCarloAlgorithm {
             int totalMoneyEarned = 0;
 
             for (int i = 0; i < NUM_SIMULATIONS; i++) {
-                // BotController cloneController = botController.cloneController();
+                // BotController cloneController = botController.clone();
                 // cloneController.handlePlayerTurn(action, currentPlayer);
                 // cloneController.simulateGame();
 

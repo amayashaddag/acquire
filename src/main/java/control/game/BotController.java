@@ -1,5 +1,6 @@
 package control.game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,10 +25,10 @@ import view.game.GameView;
  * @version 1.0
  */
 public class BotController {
-    private final Board board;
-    private final List<Player> currentPlayers;
+    private  Board board;
+    private  List<Player> currentPlayers;
     private final int numberOfPlayers;
-    private final Player currentPlayer;
+    private  Player currentPlayer;
 
     private int playerTurnIndex;
     private boolean gameOver;
@@ -607,8 +608,22 @@ public class BotController {
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        // TODO Auto-generated method stub
-        return super.clone();
+        BotController clonedController = (BotController) super.clone();
+    
+    
+    clonedController.board = (Board) this.board.clone();
+    
+    
+    clonedController.currentPlayers = new ArrayList<>();
+    for (Player player : this.currentPlayers) {
+        clonedController.currentPlayers.add((Player) player.clone());
+    }
+    
+    
+    clonedController.currentPlayer = (Player) this.currentPlayer.clone();
+    
+    
+    return clonedController;
     }
 
     /**
