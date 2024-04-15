@@ -104,7 +104,9 @@ public class PrettyMenuView extends Form {
                 JButton btn = new JButton();
                 btn.setText(p.hostName() + " : " + p.currentNumberOfPlayer()
                         + " / " + p.maxNumberOfPlayer());
-                // btn.addActionListener(() -> ); TODO :mettre join
+                btn.addActionListener((ActionListener) -> {
+                    controller.joinPreGame(p);
+                });
                 panel.add(btn);
             }
         }
