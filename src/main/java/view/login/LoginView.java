@@ -75,12 +75,20 @@ public class LoginView extends JPanel {
         ImageIcon icon = new ImageIcon("src/main/ressources/images/menu/point-dexclamation.png");
         Image image = icon.getImage();
         Image newImage = image.getScaledInstance(15,15,Image.SCALE_SMOOTH);
+        JPanel errorLabelContainer = new JPanel();
+        errorLabelContainer.setPreferredSize(new Dimension(400,36));
+        errorLabelContainer.setLayout(new GridBagLayout());
+        GridBagConstraints errorLabelContainerContraints = new GridBagConstraints();
+        errorLabelContainerContraints.gridx = 0;
+        errorLabelContainerContraints.gridy = 0;
+        errorLabelContainerContraints.insets= new Insets(1,1,1,1);
+        errorLabelContainerContraints.gridwidth = 400;
         errorLabel = new JLabel(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE,new ImageIcon(newImage),JLabel.RIGHT);
         errorLabel.setForeground(new Color(209,38,24));
         errorLabel.setAlignmentX(RIGHT_ALIGNMENT);
         errorLabel.setPreferredSize(new Dimension(400,36));
-
         errorLabel.setVisible(false);
+        errorLabelContainer.add(errorLabel,errorLabelContainerContraints);
 
 
         FlatButton loginButton = new FlatButton();
@@ -161,7 +169,7 @@ public class LoginView extends JPanel {
         signUpButtons.add(createAccountAndComeBackToLoginContainer);
         signUpButtons.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
 
-        JPanel alignement = new JPanel();
+        /*JPanel alignement = new JPanel();
         alignement.setLayout(new GridBagLayout());
         alignement.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/3,GameFrame.DEFAULT_HEIGHT*3/10));
 
@@ -192,7 +200,7 @@ public class LoginView extends JPanel {
         errorLabelContraints.gridy = passwordArea.getY() + passwordArea.getHeight();
         errorLabelContraints.anchor = GridBagConstraints.LINE_START;
         errorLabelContraints.insets = new Insets(0,0,0,0);
-        alignement.add(errorLabel,errorLabelContraints);
+        alignement.add(errorLabel,errorLabelContraints);*/
 
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(titleLabel);
@@ -203,7 +211,7 @@ public class LoginView extends JPanel {
         loginComponentContainer.add(emailArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
         loginComponentContainer.add((passwordArea));
-        loginComponentContainer.add((errorLabel));
+        loginComponentContainer.add((errorLabelContainer));
         //loginComponentContainer.add(alignement);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
         loginComponentContainer.add(loginButtons);
