@@ -122,7 +122,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static String createGame(PlayerCredentials creator, int maxPlayers) throws Exception {
+    public static PreGameAnalytics createGame(PlayerCredentials creator, int maxPlayers) throws Exception {
         DocumentReference doc = database.collection(GAME_TABLE_NAME).document();
         String gameId = doc.getId();
         HashMap<String, Object> newGame = new HashMap<>();
@@ -132,7 +132,8 @@ public class GameDatabaseConnection {
         newGame.put(GAME_CREATOR_FIELD, creator.pseudo());
         ApiFuture<WriteResult> future = doc.set(newGame);
         future.get();
-        return gameId;
+
+        return new PreGameAnalytics(creator.pseudo(), gameId, 1, maxPlayers);
     }
 
     public static void setCash(int newCash, Player player, String gameId) throws Exception {
@@ -603,6 +604,43 @@ public class GameDatabaseConnection {
 
             p.setStocks(corporation, amount.intValue());
         }
+    }
+
+    public static void startGame(String gameId) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        if (docs.isEmpty()) {
+            throw new Exception();
+        }
+
+        DocumentSnapshot game = docs.get(0);
+        DocumentReference gameRef = game.getReference();
+
+        ApiFuture<WriteResult> writer = gameRef.update(GAME_STATE_FIELD, GameController.GAME_IN_PROGRESS_STATE);
+        writer.get();
+    }
+
+    public static List<Player> getAllPlayers(String gameId) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(PLAYER_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+        List<Player> allPlayers = new LinkedList<>();
+
+        if (docs.isEmpty()) {
+            throw new Exception();
+        }
+
+        for (DocumentSnapshot doc : docs) {
+            String userId = (String) doc.get(UID_FIELD);
+            String pseudo = (String) doc.get(PSEUDO_PLAYER_FIELD);
+
+            Player p = Player.createHumanPlayer(pseudo, userId);
+            allPlayers.add(p);
+        }
+
+        return allPlayers;
     }
 
 }
