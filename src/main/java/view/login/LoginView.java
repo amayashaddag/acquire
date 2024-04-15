@@ -72,10 +72,14 @@ public class LoginView extends JPanel {
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
         titleLabel.setFont(Fonts.TITLE_FONT);
 
-
-        errorLabel = new JLabel(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE);
-        errorLabel.setForeground(new Color(138,50,36));
+        ImageIcon icon = new ImageIcon("src/main/ressources/images/menu/point-dexclamation.png");
+        Image image = icon.getImage();
+        Image newImage = image.getScaledInstance(15,15,Image.SCALE_SMOOTH);
+        errorLabel = new JLabel(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE,new ImageIcon(newImage),JLabel.RIGHT);
+        errorLabel.setForeground(new Color(209,38,24));
+        errorLabel.setAlignmentX(LEFT_ALIGNMENT);
         errorLabel.setVisible(false);
+
 
         FlatButton loginButton = new FlatButton();
         loginButton.setText(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
@@ -130,24 +134,6 @@ public class LoginView extends JPanel {
         passwordArea = new PasswordField();
         passwordArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
-
-        loginButton.addActionListener((ActionListener) -> {
-            try {
-                // TODO : Implement a password verifying process
-            } catch (Exception e) {
-                // TODO : Handle exception error showing
-            }
-
-        });
-
-        createAccountButton.addActionListener((ActionListener) -> {
-            try {
-                // TODO : Implement user registration process
-            } catch (Exception e) {
-                // TODO : Handle exception error showing
-            }
-        });
-
         offlineModeContainer = new JPanel();
         offlineModeContainer.add(offlineModeButton);
         offlineModeContainer.setPreferredSize(
@@ -169,22 +155,52 @@ public class LoginView extends JPanel {
         signUpButtons.add(createAccountAndComeBackToLoginContainer);
         signUpButtons.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
 
+        JPanel alignement = new JPanel();
+        alignement.setLayout(new GridBagLayout());
+        alignement.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/3,GameFrame.DEFAULT_HEIGHT*3/10));
 
+        GridBagConstraints pseudoContraints = new GridBagConstraints();
+        pseudoContraints.gridx = 0;
+        pseudoContraints.gridy = 0;
+        pseudoContraints.anchor = GridBagConstraints.LINE_START;
+        pseudoContraints.insets = new Insets(0,0,0,0);
+        pseudoContraints.weighty = 2;
+        alignement.add(pseudoArea,pseudoContraints);
 
+        GridBagConstraints emailContraints = new GridBagConstraints();
+        emailContraints.gridx = 0;
+        emailContraints.gridy = pseudoArea.getHeight() + GameFrame.DEFAULT_HEIGHT/25;
+        emailContraints.anchor = GridBagConstraints.LINE_START;
+        emailContraints.insets = new Insets(0,0,0,0);
+        alignement.add(emailArea,emailContraints);
+
+        GridBagConstraints passwordContraints = new GridBagConstraints();
+        passwordContraints.gridx = 0;
+        passwordContraints.gridy = emailArea.getY() + emailArea.getHeight() + GameFrame.DEFAULT_HEIGHT/25;
+        passwordContraints.anchor = GridBagConstraints.LINE_START;
+        passwordContraints.insets = new Insets(0,0,0,0);
+        alignement.add(passwordArea,passwordContraints);
+
+        GridBagConstraints errorLabelContraints = new GridBagConstraints();
+        errorLabelContraints.gridx = 0;
+        errorLabelContraints.gridy = passwordArea.getY() + passwordArea.getHeight();
+        errorLabelContraints.anchor = GridBagConstraints.LINE_START;
+        errorLabelContraints.insets = new Insets(0,0,0,0);
+        alignement.add(errorLabel,errorLabelContraints);
 
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(titleLabel);
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
-        loginComponentContainer.add(pseudoArea);
+        /*loginComponentContainer.add(pseudoArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
         loginComponentContainer.add(emailArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
-        loginComponentContainer.add(passwordArea);
-        loginComponentContainer.add(errorLabel);
+        loginComponentContainer.add((passwordArea));
+        loginComponentContainer.add((errorLabel));*/
+        loginComponentContainer.add(alignement);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
         loginComponentContainer.add(loginButtons);
-        //loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
         loginComponentContainer.add(Box.createVerticalGlue());
 
         this.setLayout(new GridBagLayout());
@@ -222,16 +238,16 @@ public class LoginView extends JPanel {
         loginComponentContainer.repaint();
     }
     public void resetPlaceHolder(){
-        pseudoArea.setPlaceholderText(LoginInterfaceResources.PSEUDO_PLACEHOLDER_TEXT);
-        emailArea.setPlaceholderText(LoginInterfaceResources.EMAIL_PLACEHOLDER_TEXT);
-        passwordArea.setPlaceholderText(LoginInterfaceResources.PASSWORD_PLACEHOLDER_TEXT);
+        pseudoArea.setText("");
+        emailArea.setText("");
+        passwordArea.setText("");
     }
 
     public void printError(String message){
         errorLabel.setText(message);
-        emailArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
-        passwordArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
-        pseudoArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(138,50,36)));
+        emailArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(209,38,24)));
+        passwordArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(209,38,24)));
+        pseudoArea.setBorder(BorderFactory.createMatteBorder(1,1,1,1,new Color(209,38,24)));
         errorLabel.setVisible(true);
         loginComponentContainer.repaint();
     }
