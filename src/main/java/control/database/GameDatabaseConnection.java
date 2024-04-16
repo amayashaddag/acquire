@@ -64,7 +64,7 @@ public class GameDatabaseConnection {
     private static final String CURRENT_PLAYER_TABLE = "current-player";
     private static final String NOTIFICATIONS_TABLE = "notifications";
     private final static String ANALYTICS_TABLE = "analytics";
-    private final static String KEEP_SELL_TRADE_STOCKS_TABLE = "analytics";
+    private final static String KEEP_SELL_TRADE_STOCKS_TABLE = "keep-sell-trade-stocks";
     private final static String MAJOR_CORPORATINO_TABLE = "major-corporation";
 
     private static final List<String> ALL_TABLES = new LinkedList<>();
