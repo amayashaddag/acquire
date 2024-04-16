@@ -24,9 +24,14 @@ public class MonteCarloAlgorithm {
             int totalMoneyEarned = 0;
 
             for (int i = 0; i < NUM_SIMULATIONS; i++) {
-                // BotController cloneController = botController.clone();
-                // cloneController.handlePlayerTurn(action, currentPlayer);
-                // cloneController.simulateGame();
+                BotController cloneController;
+                try {
+                    cloneController = (BotController) botController.clone();
+                } catch (Exception e) {
+                    return null;
+                }
+                cloneController.handlePlayerTurn(action, currentPlayer, false);
+                cloneController.simulateGame();
 
                 int moneyEarned = currentPlayer.getNet() - Player.INITIAL_CASH;
                 totalMoneyEarned += moneyEarned;
@@ -34,7 +39,7 @@ public class MonteCarloAlgorithm {
 
             int averageMoneyEarned = totalMoneyEarned / NUM_SIMULATIONS;
             // Action currentAction = new Action(action, null, null); 
-            // actionScores.put(currentAction, averageMoneyEarned);
+            actionScores.put(action, averageMoneyEarned);
         }
 
         return chooseBestAction(actionScores);

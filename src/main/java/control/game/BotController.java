@@ -249,11 +249,11 @@ public class BotController {
      *                     started
      * @see #placeCell(Point, Player)
      */
-    public void mergeCorporations(Set<Point> cellsToMerge, Point cellPosition, Player player) {
+    public void mergeCorporations(Set<Point> cellsToMerge, Action action, Player player, boolean random) {
         Set<Corporation> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
-        Set<Corporation> adjacentCorporations = board.adjacentCorporations(cellPosition);
+        Set<Corporation> adjacentCorporations = board.adjacentCorporations(action.getPoint());
 
-        Cell currentCell = board.getCell(cellPosition);
+        Cell currentCell = board.getCell(action.getPoint());
         Corporation chosenCellCorporation;
 
         if (maxCorporations.size() == 1) {
@@ -275,12 +275,25 @@ public class BotController {
 
         Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(player, adjacentCorporations);
         if (!stocksToKeepSellOrTrade.isEmpty()) {
-            Map<Corporation, Integer> mapTrade = new HashMap<>();
-            Map<Corporation, Integer> mapSell = new HashMap<>();
-            System.out.println(stocksToKeepSellOrTrade);
-            chooseKST(stocksToKeepSellOrTrade, mapTrade, mapSell);
-            sellStocks(mapSell, player);
-            tradeStocks(mapTrade, player, chosenCellCorporation);
+            if (random) {
+                Map<Corporation, Integer> mapTrade = new HashMap<>();
+                Map<Corporation, Integer> mapSell = new HashMap<>();
+    
+                chooseKST(stocksToKeepSellOrTrade, mapTrade, mapSell);
+                sellStocks(mapSell, player);
+                tradeStocks(mapTrade, player, chosenCellCorporation);
+            } else {
+                switch (action.getMergingChoice()) {
+                    case SELL:
+                        sellStocks(stocksToKeepSellOrTrade, player);
+                        break;
+                    case TRADE:
+                        tradeStocks(stocksToKeepSellOrTrade, player, chosenCellCorporation);
+                        break;
+                    default:
+                        break;  
+                }
+            }
         }
 
     }
@@ -351,15 +364,15 @@ public class BotController {
      * @param cellPosition  represents where to place a new cell.
      * @param currentPlayer represents the player that is about to place the cell.
      */
-    public void placeCell(Point cellPosition, Player currentPlayer) {
-        Cell currentCell = board.getCell(cellPosition.getX(), cellPosition.getY());
+    public void placeCell(Action action, Player currentPlayer, boolean random) {
+        Cell currentCell = board.getCell(action.getPoint().getX(), action.getPoint().getY());
         Corporation placedCorporation;
 
         currentCell.setAsOccupied();
 
-        Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(cellPosition);
-        Set<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(cellPosition);
-        Set<Corporation> adjacentCorporations = board.adjacentCorporations(cellPosition);
+        Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(action.getPoint());
+        Set<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(action.getPoint());
+        Set<Corporation> adjacentCorporations = board.adjacentCorporations(action.getPoint());
 
         if (adjacentCorporations.isEmpty()) {
             if (adjacentOccupiedCells.isEmpty()) {
@@ -378,7 +391,7 @@ public class BotController {
             board.replaceCellCorporation(currentCell, placedCorporation);
 
         } else {
-            mergeCorporations(adjacentOwnedCells, cellPosition, currentPlayer);
+            mergeCorporations(adjacentOwnedCells, action, currentPlayer, random);
             placedCorporation = currentCell.getCorporation();
         }
 
@@ -508,9 +521,9 @@ public class BotController {
      * @param cellPosition represents where to place a new cell.
      * @param player       represents the player that is about to place a new cell.
      */
-    public synchronized void handlePlayerTurn(Point cellPosition, Player player) {
+    public synchronized void handlePlayerTurn(Action action, Player player, boolean random) {
         resetNets();
-        placeCell(cellPosition, player);
+        placeCell(action, player, random);
         if (board.thereArePlacedCorporations()) {
             buyStocks(player);
         }
@@ -587,7 +600,9 @@ public class BotController {
                 int randomIndex = r.nextInt(possibleCells.size());
                 Point cellPosition = possibleCells.get(randomIndex);
                 System.out.println(cellPosition);
-                handlePlayerTurn(cellPosition, currentPlayer);
+
+                Action action = new Action(cellPosition, null, null);
+                handlePlayerTurn(action, currentPlayer ,true);
             }
         }
         sc.close();
