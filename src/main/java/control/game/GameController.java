@@ -36,6 +36,7 @@ public class GameController {
     private final Map<Point, Corporation> newPlacedCells;
 
     private Map.Entry<String, Integer> lastNotification;
+    private long lastKeepSellTradeStockTime;
     private int playerTurnIndex;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
@@ -62,6 +63,7 @@ public class GameController {
                 updateCashNet();
                 updateCurrentPlayer();
                 updateLastNotification();
+                updateKeepSellOrTradeStocks();
 
                 board.updatePlayerDeck(currentPlayer);
                 gameView.updatePlayerDeck();
@@ -175,6 +177,30 @@ public class GameController {
         if (lastNotification == null || !lastNotification.getValue().equals(notification.getValue())) {
             gameView.showInfoNotification(notification.getKey());
             lastNotification = notification;
+        }
+    }
+
+    private void updateKeepSellOrTradeStocks() {
+        try {
+            Map<Corporation, Long> stocks = GameDatabaseConnection.getKeepSellOrTradeStocks(gameId, lastKeepSellTradeStockTime);
+
+            if (stocks.isEmpty()) {
+                return;
+            }
+
+            long time = stocks.entrySet().iterator().next().getValue();
+            Corporation major = GameDatabaseConnection.getMajorCorporation(gameId, time);
+            Set<Corporation> adjacentCorporations = stocks.keySet();
+            Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(gameView.getPlayer(), adjacentCorporations);
+
+            if (stocksToKeepSellOrTrade.isEmpty()) {
+                return;
+            }
+
+            gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, major);
+
+        } catch (Exception e) {
+            errorInterrupt(e);
         }
     }
 
@@ -373,6 +399,16 @@ public class GameController {
         adjacentCorporations.remove(chosenCellCorporation);
 
         Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(player, adjacentCorporations);
+
+        if (onlineMode) {
+            try {
+                GameDatabaseConnection.setKeepSellOrTradeStocks(adjacentCorporations, gameId);
+                GameDatabaseConnection.setMajorCorporation(gameId, chosenCellCorporation);
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+        }
+
         if (!stocksToKeepSellOrTrade.isEmpty()) {
             gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, chosenCellCorporation);
         }

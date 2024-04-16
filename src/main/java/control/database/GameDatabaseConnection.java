@@ -1,11 +1,13 @@
 package control.database;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -50,7 +52,7 @@ public class GameDatabaseConnection {
     private static final String CASH_FIELD = "cash";
     private static final String NET_FIELD = "net";
     private static final String NOTIFICATION_MESSAGE_FIELD = "message";
-    private static final String NOTIFICATION_TIME_FIELD = "time";
+    private static final String TIME_FIELD = "time";
     private final static String BEST_SCORE_FIELD = "best-score";
     private final static String PLAYED_GAMES_FIELD = "played-games";
     private final static String WON_GAMES_FIELD = "won-games";
@@ -62,6 +64,8 @@ public class GameDatabaseConnection {
     private static final String CURRENT_PLAYER_TABLE = "current-player";
     private static final String NOTIFICATIONS_TABLE = "notifications";
     private final static String ANALYTICS_TABLE = "analytics";
+    private final static String KEEP_SELL_TRADE_STOCKS_TABLE = "analytics";
+    private final static String MAJOR_CORPORATINO_TABLE = "major-corporation";
 
     private static final List<String> ALL_TABLES = new LinkedList<>();
     static {
@@ -71,7 +75,10 @@ public class GameDatabaseConnection {
                 GAME_TABLE_NAME,
                 PLACED_CELLS_TABLE_NAME,
                 CURRENT_PLAYER_TABLE,
-                NOTIFICATIONS_TABLE);
+                NOTIFICATIONS_TABLE,
+                ANALYTICS_TABLE,
+                KEEP_SELL_TRADE_STOCKS_TABLE,
+                MAJOR_CORPORATINO_TABLE);
     }
 
     public static void addPlayer(String gameId, PlayerCredentials c) throws Exception {
@@ -431,7 +438,7 @@ public class GameDatabaseConnection {
         DocumentSnapshot gameNotification = docs.get(0);
 
         String notificationMessage = (String) gameNotification.get(NOTIFICATION_MESSAGE_FIELD);
-        Long notificationTime = (Long) gameNotification.get(NOTIFICATION_TIME_FIELD);
+        Long notificationTime = (Long) gameNotification.get(TIME_FIELD);
 
         if (notificationMessage == null || notificationTime == null) {
             throw new Exception();
@@ -467,12 +474,12 @@ public class GameDatabaseConnection {
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
         DocumentReference notification;
-        long currentTime = System.currentTimeMillis();
+        long currentTime = Instant.now().toEpochMilli();
         Map<String, Object> notificationInformation = new HashMap<>();
 
         notificationInformation.put(GAME_ID_FIELD, gameId);
         notificationInformation.put(NOTIFICATION_MESSAGE_FIELD, notificationMessage);
-        notificationInformation.put(NOTIFICATION_TIME_FIELD, currentTime);
+        notificationInformation.put(TIME_FIELD, currentTime);
 
         ApiFuture<WriteResult> writer;
 
@@ -641,6 +648,100 @@ public class GameDatabaseConnection {
         }
 
         return allPlayers;
+    }
+
+    public static Map<Corporation, Long> getKeepSellOrTradeStocks(String gameId, long lastTime) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(KEEP_SELL_TRADE_STOCKS_TABLE)
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .whereGreaterThan(TIME_FIELD, lastTime).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+        Map<Corporation, Long> stocks = new HashMap<>();
+
+        if (docs.isEmpty()) {
+            return stocks;
+        }
+
+        for (DocumentSnapshot doc : docs) {
+            String corporationName = (String) doc.get(CORPORATION_FIELD);
+            Long time = (Long) doc.get(TIME_FIELD);
+
+            if (time == null || corporationName == null) {
+                throw new NullPointerException();
+            }
+
+            stocks.put(Corporation.getCorporationFromName(corporationName), time);
+        }
+
+        return stocks;
+    }
+
+    public static void setKeepSellOrTradeStocks(Set<Corporation> stocks, String gameId) throws Exception {
+        long time = Instant.now().toEpochMilli();
+        for (Corporation c : stocks) {
+            Map<String, Object> stockFields = new HashMap<>();
+            stockFields.put(GAME_ID_FIELD, gameId);
+            stockFields.put(CORPORATION_FIELD, c.toString());
+            stockFields.put(TIME_FIELD, time);
+
+            ApiFuture<QuerySnapshot> reader = database.collection(KEEP_SELL_TRADE_STOCKS_TABLE)
+                    .whereEqualTo(GAME_ID_FIELD, gameId)
+                    .whereEqualTo(CORPORATION_FIELD, c.toString())
+                    .whereLessThan(TIME_FIELD, time).get();
+            List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+            ApiFuture<WriteResult> writer;
+            DocumentReference stockRef;
+
+            if (docs.isEmpty()) {
+                stockRef = database.collection(KEEP_SELL_TRADE_STOCKS_TABLE).document();
+                writer = stockRef.set(stockFields);
+            } else {
+                stockRef = docs.get(0).getReference();
+                writer = stockRef.update(stockFields);
+            }
+
+            writer.get();
+        }
+    }
+
+    public static Corporation getMajorCorporation(String gameId, long time) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATINO_TABLE)
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .whereEqualTo(TIME_FIELD, time).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        if (docs.isEmpty()) {
+            throw new Exception();
+        }
+
+        DocumentSnapshot doc = docs.get(0);
+        String corporationName = (String) doc.get(CORPORATION_FIELD);
+        Corporation major = Corporation.getCorporationFromName(corporationName);
+
+        return major;
+    }
+
+    public static void setMajorCorporation(String gameId, Corporation major) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATINO_TABLE)
+                .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+        Map<String, Object> majorFields = new HashMap<>();
+        DocumentReference majorRef;
+        ApiFuture<WriteResult> writer;
+        long time = Instant.now().toEpochMilli();
+
+        majorFields.put(GAME_ID_FIELD, gameId);
+        majorFields.put(CORPORATION_FIELD, major.toString());
+        majorFields.put(TIME_FIELD, time);
+
+        if (docs.isEmpty()) {
+            majorRef = database.collection(MAJOR_CORPORATINO_TABLE).document();
+            writer = majorRef.set(majorFields);
+        } else {
+            majorRef = docs.get(0).getReference();
+            writer = majorRef.update(majorFields);
+        }
+
+        writer.get();
     }
 
 }
