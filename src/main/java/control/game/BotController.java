@@ -35,15 +35,15 @@ public class BotController {
 
     public final static int FOUNDING_STOCK_BONUS = 1;
 
-    public BotController(List<Player> currentPlayers, Player currentPlayer) {
-        this.board = new Board();
+    public BotController(Board board, List<Player> currentPlayers, Player currentPlayer, int numberOfPlayers, int playerTurnIndex) {
+        this.board = board;
         this.currentPlayers = currentPlayers;
         this.numberOfPlayers = currentPlayers.size();
-        this.playerTurnIndex = 0;
+        this.playerTurnIndex = playerTurnIndex;
         this.currentPlayer = currentPlayer;
-        initPlayersDecks();
     }
 
+    
     public Board getBoard() {
         return board;
     }

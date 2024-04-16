@@ -1,4 +1,4 @@
-package app.launcher;
+/* package app.launcher;
 import control.game.BotController;
 import model.game.Player;
 
@@ -12,7 +12,8 @@ public class App {
         List<Player> players = new LinkedList<>();
         players.add(p1);
         players.add(p2);
-        BotController c = new BotController(players, p1);
+        BotController c = new BotController(players, p1); 
         c.simulateGame();
     }
 }
+ */

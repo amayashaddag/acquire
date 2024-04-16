@@ -16,9 +16,10 @@ public class MonteCarloAlgorithm {
         this.botController = botController;
     }
 
-    public Action runMonteCarlo(Player currentPlayer) {
-        Map<Action, Integer> actionScores = new HashMap<>();
+    public Action runMonteCarlo() {
 
+        Map<Action, Integer> actionScores = new HashMap<>();
+        
         List<Action> possibleActions = botController.getPossibleActions();
         for (Action action : possibleActions) {
             int totalMoneyEarned = 0;
@@ -30,6 +31,7 @@ public class MonteCarloAlgorithm {
                 } catch (Exception e) {
                     return null;
                 }
+                Player currentPlayer = cloneController.getCurrentPlayer();
                 cloneController.handlePlayerTurn(action, currentPlayer, false);
                 cloneController.simulateGame();
 
@@ -37,8 +39,7 @@ public class MonteCarloAlgorithm {
                 totalMoneyEarned += moneyEarned;
             }
 
-            int averageMoneyEarned = totalMoneyEarned / NUM_SIMULATIONS;
-            // Action currentAction = new Action(action, null, null); 
+            int averageMoneyEarned = totalMoneyEarned / NUM_SIMULATIONS; 
             actionScores.put(action, averageMoneyEarned);
         }
 
