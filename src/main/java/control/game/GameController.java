@@ -198,6 +198,7 @@ public class GameController {
             }
 
             gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, major);
+            lastKeepSellTradeStockTime = time;
 
         } catch (Exception e) {
             errorInterrupt(e);

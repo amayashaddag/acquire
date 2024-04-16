@@ -515,10 +515,10 @@ public class GameDatabaseConnection {
             int currentNumberOfPlayer = currentPlayersInGame.size();
 
             PreGameAnalytics analytics = new PreGameAnalytics(
-                creator, 
-                gameId, 
-                currentNumberOfPlayer, 
-                max.intValue());
+                    creator,
+                    gameId,
+                    currentNumberOfPlayer,
+                    max.intValue());
             availableGames.add(analytics);
         }
 
@@ -590,7 +590,6 @@ public class GameDatabaseConnection {
 
         return players;
     }
-    
 
     public static void updateStocks(Player p, String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(STOCKS_TABLE_NAME)
@@ -664,7 +663,11 @@ public class GameDatabaseConnection {
         DocumentSnapshot docSnapshopt = docs.get(0);
         Long currentTime = (Long) docSnapshopt.get(TIME_FIELD);
 
-        if (currentTime == lastTime) {
+        if (currentTime == null) {
+            throw new NullPointerException();
+        }
+
+        if (currentTime.longValue() == lastTime) {
             return stocks;
         }
 
@@ -713,7 +716,8 @@ public class GameDatabaseConnection {
     public static Corporation getMajorCorporation(String gameId, long time) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATINO_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
-                .whereEqualTo(TIME_FIELD, time).get();
+                .whereEqualTo(TIME_FIELD, time)
+                .get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
 
         if (docs.isEmpty()) {
