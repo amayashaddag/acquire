@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -123,14 +124,17 @@ public class PrettyMenuView extends Form {
             }
         }
 
-        for (int i = 0; i < 30; i++)
-            scrollPane.add(new JLabel("dzadz" + i));
-
         JScrollPane scroll = new JScrollPane(scrollPane);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
         panel.add(scroll, "grow");
         scroll.setOpaque(false);
         scrollPane.setOpaque(false);
         panel.setOpaque(false);
+
+        // TODO : pourquoi ils ne sont pas opaques ?
+        System.out.println(
+                "are opaque : " + scroll.isOpaque() + " " + scrollPane.isOpaque() + " " + panel.isOpaque());
+
         panel.repaint();
         panel.setVisible(true);
         repaint();
