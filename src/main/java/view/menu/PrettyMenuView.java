@@ -9,6 +9,8 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -53,8 +55,8 @@ public class PrettyMenuView extends Form {
         panel.setVisible(false);
         panel.setOpaque(false);
 
-        add(menu3d, "x 20%, y 30%, w 25%, h 50%");
-        add(panel, "x 60%, y 30%, w 30%, h 50%");
+        add(menu3d, "x 10%, y 40%, w 25%, h 50%");
+        add(panel, "x 60%, y 40%, w 30%, h 50%");
         repaint();
     }
 
@@ -74,7 +76,11 @@ public class PrettyMenuView extends Form {
         mig.setComponentConstraints(panel, "x 60%, y 40%, w 30%, h 50%");
         revalidate();
         panel.removeAll();
-        panel.setLayout(new MigLayout("al center, wrap 1"));
+        panel.setLayout(new MigLayout("fill, insets 0, wrap"));
+
+        JPanel scrollPane = new JPanel();
+        scrollPane.setLayout(new MigLayout("al center, wrap"));
+        panel.add(scrollPane);
 
         JButton createGameBtn = new JButton();
         if (aMultiGameIsLaunching) {
@@ -86,6 +92,12 @@ public class PrettyMenuView extends Form {
                 multiPlayer();
             });
 
+            JButton startBtn = new JButton("Start Game");
+            startBtn.setBackground(Color.GREEN);
+            startBtn.addActionListener((e) -> {
+                controller.launchMultiGame();
+            });
+            scrollPane.add(startBtn);
         } else {
             createGameBtn.setText("Create new game");
             createGameBtn.setBackground(Color.GREEN);
@@ -95,7 +107,7 @@ public class PrettyMenuView extends Form {
                 multiPlayer();
             });
         }
-        panel.add(createGameBtn);
+        scrollPane.add(createGameBtn);
 
         List<PreGameAnalytics> list = controller.getAvailableGames();
         System.out.println(list);
@@ -107,10 +119,18 @@ public class PrettyMenuView extends Form {
                 btn.addActionListener((ActionListener) -> {
                     controller.joinPreGame(p);
                 });
-                panel.add(btn);
+                scrollPane.add(btn);
             }
         }
 
+        for (int i = 0; i < 30; i++)
+            scrollPane.add(new JLabel("dzadz" + i));
+
+        JScrollPane scroll = new JScrollPane(scrollPane);
+        panel.add(scroll, "grow");
+        scroll.setOpaque(false);
+        scrollPane.setOpaque(false);
+        panel.setOpaque(false);
         panel.repaint();
         panel.setVisible(true);
         repaint();
@@ -150,7 +170,6 @@ public class PrettyMenuView extends Form {
                 "hoverTrackColor:null");
         table.setDefaultRenderer(Object.class, new TableGradientCell());
         DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.addRow(new Object[] { 1, "John Smith", "de", "123 Main St, City", "Manager" });
 
         int i = 0;
         List<PlayerAnalytics> playerRanking;
