@@ -693,7 +693,7 @@ public class GameDatabaseConnection {
             ApiFuture<QuerySnapshot> reader = database.collection(KEEP_SELL_TRADE_STOCKS_TABLE)
                     .whereEqualTo(GAME_ID_FIELD, gameId)
                     .whereEqualTo(CORPORATION_FIELD, c.toString())
-                    .whereLessThan(TIME_FIELD, time).get();
+                    .get();
             List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
             ApiFuture<WriteResult> writer;
             DocumentReference stockRef;
