@@ -653,12 +653,18 @@ public class GameDatabaseConnection {
     public static Map<Corporation, Long> getKeepSellOrTradeStocks(String gameId, long lastTime) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(KEEP_SELL_TRADE_STOCKS_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
-                .whereNotEqualTo(TIME_FIELD, lastTime)
                 .get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
         Map<Corporation, Long> stocks = new HashMap<>();
 
         if (docs.isEmpty()) {
+            return stocks;
+        }
+
+        DocumentSnapshot docSnapshopt = docs.get(0);
+        Long currentTime = (Long) docSnapshopt.get(TIME_FIELD);
+
+        if (currentTime == lastTime) {
             return stocks;
         }
 
