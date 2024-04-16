@@ -276,7 +276,6 @@ public class MenuController {
             if (fis.available() > 0) {
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 session = (PlayerCredentials) ois.readObject();
-                System.out.println(session.pseudo());
                 ois.close();
             }
 
