@@ -23,7 +23,7 @@ public class BlurImage extends JFrame {
             BufferedImage backgroundImage = ImageIO.read(new File("background.jpeg"));
 
             // Appliquer le flou gaussien à l'image
-            BufferedImage blurredImage = applyGaussianBlur(backgroundImage, 1, 20);
+            BufferedImage blurredImage = applyGaussianBlur(backgroundImage, 1, 2);
 
             // Utiliser un JPanel personnalisé pour afficher l'image floue en arrière-plan
             JPanel backgroundPanel = new JPanel() {
