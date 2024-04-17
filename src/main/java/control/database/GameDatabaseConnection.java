@@ -717,7 +717,6 @@ public class GameDatabaseConnection {
     public static Corporation getMajorCorporation(String gameId, long time) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATINO_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
-                .whereEqualTo(TIME_FIELD, time)
                 .get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
 
