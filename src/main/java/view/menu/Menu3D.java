@@ -69,6 +69,7 @@ public class Menu3D extends JComponent {
 
     private final List<EventMenu> events = new ArrayList<>();
     private final List<Menu3dItem> items = new ArrayList<>();
+    private final List<Runnable> globalsEvents = new ArrayList<>();
     private int menuHeight = 50;
     private int shadowSize = 15;
     private int left = 60;
@@ -76,7 +77,7 @@ public class Menu3D extends JComponent {
     private int overIndex = -1;
     private int pressedIndex = -1;
 
-    public Menu3D(String ... labels) {
+    public Menu3D(String... labels) {
         setOpaque(false);
 
         for (String s : labels)
@@ -108,9 +109,20 @@ public class Menu3D extends JComponent {
     }
 
     private void runEvent() {
+        for (Runnable event : globalsEvents) {
+            event.run();
+        }
         for (EventMenu event : events) {
             event.menuSelected(pressedIndex);
         }
+    }
+
+    public void addGlobalEvent(Runnable event) {
+        globalsEvents.add(event);
+    }
+
+    public void addGlobalEvent(EventMenu event) {
+        addGlobalEvent(() -> event.menuSelected(0));
     }
 
     public void addMenuItem(String menu) {
@@ -118,14 +130,19 @@ public class Menu3D extends JComponent {
         items.add(new Menu3dItem(this, left, y, menuHeight, shadowSize, menu));
     }
 
-    public void addMenuItem(String menu, Runnable task) {
+    public void addMenuItem(String menu, Runnable event) {
         int size = items.size();
         int y = size * menuHeight + left;
         addEvent((i) -> {
             if (i == size)
-                task.run();
+                event.run();
         });
         items.add(new Menu3dItem(this, left, y, menuHeight, shadowSize, menu));
+    }
+
+    @Deprecated
+    public void addMenuItem(String menu, EventMenu event) {
+        addMenuItem(menu, () -> event.menuSelected(0));
     }
 
     private int getOverIndex(Point mouse) {

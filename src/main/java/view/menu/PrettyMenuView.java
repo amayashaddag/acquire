@@ -52,6 +52,7 @@ public class PrettyMenuView extends Form {
         menu3d.addMenuItem("RANKING", this::ranking);
         menu3d.addMenuItem("SETTING", this::settings);
         menu3d.addMenuItem("EXIT", this::exit);
+        menu3d.addGlobalEvent(controller::avortMutiGame);
 
         panel.setVisible(false);
         panel.setOpaque(false);
@@ -59,6 +60,10 @@ public class PrettyMenuView extends Form {
         add(menu3d, "x 10%, y 40%, w 25%, h 50%");
         add(panel, "x 60%, y 40%, w 30%, h 50%");
         repaint();
+    }
+
+    public boolean aMultiGameIsLaunching() {
+        return aMultiGameIsLaunching;
     }
 
     private void singlePlayer() {

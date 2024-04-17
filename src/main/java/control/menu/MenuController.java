@@ -231,9 +231,9 @@ public class MenuController {
         try {
             GameDatabaseConnection.startGame(joinedGameAnalytics.gameID());
             Player currentPlayer = joinGame();
-                    GameDatabaseConnection.setCurrentPlayer(
-                            joinedGameAnalytics.gameID(),
-                            currentPlayer.getUID());
+            GameDatabaseConnection.setCurrentPlayer(
+                    joinedGameAnalytics.gameID(),
+                    currentPlayer.getUID());
         } catch (Exception e) {
             GameFrame.showError(e, () -> {
                 GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
@@ -243,6 +243,8 @@ public class MenuController {
     }
 
     public void avortMutiGame() {
+        if (!view.aMultiGameIsLaunching())
+            return;
         try {
             GameDatabaseConnection.removeGame(joinedGameAnalytics.gameID());
             joinedGameAnalytics = null;
