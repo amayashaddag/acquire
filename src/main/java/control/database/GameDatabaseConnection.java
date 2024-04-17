@@ -687,6 +687,7 @@ public class GameDatabaseConnection {
 
     public static void setKeepSellOrTradeStocks(Set<Corporation> stocks, String gameId) throws Exception {
         long time = Instant.now().toEpochMilli();
+
         for (Corporation c : stocks) {
             Map<String, Object> stockFields = new HashMap<>();
             stockFields.put(GAME_ID_FIELD, gameId);

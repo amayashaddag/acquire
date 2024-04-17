@@ -713,7 +713,7 @@ public class GameController {
         if (onlineMode) {
             try {
                 if (gameId != null) {
-                    GameDatabaseConnection.removeGame(gameId);
+                    // GameDatabaseConnection.removeGame(gameId);
                 } else {
                     throw new NullPointerException();
                 }      
