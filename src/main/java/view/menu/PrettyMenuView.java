@@ -135,6 +135,7 @@ public class PrettyMenuView extends Form {
         scroll.setOpaque(false);
         scrollPane.setOpaque(false);
         panel.setOpaque(false);
+        scroll.getViewport().setOpaque(false);
 
         // TODO : pourquoi ils ne sont pas opaques ?
         System.out.println(
