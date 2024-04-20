@@ -110,12 +110,24 @@ public class MenuController {
 
     public void startSingleGame() {
         List<Player> players = new LinkedList<>();
+
         Player p = Player.createHumanPlayer("Player", null);
+        Player bot = Player.createBotPlayer();
+
+        players.add(p);
+        players.add(bot);
+
         GameController controller = new GameController(players, p, null, false);
-        GameView view = controller.getGameView();
+        GameView gameView = controller.getGameView();
 
         SwingUtilities.invokeLater(() -> {
-            view.setVisible(true);
+            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+            parent.setContentPane(gameView);
+            gameView.setVisible(true);
+            gameView.revalidate();
+            gameView.repaint();
+            
+            onlineObserver.stop();
         });
     }
 

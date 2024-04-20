@@ -44,6 +44,8 @@ public class MonteCarloAlgorithm {
 
                 int moneyEarned = currentPlayer.getNet() - Player.INITIAL_CASH;
                 totalMoneyEarned += moneyEarned;
+
+                System.out.println("LEAVING ?");
             }
 
             int averageMoneyEarned = totalMoneyEarned / numSimulations; 
@@ -51,8 +53,10 @@ public class MonteCarloAlgorithm {
 
         }
 
-        System.out.println(actionScores);
+        System.out.println("COMPLETETY");
 
+        Action best = chooseBestAction(actionScores);
+        System.out.println(best);
         return chooseBestAction(actionScores);
     }
 

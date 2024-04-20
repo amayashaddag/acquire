@@ -16,6 +16,7 @@ import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
+import model.tools.Action;
 import model.tools.Point;
 import view.game.GameNotifications;
 import view.game.GameView;
@@ -33,6 +34,7 @@ public class GameController {
     private final String gameId;
     private final boolean onlineMode;
     private final Timer onlineObserver;
+    private final Timer botTurnTimer;
     private final Map<Point, Corporation> newPlacedCells;
 
     private Map.Entry<String, Integer> lastNotification;
@@ -41,7 +43,9 @@ public class GameController {
 
     public final static int FOUNDING_STOCK_BONUS = 1;
     public final static int ONLINE_OBSERVER_DELAY = 2000;
+    public final static int BOT_TURN_OBSERVER_DELAY = 20;
     public final static int GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
+    public final static int NUM_SIMULATIONS = 10;
 
     public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online) {
         this.board = new Board();
@@ -76,8 +80,32 @@ public class GameController {
             } 
         });
 
+        this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionListener) -> {
+            Player p = getCurrentPlayer();
+
+            if (!p.isBot()) {
+                return;
+            }
+
+            try {
+                BotController botController = new BotController(this);
+                MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
+                Action nextAction = monteCarlo.runMonteCarlo();
+
+                handleCellPlacing(nextAction, p);
+
+                gameView.revalidate();
+                gameView.repaint();
+                
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+        });
+
         if (online) {
             onlineObserver.start();
+        } else {
+            botTurnTimer.start();
         }
     }
 
@@ -360,23 +388,28 @@ public class GameController {
      *                     started
      * @see #placeCell(Point, Player)
      */
-    public void mergeCorporations(Set<Point> cellsToMerge, Point cellPosition, Player player) {
+    public void mergeCorporations(Set<Point> cellsToMerge, Action action, Player player) {
         Set<Corporation> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
-        Set<Corporation> adjacentCorporations = board.adjacentCorporations(cellPosition);
+        Set<Corporation> adjacentCorporations = board.adjacentCorporations(action.getPoint());
 
-        Cell currentCell = board.getCell(cellPosition);
+        Cell currentCell = board.getCell(action.getPoint());
         Corporation chosenCellCorporation;
 
         if (maxCorporations.size() == 1) {
             Iterator<Corporation> iterator = maxCorporations.iterator();
             chosenCellCorporation = iterator.next();
         } else {
-            chosenCellCorporation = gameView.getCorporationChoice(maxCorporations.stream().toList());
+
+            if (player.isHuman()) {
+                chosenCellCorporation = gameView.getCorporationChoice(maxCorporations.stream().toList());
+            } else {
+                chosenCellCorporation = maxCorporations.iterator().next();
+            }
         }
 
         board.replaceCellCorporation(currentCell, chosenCellCorporation);
         if (onlineMode) {
-            newPlacedCells.put(cellPosition, chosenCellCorporation);
+            newPlacedCells.put(action.getPoint(), chosenCellCorporation);
         }
         for (Point adj : cellsToMerge) {
             Cell adjacentCell = board.getCell(adj);
@@ -411,7 +444,20 @@ public class GameController {
         }
 
         if (!stocksToKeepSellOrTrade.isEmpty()) {
-            gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, chosenCellCorporation);
+            if (player.isHuman()) {
+                gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, chosenCellCorporation);
+            } else {
+                switch (action.getMergingChoice()) {
+                    case SELL:
+                        sellStocks(stocksToKeepSellOrTrade, player);
+                        break;
+                    case TRADE:
+                        tradeStocks(stocksToKeepSellOrTrade, player, chosenCellCorporation);
+                        break;
+                    default:
+                        break;  
+                }
+            }
         }
     }
 
@@ -439,22 +485,22 @@ public class GameController {
      * @param cellPosition  represents where to place a new cell.
      * @param currentPlayer represents the player that is about to place the cell.
      */
-    public void placeCell(Point cellPosition, Player currentPlayer) {
-        Cell currentCell = board.getCell(cellPosition.getX(), cellPosition.getY());
+    public void placeCell(Action action, Player currentPlayer) {
+        Cell currentCell = board.getCell(action.getPoint().getX(), action.getPoint().getY());
         Corporation placedCorporation;
 
         currentCell.setAsOccupied();
 
         if (onlineMode) {
-            newPlacedCells.put(cellPosition, null);
+            newPlacedCells.put(action.getPoint(), null);
         }
 
         gameView.showSuccessNotification(
                 GameNotifications.cellPlacingNotification(currentPlayer.getPseudo()));
 
-        Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(cellPosition);
-        Set<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(cellPosition);
-        Set<Corporation> adjacentCorporations = board.adjacentCorporations(cellPosition);
+        Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(action.getPoint());
+        Set<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(action.getPoint());
+        Set<Corporation> adjacentCorporations = board.adjacentCorporations(action.getPoint());
 
         if (adjacentCorporations.isEmpty()) {
             if (adjacentOccupiedCells.isEmpty()) {
@@ -467,13 +513,19 @@ public class GameController {
             // This initialization should be replaced later with the choice of the player
 
             List<Corporation> unplacedCorporations = board.unplacedCorporations();
-            placedCorporation = gameView.getCorporationChoice(unplacedCorporations);
+            
+            if (currentPlayer.isHuman()) {
+                placedCorporation = gameView.getCorporationChoice(unplacedCorporations);
+            } else {
+                placedCorporation = action.getCreatedCorporation();
+            }
+
             currentPlayer.addToEarnedStocks(placedCorporation, FOUNDING_STOCK_BONUS);
 
             board.replaceCellCorporation(currentCell, placedCorporation);
 
             if (onlineMode) {
-                newPlacedCells.put(cellPosition, placedCorporation);
+                newPlacedCells.put(action.getPoint(), placedCorporation);
             }
 
             gameView.showInfoNotification(
@@ -481,7 +533,7 @@ public class GameController {
                             currentPlayer.getPseudo(),
                             placedCorporation));
         } else {
-            mergeCorporations(adjacentOwnedCells, cellPosition, currentPlayer);
+            mergeCorporations(adjacentOwnedCells, action, currentPlayer);
             placedCorporation = currentCell.getCorporation();
         }
 
@@ -615,16 +667,26 @@ public class GameController {
      * @param cellPosition represents where to place a new cell.
      * @param player       represents the player that is about to place a new cell.
      */
-    public synchronized void handleCellPlacing(Point cellPosition, Player player) {
+    public synchronized void handleCellPlacing(Action action, Player player) {
 
         if (onlineMode) {
             onlineObserver.stop();
         }
 
         resetNets();
-        placeCell(cellPosition, player);
+        placeCell(action, player);
+
         if (board.thereArePlacedCorporations()) {
-            buyStocks(player);
+            if (player.isHuman()) {
+                buyStocks(player);
+            } else {
+                Map<Corporation, Integer> chosenStocksToBuy = action.getBoughtStocks();
+
+                if (!chosenStocksToBuy.isEmpty()) {
+                    int totalPrice = calculateStocksPrice(chosenStocksToBuy);
+                    buyChosenStocks(chosenStocksToBuy, totalPrice, player);
+                }
+            }
         }
         adjustNets();
 
@@ -722,7 +784,10 @@ public class GameController {
             }
 
             onlineObserver.stop();
+        } else {
+            botTurnTimer.stop();
         }
+
         GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
         parent.dispose();
     }

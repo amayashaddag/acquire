@@ -518,7 +518,6 @@ public class BotController implements Cloneable {
             buyStocks(player);
         }
         adjustNets();
-
         board.updateDeadCells();
 
         for (Player p : currentPlayers) {
@@ -574,11 +573,13 @@ public class BotController implements Cloneable {
 
     public void simulateGame() {
         while (!board.isGameOver()) {
+
             Player currentPlayer = currentPlayers.get(playerTurnIndex);
 
             Random r = new Random();
             List<Point> possibleCells = new LinkedList<>();
             Point[] deck = currentPlayer.getDeck();
+
             for (int i = 0; i < Board.DECK_SIZE; i++) {
                 Point p = deck[i];
                 if (p != null) {
@@ -590,12 +591,13 @@ public class BotController implements Cloneable {
                 int randomIndex = r.nextInt(possibleCells.size());
                 Point cellPosition = possibleCells.get(randomIndex);
 
-                Action action = new Action(cellPosition, null, null);
+                Action action = new Action(cellPosition, null, null, null);
                 handlePlayerTurn(action, currentPlayer, true);
             } else {
                 break;
             }
         }
+
     }
 
     public boolean currentPlayerWon() {
@@ -642,9 +644,11 @@ public class BotController implements Cloneable {
 
             for (MergingChoice choice : MergingChoice.values()) {
                 for (Map<Corporation, Integer> comb : combinationsOfBuyingStocks) {
-                    Action possibleAction = new Action(p, comb, choice);
+                    for (Corporation c : board.unplacedCorporations()) {
+                        Action possibleAction = new Action(p, c, comb, choice);
 
-                    possibleActions.add(possibleAction);
+                        possibleActions.add(possibleAction);
+                    }
                 }
             }
 
@@ -654,9 +658,11 @@ public class BotController implements Cloneable {
              */
 
             for (MergingChoice choice : MergingChoice.values()) {
-                Action emptyStockAction = new Action(p, new HashMap<>(), choice);
+                for (Corporation c : board.unplacedCorporations()) {
+                    Action emptyStockAction = new Action(p, c, new HashMap<>(), choice);
 
-                possibleActions.add(emptyStockAction);
+                    possibleActions.add(emptyStockAction);
+                }
             }
 
         }
