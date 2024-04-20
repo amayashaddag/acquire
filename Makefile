@@ -6,7 +6,7 @@ VIEW=view/*/*
 
 JAVA_TEST=src/test/java
 OUT=build
-MAIN=app.launcher.App
+MAIN=app.launcher.NetworkDebug
 LIB=lib
 
 
@@ -39,5 +39,5 @@ debug: clean processor
 	@java -cp "$(OUT):$(LIB)/*" app.launcher.Debug
 
 quickdeb: clean
-	@javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -d $(OUT) src/main/java/app/Debug.java
-	@java -cp "$(OUT):$(LIB)/*" app.Debug
+	@javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -d $(OUT) src/main/java/app/launcher/Debug.java
+	@java -cp "$(OUT):$(LIB)/*" app.launcher.Debug

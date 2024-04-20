@@ -1,20 +1,19 @@
-package view.frame;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+package view.window;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import com.formdev.flatlaf.FlatDarculaLaf;
 
 import control.game.GameController;
 import model.game.Player;
 import raven.toast.Notifications;
 import view.game.GameView;
-
-import com.formdev.flatlaf.FlatDarculaLaf;
-
 
 /**
  * This is the class Frame for the view of the game
@@ -22,18 +21,22 @@ import com.formdev.flatlaf.FlatDarculaLaf;
  * @author Arthur Deck
  * @version 0.1
  */
-@Deprecated
 public class GameFrame extends JFrame {
     public final static int DEFAULT_WIDTH = 1200;
     public final static int DEFAULT_HEIGHT = 900;
+    public final static int MAX_LINES_TO_PRINT = 10;
+
+    public final static String TITLE = "Acquire";
+    public final static String ERROR_MESSAGE_TITLE = "An error occured during the execution :\n";
 
     public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
+    public final static GameFrame currentFrame = new GameFrame();
 
     public GameFrame() {
         super();
         FlatDarculaLaf.setup();
 
-        setTitle("Acquire");
+        setTitle(TITLE);
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -42,35 +45,51 @@ public class GameFrame extends JFrame {
         Notifications.getInstance().setJFrame(this);
     }
 
+    public static GameFrame getCurrentFrame() {
+        return currentFrame;
+    }
+
     public void setGameView(GameController controller, Player player) {
         this.setForm(new GameView(controller, player));
     }
 
     /**
-     * <p> Set a form on the current frame 
-     * (example : option page, game page, chat page ...) </p>
+     * <p>
+     * Set a form on the current frame
+     * (example : option page, game page, chat page ...)
+     * </p>
      * 
-     * @param comp : the empty constructor of the form's 
-     * component you want to set
+     * @param comp : the empty constructor of the form's
+     *             component you want to set
      * @apiNote example : setForm(new MapView())
      */
-    private void setForm(Form form) {
+    public void setForm(Form form) {
         this.getContentPane().removeAll();
         form.setOn(this);
         this.repaint();
         this.revalidate();
+        this.repaint();
     }
 
     /**
      * A graphical display of errors / exceptions
-     * @param e : the exception you want display
-     * @param task : the task you want execute (example :  System.exit(1))
+     * 
+     * @param e    : the exception you want display
+     * @param task : the task you want to execute (example : System.exit(1))
      * @apiNote example : GameFrame.showError(new Exception(), () -> System.exit(1))
      */
     public static void showError(Exception e, Runnable task) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
+        StackTraceElement[] stackTrace = e.getStackTrace();
+        int numberOfLinesToPrint = Math.min(stackTrace.length, MAX_LINES_TO_PRINT); // Limiting to 10 lines
+
+        pw.println(ERROR_MESSAGE_TITLE);
+
+        for (int i = 0; i < numberOfLinesToPrint; i++) {
+            pw.println(stackTrace[i].toString());
+        }
+
         JOptionPane.showMessageDialog(null, sw.toString(), "Error", JOptionPane.ERROR_MESSAGE);
         task.run();
     }

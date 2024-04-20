@@ -249,10 +249,9 @@ public class Board {
      * @param op           the operation that maps the cells
      */
     public void mappingDFS(Corporation corporation, Point currentPoint, List<Point> visitedCells,
-            Function<Cell, Void> op) {
+            Function<Point, Void> op) {
         visitedCells.add(currentPoint);
-        Cell currentCell = getCell(currentPoint);
-        op.apply(currentCell);
+        op.apply(currentPoint);
 
         Set<Point> adjacentCells = adjacentCells(currentPoint, (cell) -> true);
 
@@ -309,20 +308,25 @@ public class Board {
      * @param startingPoint the point where the setting will start from
      * @see #mappingDFS(Corporation, Point, List, Function)
      */
-    public void replaceCorporationFrom(Corporation corporation, Point startingPoint) {
+    public Map<Point, Corporation> replaceCorporationFrom(Corporation corporation, Point startingPoint) {
+        Map<Point, Corporation> replacedCells = new HashMap<>();
         Cell currentCell = getCell(startingPoint);
 
         if (!currentCell.isOwned()) {
-            return;
+            return replacedCells;
         }
 
         Corporation currentCorporation = currentCell.getCorporation();
 
         List<Point> visitedCells = new LinkedList<>();
-        mappingDFS(currentCorporation, startingPoint, visitedCells, (Cell cell) -> {
+        mappingDFS(currentCorporation, startingPoint, visitedCells, (Point p) -> {
+            Cell cell = getCell(p);
             replaceCellCorporation(cell, corporation);
+            replacedCells.put(p, corporation);
             return null;
         });
+
+        return replacedCells;
     }
 
     /**

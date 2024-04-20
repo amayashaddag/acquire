@@ -1,33 +1,22 @@
 package view.assets;
 
-import model.game.Corporation;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+
 import javax.imageio.ImageIO;
 
 /**
- * All ressouces used for in game
- * 
+ * All ressouces used for Menu
+ *
  * @author Arthur Deck
  * @version 0.1
  */
-public class GameResources {
+public class MenuRessources {
     public static final String MAIN_PATH = "src/main/";
     public static final String RESSOURCES_PATH = "ressources/";
-    public static final String IMAGES_PATH = "images/game/";
-
-    public static BufferedImage imageToBufferedImage(Image im) {
-        BufferedImage bi = new BufferedImage
-                (im.getWidth(null),im.getHeight(null),BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2D = bi.createGraphics();
-        g2D.drawImage(im, 0, 0, null);
-        g2D.dispose();
-        return bi;
-    }
+    public static final String IMAGES_PATH = "images/menu/";
 
     /**
      * Use with the following name
@@ -83,36 +72,5 @@ public class GameResources {
         }
 
         public static Image BACKGROUND;
-        public static Image GRASS;
-        public static Image BOARD_CELL;
-        public static Image EMPTY_CELL;
-        public static Image OCCUPIED_CELL;
-        public static Image SELECTED_CELL;
-        public static Image BLUE_TOWER_CELL;
-        public static Image CYAN_TOWER_CELL;
-        public static Image GREEN_TOWER_CELL;
-        public static Image ORANGE_TOWER_CELL;
-        public static Image PURPLE_TOWER_CELL;
-        public static Image RED_TOWER_CELL;
-        public static Image YELLOW_TOWER_CELL;
-
-        public static Image getCorpImage(Corporation c) {
-            return switch (c) {
-                case IMPERIAL -> GameResources.Assets.CYAN_TOWER_CELL;
-                case FESTIVAL -> GameResources.Assets.YELLOW_TOWER_CELL;
-                case AMERICAN -> GameResources.Assets.RED_TOWER_CELL;
-                case SACKSON -> GameResources.Assets.BLUE_TOWER_CELL;
-                case TOWER -> GameResources.Assets.GREEN_TOWER_CELL;
-                case WORLDWIDE -> GameResources.Assets.ORANGE_TOWER_CELL;
-                case CONTINENTAL -> GameResources.Assets.PURPLE_TOWER_CELL;
-            };
-        }
-
-        public static Color getCorpColor(Corporation c) {
-            Image img = getCorpImage(c);
-            BufferedImage bfi = GameResources.imageToBufferedImage(img);
-            int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
-            return new Color(clr, true);
-        }
     }
 }

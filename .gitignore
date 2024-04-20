@@ -6,9 +6,3 @@ out/
 debug/
 *.class
 *.xml
-
-
-*.iml
-.idea/
-.vscode/
-out/

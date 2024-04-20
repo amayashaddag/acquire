@@ -1,19 +1,27 @@
-/* package app.launcher;
-import control.game.BotController;
-import model.game.Player;
 
-import java.util.LinkedList;
-import java.util.List;
+package app.launcher;
+
+import com.formdev.flatlaf.FlatDarculaLaf;
+import control.firebaseinit.FirebaseClient;
+import view.login.LoginView;
+import view.window.GameFrame;
+
+import javax.swing.SwingUtilities;
 
 public class App {
     public static void main(String[] args) {
-        Player p1 = Player.createBotPlayer();
-        Player p2 = Player.createBotPlayer();
-        List<Player> players = new LinkedList<>();
-        players.add(p1);
-        players.add(p2);
-        BotController c = new BotController(players, p1); 
-        c.simulateGame();
+        FlatDarculaLaf.setup();
+        GameFrame frame = new GameFrame();
+        SwingUtilities.invokeLater(() -> {
+            frame.setVisible(true);
+        });
+        LoginView loginView = new LoginView();
+        frame.setContentPane(loginView);
+        try {
+            FirebaseClient.initialize();
+        } catch (Exception e) {
+            GameFrame.showError(e, frame::dispose);
+        }
     }
 }
  */
