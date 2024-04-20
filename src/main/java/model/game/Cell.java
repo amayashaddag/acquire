@@ -52,26 +52,43 @@ public class Cell {
 
     public String toString() {
         switch (cellState) {
-            case EMPTY: return ".";
-            case DEAD : return "*";
-            case OCCUPIED : return "+";
-            case OWNED : {
+            case EMPTY:
+                return ".";
+            case DEAD:
+                return "*";
+            case OCCUPIED:
+                return "+";
+            case OWNED: {
                 switch (currentCorporation) {
-                    case AMERICAN: return "A";
-                    case CONTINENTAL: return "C";
-                    case FESTIVAL: return "F";
-                    case IMPERIAL: return "I";
-                    case SACKSON: return "S";
-                    case TOWER: return "T";
-                    case WORLDWIDE: return "W";
-                    default: return "";
+                    case AMERICAN:
+                        return "A";
+                    case CONTINENTAL:
+                        return "C";
+                    case FESTIVAL:
+                        return "F";
+                    case IMPERIAL:
+                        return "I";
+                    case SACKSON:
+                        return "S";
+                    case TOWER:
+                        return "T";
+                    case WORLDWIDE:
+                        return "W";
+                    default:
+                        return "";
                 }
             }
-            default : return "";
+            default:
+                return "";
         }
     }
-     @Override
+
+    @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    } 
+        Cell cell = new Cell();
+        cell.cellState = cellState;
+        cell.currentCorporation = currentCorporation;
+
+        return cell;
+    }
 }

@@ -28,4 +28,9 @@ public class Action {
     public MergingChoice getMergingChoice() {
         return mergingChoice;
     }
+
+    @Override
+    public String toString() {
+        return "(" + point + ", " + mergingChoice + boughtStocks + ")";
+    }
 }
