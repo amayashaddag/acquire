@@ -207,4 +207,23 @@ public class Player {
     public int getStocks(Corporation c) {
         return earnedStocks.get(c);
     }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+    Player clonedPlayer = new Player(this.playerType, this.pseudo);
+    clonedPlayer.cash = this.cash;
+    clonedPlayer.net = this.net;
+    clonedPlayer.earnedStocks = new HashMap<>(this.earnedStocks);
+    
+    
+    clonedPlayer.deck = new Point[this.deck.length];
+    for (int i = 0; i < this.deck.length; i++) {
+        if (this.deck[i] != null) {
+            clonedPlayer.deck[i] = new Point(this.deck[i].getX(), this.deck[i].getY());
+        }
+    }
+
+    return clonedPlayer;
+}
+
 }

@@ -15,10 +15,10 @@ public class Board {
     public final static int WINNING_CORPORATION_SIZE = 41;
     public final static int MAXIMUM_AMOUNT_OF_BUYING_STOCKS = 3;
 
-    private final Cell[][] grid;
-    private final Map<Corporation, Integer> corporationSizes;
-    private final Map<Corporation, Integer> remainingStocks;
-    private final List<Point> remainingCells;
+    private  Cell[][] grid;
+    private  Map<Corporation, Integer> corporationSizes;
+    private  Map<Corporation, Integer> remainingStocks;
+    private  List<Point> remainingCells;
 
     public Board() {
         this.grid = new Cell[BOARD_HEIGHT][BOARD_WIDTH];
@@ -548,25 +548,28 @@ public class Board {
 
         return false;
     }
+    @Override 
+    public Object clone() throws CloneNotSupportedException {
 
-    /**
-     * Updates the board according to the given map in argument.
-     * Used in online mode.
-     * 
-     * @param newPlacedCells a map of (Point, Corporation) that specifies the new placed
-     * cells by other players.
-     * @apiNote Corporation == null refeers to the cell being in OCCUPIED state.
-     */
-    public void updateNewPlacedCells(Map<Point, Corporation> newPlacedCells) {
-        for (Point p : newPlacedCells.keySet()) {
-            Corporation c = newPlacedCells.get(p);
-            Cell cell = getCell(p);
-
-            if (c == null) {
-                cell.setAsOccupied();
-            } else {
-                replaceCellCorporation(cell, c);
+        Cell[][] clonedGrid = new Cell[BOARD_HEIGHT][BOARD_WIDTH];
+        for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
+                clonedGrid[i][j] = (Cell) this.grid[i][j].clone();
             }
         }
+        
+        Map<Corporation, Integer> clonedCorporationSizes = new HashMap<>(this.corporationSizes);
+        Map<Corporation, Integer> clonedRemainingStocks = new HashMap<>(this.remainingStocks);
+        List<Point> clonedRemainingCells = new ArrayList<>(this.remainingCells);
+
+        
+        Board clonedBoard = new Board();
+        clonedBoard.grid = clonedGrid;
+        clonedBoard.corporationSizes = clonedCorporationSizes;
+        clonedBoard.remainingStocks = clonedRemainingStocks;
+        clonedBoard.remainingCells = clonedRemainingCells;
+
+        return clonedBoard;
     }
+
 }
