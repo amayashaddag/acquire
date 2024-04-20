@@ -26,8 +26,6 @@ public class MonteCarloAlgorithm {
         Map<Action, Integer> actionScores = new HashMap<>();
         List<Action> possibleActions = botController.getPossibleActions();
 
-        System.out.println(possibleActions);
-
         for (Action action : possibleActions) {
             int totalMoneyEarned = 0;
 
@@ -44,8 +42,6 @@ public class MonteCarloAlgorithm {
 
                 int moneyEarned = currentPlayer.getNet() - Player.INITIAL_CASH;
                 totalMoneyEarned += moneyEarned;
-
-                System.out.println("LEAVING ?");
             }
 
             int averageMoneyEarned = totalMoneyEarned / numSimulations; 
@@ -53,11 +49,9 @@ public class MonteCarloAlgorithm {
 
         }
 
-        System.out.println("COMPLETETY");
 
         Action best = chooseBestAction(actionScores);
-        System.out.println(best);
-        return chooseBestAction(actionScores);
+        return best;
     }
 
     private Action chooseBestAction(Map<Action, Integer> actionScores) {
