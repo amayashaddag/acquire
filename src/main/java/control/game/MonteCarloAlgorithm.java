@@ -51,6 +51,8 @@ public class MonteCarloAlgorithm {
 
         }
 
+        System.out.println(actionScores);
+
         return chooseBestAction(actionScores);
     }
 

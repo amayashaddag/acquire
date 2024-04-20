@@ -592,6 +592,8 @@ public class BotController implements Cloneable {
 
                 Action action = new Action(cellPosition, null, null);
                 handlePlayerTurn(action, currentPlayer, true);
+            } else {
+                break;
             }
         }
     }
