@@ -7,24 +7,31 @@ import java.util.Map;
 import model.game.Player;
 import model.tools.Action;
 
+/**
+ * @author Nida HAMMOUCHE
+ * @version 1.0
+ */
 public class MonteCarloAlgorithm {
 
     private final BotController botController;
-    private final static int NUM_SIMULATIONS = 1000;
+    private final int numSimulations;
 
     public MonteCarloAlgorithm(BotController botController, int numSimulations) {
         this.botController = botController;
+        this.numSimulations = numSimulations;
     }
 
     public Action runMonteCarlo() {
 
         Map<Action, Integer> actionScores = new HashMap<>();
-        
         List<Action> possibleActions = botController.getPossibleActions();
+
+        System.out.println(possibleActions);
+
         for (Action action : possibleActions) {
             int totalMoneyEarned = 0;
 
-            for (int i = 0; i < NUM_SIMULATIONS; i++) {
+            for (int i = 0; i < numSimulations; i++) {
                 BotController cloneController;
                 try {
                     cloneController = (BotController) botController.clone();
@@ -39,8 +46,9 @@ public class MonteCarloAlgorithm {
                 totalMoneyEarned += moneyEarned;
             }
 
-            int averageMoneyEarned = totalMoneyEarned / NUM_SIMULATIONS; 
+            int averageMoneyEarned = totalMoneyEarned / numSimulations; 
             actionScores.put(action, averageMoneyEarned);
+
         }
 
         return chooseBestAction(actionScores);

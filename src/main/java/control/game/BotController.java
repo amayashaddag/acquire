@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.Set;
 
 import model.game.Board;
@@ -22,20 +21,20 @@ import view.game.GameView;
 
 /**
  * @author Amayas HADDAG
+ * @author Lamine BETRAOUI
  * @version 1.0
  */
-public class BotController {
-    private  Board board;
-    private  List<Player> currentPlayers;
+public class BotController implements Cloneable {
+    private Board board;
+    private List<Player> currentPlayers;
     private final int numberOfPlayers;
-    private  Player currentPlayer;
+    private Player currentPlayer;
 
     private int playerTurnIndex;
-    private boolean gameOver;
-
     public final static int FOUNDING_STOCK_BONUS = 1;
 
-    public BotController(Board board, List<Player> currentPlayers, Player currentPlayer, int numberOfPlayers, int playerTurnIndex) {
+    public BotController(Board board, List<Player> currentPlayers, Player currentPlayer, int numberOfPlayers,
+            int playerTurnIndex) {
         this.board = board;
         this.currentPlayers = currentPlayers;
         this.numberOfPlayers = currentPlayers.size();
@@ -43,7 +42,14 @@ public class BotController {
         this.currentPlayer = currentPlayer;
     }
 
-    
+    public BotController(GameController controller) throws CloneNotSupportedException {
+        this.board = (Board) controller.getBoard().clone();
+        this.currentPlayers = new LinkedList<>(controller.getCurrentPlayers());
+        this.numberOfPlayers = controller.getNumberOfPlayers();
+        this.playerTurnIndex = controller.getPlayerTurnIndex();
+        this.currentPlayer = controller.getCurrentPlayer();
+    }
+
     public Board getBoard() {
         return board;
     }
@@ -62,23 +68,6 @@ public class BotController {
 
     public List<Player> getCurrentPlayers() {
         return currentPlayers;
-    }
-
-    /**
-     * This function is used at the beginning of the game (where it is already
-     * supposed that there is enough board cells for everyone) to initialize players
-     * decks.
-     */
-    private void initPlayersDecks() {
-        for (Player player : currentPlayers) {
-            Point[] deck = new Point[Board.DECK_SIZE];
-            for (int i = 0; i < Board.DECK_SIZE; i++) {
-                Point randomChosenCell = board.getFromRemainingCells();
-                deck[i] = randomChosenCell;
-            }
-
-            player.setDeck(deck);
-        }
     }
 
     private void buyStocks(Player player) {
@@ -278,7 +267,7 @@ public class BotController {
             if (random) {
                 Map<Corporation, Integer> mapTrade = new HashMap<>();
                 Map<Corporation, Integer> mapSell = new HashMap<>();
-    
+
                 chooseKST(stocksToKeepSellOrTrade, mapTrade, mapSell);
                 sellStocks(mapSell, player);
                 tradeStocks(mapTrade, player, chosenCellCorporation);
@@ -291,7 +280,7 @@ public class BotController {
                         tradeStocks(stocksToKeepSellOrTrade, player, chosenCellCorporation);
                         break;
                     default:
-                        break;  
+                        break;
                 }
             }
         }
@@ -385,6 +374,7 @@ public class BotController {
             // This initialization should be replaced later with the choice of the player
 
             List<Corporation> unplacedCorporations = board.unplacedCorporations();
+
             placedCorporation = randomCorporation(new HashSet<>(unplacedCorporations));
             currentPlayer.addToEarnedStocks(placedCorporation, FOUNDING_STOCK_BONUS);
 
@@ -530,10 +520,11 @@ public class BotController {
         adjustNets();
 
         board.updateDeadCells();
-        board.updatePlayerDeck(player);
-        if (board.isGameOver()) {
-            gameOver = true;
+
+        for (Player p : currentPlayers) {
+            board.updatePlayerDeck(p);
         }
+
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
     }
 
@@ -582,8 +573,7 @@ public class BotController {
     }
 
     public void simulateGame() {
-        Scanner sc = new Scanner(System.in);
-        while (!gameOver) {
+        while (!board.isGameOver()) {
             Player currentPlayer = currentPlayers.get(playerTurnIndex);
 
             Random r = new Random();
@@ -599,13 +589,11 @@ public class BotController {
             if (!possibleCells.isEmpty()) {
                 int randomIndex = r.nextInt(possibleCells.size());
                 Point cellPosition = possibleCells.get(randomIndex);
-                System.out.println(cellPosition);
 
                 Action action = new Action(cellPosition, null, null);
-                handlePlayerTurn(action, currentPlayer ,true);
+                handlePlayerTurn(action, currentPlayer, true);
             }
         }
-        sc.close();
     }
 
     public boolean currentPlayerWon() {
@@ -624,21 +612,15 @@ public class BotController {
     @Override
     protected Object clone() throws CloneNotSupportedException {
         BotController clonedController = (BotController) super.clone();
-    
-    
-    clonedController.board = (Board) this.board.clone();
-    
-    
-    clonedController.currentPlayers = new ArrayList<>();
-    for (Player player : this.currentPlayers) {
-        clonedController.currentPlayers.add((Player) player.clone());
-    }
-    
-    
-    clonedController.currentPlayer = (Player) this.currentPlayer.clone();
-    
-    
-    return clonedController;
+        clonedController.board = (Board) this.board.clone();
+        clonedController.currentPlayers = new ArrayList<>();
+
+        for (Player player : this.currentPlayers) {
+            clonedController.currentPlayers.add((Player) player.clone());
+        }
+
+        clonedController.currentPlayer = (Player) this.currentPlayer.clone();
+        return clonedController;
     }
 
     /**
@@ -664,8 +646,11 @@ public class BotController {
                 }
             }
 
-            /* This part includes the cases of not buying stocks for each choice of merging choices */
-            
+            /*
+             * This part includes the cases of not buying stocks for each choice of merging
+             * choices
+             */
+
             for (MergingChoice choice : MergingChoice.values()) {
                 Action emptyStockAction = new Action(p, new HashMap<>(), choice);
 
