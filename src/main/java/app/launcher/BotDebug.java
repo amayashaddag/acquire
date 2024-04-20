@@ -17,7 +17,7 @@ public class BotDebug {
         players.add(bot1);
         players.add(bot2);
 
-        GameController controller = new GameController(players, bot1);
+        GameController controller = new GameController(players, bot1, null, false);
         BotController botController = new BotController(controller);
         MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, 100);
 

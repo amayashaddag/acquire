@@ -548,6 +548,28 @@ public class Board {
 
         return false;
     }
+
+    /**
+     * Updates the board according to the given map in argument.
+     * Used in online mode.
+     * 
+     * @param newPlacedCells a map of (Point, Corporation) that specifies the new placed
+     * cells by other players.
+     * @apiNote Corporation == null refeers to the cell being in OCCUPIED state.
+     */
+    public void updateNewPlacedCells(Map<Point, Corporation> newPlacedCells) {
+        for (Point p : newPlacedCells.keySet()) {
+            Corporation c = newPlacedCells.get(p);
+            Cell cell = getCell(p);
+
+            if (c == null) {
+                cell.setAsOccupied();
+            } else {
+                replaceCellCorporation(cell, c);
+            }
+        }
+    }
+
     @Override 
     public Object clone() throws CloneNotSupportedException {
 

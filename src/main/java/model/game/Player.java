@@ -145,7 +145,8 @@ public class Player {
     }
 
     /**
-     * add to player's corporation gave in argument a number of stocks gave in argument to
+     * add to player's corporation gave in argument a number of stocks gave in
+     * argument to
      *
      * @param1 corporation in which add stocks
      * @param2 number of stocks to add
@@ -156,7 +157,8 @@ public class Player {
     }
 
     /**
-     * remove to player's corporation gave in argument a number of stocks gave in argument to
+     * remove to player's corporation gave in argument a number of stocks gave in
+     * argument to
      *
      * @param1 corporation in which remove stocks
      * @param2 number of stocks to remove
@@ -210,20 +212,19 @@ public class Player {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-    Player clonedPlayer = new Player(this.playerType, this.pseudo);
-    clonedPlayer.cash = this.cash;
-    clonedPlayer.net = this.net;
-    clonedPlayer.earnedStocks = new HashMap<>(this.earnedStocks);
-    
-    
-    clonedPlayer.deck = new Point[this.deck.length];
-    for (int i = 0; i < this.deck.length; i++) {
-        if (this.deck[i] != null) {
-            clonedPlayer.deck[i] = new Point(this.deck[i].getX(), this.deck[i].getY());
-        }
-    }
+        Player clonedPlayer = new Player(this.playerType, this.pseudo, null);
+        clonedPlayer.cash = this.cash;
+        clonedPlayer.net = this.net;
+        clonedPlayer.earnedStocks = new HashMap<>(this.earnedStocks);
 
-    return clonedPlayer;
-}
+        clonedPlayer.deck = new Point[this.deck.length];
+        for (int i = 0; i < this.deck.length; i++) {
+            if (this.deck[i] != null) {
+                clonedPlayer.deck[i] = new Point(this.deck[i].getX(), this.deck[i].getY());
+            }
+        }
+
+        return clonedPlayer;
+    }
 
 }
