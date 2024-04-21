@@ -35,6 +35,7 @@ public class GameController {
     private final boolean onlineMode;
     private final Timer onlineObserver;
     private final Timer botTurnTimer;
+    private final Timer refresher;
     private final Map<Point, Corporation> newPlacedCells;
 
     private Map.Entry<String, Integer> lastNotification;
@@ -72,9 +73,6 @@ public class GameController {
                 board.updatePlayerDeck(currentPlayer);
                 gameView.updatePlayerDeck();
 
-                gameView.revalidate();
-                gameView.repaint();
-
             } catch (Exception e) {
                 errorInterrupt(e);
             } 
@@ -93,13 +91,15 @@ public class GameController {
                 Action nextAction = monteCarlo.runMonteCarlo();
 
                 handleCellPlacing(nextAction, p);
-
-                gameView.revalidate();
-                gameView.repaint();
                 
             } catch (Exception e) {
                 errorInterrupt(e);
             }
+        });
+
+        this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionListener) -> {
+            gameView.repaint();
+            gameView.revalidate();
         });
 
         if (online) {
@@ -107,6 +107,8 @@ public class GameController {
         } else {
             botTurnTimer.start();
         }
+
+        this.refresher.start();
     }
 
     private void updateGameState() throws Exception {
@@ -121,7 +123,6 @@ public class GameController {
 
         if (!newPlacedCells.isEmpty()) {
             board.updateNewPlacedCells(newPlacedCells);
-            gameView.repaint();
         }
     }
 
@@ -787,6 +788,8 @@ public class GameController {
         } else {
             botTurnTimer.stop();
         }
+
+        refresher.stop();
 
         GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
         parent.dispose();
