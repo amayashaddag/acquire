@@ -6,12 +6,14 @@ import java.awt.GridLayout;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.SpinnerNumberModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -39,6 +41,7 @@ public class PrettyMenuView extends Form {
     private final JPanel panel = new JPanel();
     private final MigLayout mig = new MigLayout("al center, filly");
     private boolean aMultiGameIsLaunching = false;
+    private int numberOfPlayerByGame = 6;
 
     public PrettyMenuView(MenuController controller) {
         super();
@@ -53,6 +56,7 @@ public class PrettyMenuView extends Form {
         menu3d.addMenuItem("SETTING", this::settings);
         menu3d.addMenuItem("EXIT", this::exit);
         menu3d.addGlobalEvent(controller::avortMutiGame);
+        menu3d.addGlobalEvent(() -> panel.setVisible(false));
 
         panel.setVisible(false);
         panel.setOpaque(false);
@@ -60,6 +64,10 @@ public class PrettyMenuView extends Form {
         add(menu3d, "x 10%, y 40%, w 25%, h 50%");
         add(panel, "x 60%, y 40%, w 30%, h 50%");
         repaint();
+    }
+
+    public int getNumberOfPlayerByGame() {
+        return numberOfPlayerByGame;
     }
 
     public boolean aMultiGameIsLaunching() {
@@ -82,11 +90,12 @@ public class PrettyMenuView extends Form {
         mig.setComponentConstraints(panel, "x 60%, y 40%, w 30%, h 50%");
         revalidate();
         panel.removeAll();
-        panel.setLayout(new MigLayout("fill, insets 0, wrap"));
+        panel.setLayout(new MigLayout("al center, fill, insets 0, wrap"));
 
         JPanel scrollPane = new JPanel();
-        scrollPane.setLayout(new MigLayout("al center, wrap"));
+        scrollPane.setLayout(new MigLayout("center x, insets 5"));
         panel.add(scrollPane);
+        String btnContraints = "w 70%, h 5%, wrap";
 
         JButton createGameBtn = new JButton();
         if (aMultiGameIsLaunching) {
@@ -103,7 +112,7 @@ public class PrettyMenuView extends Form {
             startBtn.addActionListener((e) -> {
                 controller.launchMultiGame();
             });
-            scrollPane.add(startBtn);
+            scrollPane.add(startBtn, btnContraints);
         } else {
             createGameBtn.setText("Create new game");
             createGameBtn.setBackground(Color.GREEN);
@@ -113,7 +122,7 @@ public class PrettyMenuView extends Form {
                 multiPlayer();
             });
         }
-        scrollPane.add(createGameBtn);
+        scrollPane.add(createGameBtn, btnContraints);
 
         List<PreGameAnalytics> list = controller.getAvailableGames();
         System.out.println(list);
@@ -125,9 +134,16 @@ public class PrettyMenuView extends Form {
                 btn.addActionListener((ActionListener) -> {
                     controller.joinPreGame(p);
                 });
-                scrollPane.add(btn);
+                scrollPane.add(btn, btnContraints);
             }
         }
+
+        JSpinner spinner = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
+        spinner.addChangeListener((e) -> numberOfPlayerByGame = (int) spinner.getValue());
+        JPanel spinnerPane = new JPanel();
+        spinnerPane.add(new JLabel("Player by game : "));
+        spinnerPane.add(spinner);
+        scrollPane.add(spinnerPane, btnContraints);
 
         JScrollPane scroll = new JScrollPane(scrollPane);
         scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -209,9 +225,8 @@ public class PrettyMenuView extends Form {
             panel.add(new LoginView());
         else {
             PlayerAnalytics p = controller.getPlayerAnalytics();
-            panel.setLayout(new GridLayout(4, 1));
+            panel.setLayout(new GridLayout(3, 1));
             panel.add(new JLabel("Pseudo : " + p.pseudo()));
-            panel.add(new JLabel("Email : " + null));
             panel.add(new JLabel("Won Games" + p.wonGames()));
             panel.add(new JLabel("Played Games" + p.playedGames()));
             JButton jb = new JButton("Change account");

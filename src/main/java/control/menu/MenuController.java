@@ -126,13 +126,14 @@ public class MenuController {
             gameView.setVisible(true);
             gameView.revalidate();
             gameView.repaint();
-            
+
             onlineObserver.stop();
         });
     }
 
     public PlayerAnalytics getPlayerAnalytics(String uid) {
         try {
+            System.out.println("UID : " + uid); // TODO : fixit
             return GameDatabaseConnection.getPlayerAnalytics(uid);
         } catch (Exception e) {
             GameFrame.showError(e, () -> {
