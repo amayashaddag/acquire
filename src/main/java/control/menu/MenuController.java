@@ -228,9 +228,9 @@ public class MenuController {
         }
     }
 
-    public void createMultiGame() {
+    public void createMultiGame(int numberOfPlayer) {
         try {
-            PreGameAnalytics gameAnalytics = GameDatabaseConnection.createGame(session, DEFAULT_MAX_PLAYERS);
+            PreGameAnalytics gameAnalytics = GameDatabaseConnection.createGame(session, numberOfPlayer);
             joinPreGame(gameAnalytics);
         } catch (Exception e) {
             GameFrame.showError(e, () -> {

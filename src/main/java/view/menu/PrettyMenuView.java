@@ -117,7 +117,7 @@ public class PrettyMenuView extends Form {
             createGameBtn.setText("Create new game");
             createGameBtn.setBackground(Color.GREEN);
             createGameBtn.addActionListener((e) -> {
-                controller.createMultiGame();
+                controller.createMultiGame(numberOfPlayerByGame);
                 aMultiGameIsLaunching = true;
                 multiPlayer();
             });
