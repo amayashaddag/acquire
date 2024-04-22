@@ -41,6 +41,7 @@ public class PrettyMenuView extends Form {
     private final JPanel panel = new JPanel();
     private final MigLayout mig = new MigLayout("al center, filly");
     private boolean aMultiGameIsLaunching = false;
+    private boolean haveJoinAGame = false;
     private int numberOfPlayerByGame = 6;
 
     public PrettyMenuView(MenuController controller) {
@@ -64,6 +65,14 @@ public class PrettyMenuView extends Form {
         add(menu3d, "x 10%, y 40%, w 25%, h 50%");
         add(panel, "x 60%, y 40%, w 30%, h 50%");
         repaint();
+    }
+
+    public boolean getHaveJoinAGame() {
+        return getHaveJoinAGame;
+    }
+
+    public void setHaveJoinAGame(boolean b) {
+        haveJoinAGame = b;
     }
 
     public int getNumberOfPlayerByGame() {

@@ -32,7 +32,8 @@ public class MenuController {
     private final String FILE_OUTPUT = "src/main/ressources/session/game-session.ser";
 
     // ONLY FOR TEST, // TODO : Should remove later
-    private PlayerCredentials session = new PlayerCredentials("SOME-WEIRD-UID", "amayas@icloud.dz", "my___ass");
+    private PlayerCredentials session = new PlayerCredentials("SOME-WEIdzfezadzqdD-UID", "amayadzaeza@icloud.dz",
+            "arthur");
     private PrettyMenuView view;
 
     private Timer onlineObserver;
@@ -267,6 +268,12 @@ public class MenuController {
                 parent.dispose();
             });
         }
+    }
+
+    public void quitGame() {
+        // TODO : a faire
+
+        view.setHaveJoinAGame(false);
     }
 
     public void saveSession() {
