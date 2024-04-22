@@ -268,11 +268,11 @@ public class MenuController {
                 parent.dispose();
             });
         }
+        view.setAMultiGameIsLaunching(false);
     }
 
     public void quitGame() {
         // TODO : a faire
-
         view.setHaveJoinAGame(false);
     }
 

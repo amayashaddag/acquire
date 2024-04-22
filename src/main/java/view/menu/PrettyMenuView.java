@@ -67,8 +67,8 @@ public class PrettyMenuView extends Form {
         repaint();
     }
 
-    public boolean getHaveJoinAGame() {
-        return getHaveJoinAGame;
+    public boolean haveJoinAGame() {
+        return haveJoinAGame;
     }
 
     public void setHaveJoinAGame(boolean b) {
@@ -81,6 +81,10 @@ public class PrettyMenuView extends Form {
 
     public boolean aMultiGameIsLaunching() {
         return aMultiGameIsLaunching;
+    }
+
+    public void setAMultiGameIsLaunching(boolean b) {
+        aMultiGameIsLaunching = b;
     }
 
     private void singlePlayer() {
@@ -107,7 +111,12 @@ public class PrettyMenuView extends Form {
         String btnContraints = "w 70%, h 5%, wrap";
 
         JButton createGameBtn = new JButton();
-        if (aMultiGameIsLaunching) {
+        if (aMultiGameIsLaunching && haveJoinAGame) {
+            aMultiGameIsLaunching = false;
+            haveJoinAGame = false;
+            controller.avortMutiGame();
+            multiPlayer();
+        } else if (aMultiGameIsLaunching) {
             createGameBtn.setText("Avort game");
             createGameBtn.setBackground(Color.RED);
             createGameBtn.addActionListener((e) -> {
@@ -120,6 +129,14 @@ public class PrettyMenuView extends Form {
             startBtn.setBackground(Color.GREEN);
             startBtn.addActionListener((e) -> {
                 controller.launchMultiGame();
+            });
+            scrollPane.add(startBtn, btnContraints);
+        } else if (haveJoinAGame) {
+            JButton startBtn = new JButton("Quit queue");
+            startBtn.setBackground(Color.GREEN);
+            startBtn.addActionListener((e) -> {
+                controller.quitGame();
+                haveJoinAGame = false;
             });
             scrollPane.add(startBtn, btnContraints);
         } else {
@@ -144,6 +161,8 @@ public class PrettyMenuView extends Form {
                     controller.joinPreGame(p);
                 });
                 scrollPane.add(btn, btnContraints);
+                if (aMultiGameIsLaunching || haveJoinAGame)
+                    btn.setEnabled(false);
             }
         }
 
