@@ -7,8 +7,7 @@ import model.game.Board;
 import model.game.Cell;
 import net.miginfocom.swing.MigLayout;
 import model.tools.Point;
-import view.frame.Form;
-import view.frame.GameFrame;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -21,6 +20,8 @@ import java.util.Map;
 import javax.swing.*;
 import raven.toast.Notifications;
 import view.assets.GameResources;
+import view.window.Form;
+import view.window.GameFrame;
 
 /**
  * The panel which has the map

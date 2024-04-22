@@ -1,6 +1,5 @@
 package view.menu;
 
-
 /**
  * @author RAVEN
  */

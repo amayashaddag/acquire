@@ -1,7 +1,7 @@
 package view.game;
 
 import model.tools.AutoSetter;
-import view.frame.GameFrame;
+import view.window.GameFrame;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

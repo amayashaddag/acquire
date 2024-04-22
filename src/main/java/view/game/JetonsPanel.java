@@ -1,16 +1,23 @@
 package view.game;
 
-import model.tools.AutoSetter;
-import model.tools.Point;
-import view.frame.GameFrame;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import java.awt.event.MouseEvent;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
-import javax.swing.*;
+import model.tools.Action;
+import model.tools.AutoSetter;
+import model.tools.Point;
+import view.window.GameFrame;
 
 /**
  * The JPanel for the jetons
@@ -119,7 +126,8 @@ public class JetonsPanel extends JPanel {
             this.setText("-");
             this.addActionListener((e) -> {
                 new Thread(() -> {
-                    g.getController().handleCellPlacing(p, g.getPlayer());
+                    Action action = new Action(p, null, null, null);
+                    g.getController().handleCellPlacing(action, g.getPlayer());
 
                     Point[] playerDeck = g.getPlayer().getDeck();
                     if (playerDeck.length == 0) {

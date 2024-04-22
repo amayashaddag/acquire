@@ -23,6 +23,7 @@ public class Player {
     private final String uid;
 
     public static final int INITIAL_CASH = 6000;
+    public static final int INITIAL_NET = INITIAL_CASH;
     private static int botNumber = 0;
     private final static String botPseudoPrefix = "Bot";
 
@@ -144,7 +145,8 @@ public class Player {
     }
 
     /**
-     * add to player's corporation gave in argument a number of stocks gave in argument to
+     * add to player's corporation gave in argument a number of stocks gave in
+     * argument to
      *
      * @param1 corporation in which add stocks
      * @param2 number of stocks to add
@@ -155,7 +157,8 @@ public class Player {
     }
 
     /**
-     * remove to player's corporation gave in argument a number of stocks gave in argument to
+     * remove to player's corporation gave in argument a number of stocks gave in
+     * argument to
      *
      * @param1 corporation in which remove stocks
      * @param2 number of stocks to remove
@@ -206,4 +209,22 @@ public class Player {
     public int getStocks(Corporation c) {
         return earnedStocks.get(c);
     }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Player clonedPlayer = new Player(this.playerType, this.pseudo, null);
+        clonedPlayer.cash = this.cash;
+        clonedPlayer.net = this.net;
+        clonedPlayer.earnedStocks = new HashMap<>(this.earnedStocks);
+
+        clonedPlayer.deck = new Point[this.deck.length];
+        for (int i = 0; i < this.deck.length; i++) {
+            if (this.deck[i] != null) {
+                clonedPlayer.deck[i] = new Point(this.deck[i].getX(), this.deck[i].getY());
+            }
+        }
+
+        return clonedPlayer;
+    }
+
 }

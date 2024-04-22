@@ -1,249 +1,53 @@
 package control.game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-
-import control.database.GameDatabaseConnection;
 import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
 import model.tools.Action;
+import model.tools.MergingChoice;
 import model.tools.Point;
-import view.game.GameNotifications;
 import view.game.GameView;
-import view.window.GameFrame;
 
 /**
  * @author Amayas HADDAG
+ * @author Lamine BETRAOUI
  * @version 1.0
  */
-public class GameController {
-    private final Board board;
-    private final GameView gameView;
-    private final List<Player> currentPlayers;
+public class BotController implements Cloneable {
+    private Board board;
+    private List<Player> currentPlayers;
     private final int numberOfPlayers;
-    private final String gameId;
-    private final boolean onlineMode;
-    private final Timer onlineObserver;
-    private final Timer botTurnTimer;
-    private final Timer refresher;
-    private final Map<Point, Corporation> newPlacedCells;
+    private Player currentPlayer;
 
-    private Map.Entry<String, Integer> lastNotification;
-    private long lastKeepSellTradeStockTime;
     private int playerTurnIndex;
-
     public final static int FOUNDING_STOCK_BONUS = 1;
-    public final static int ONLINE_OBSERVER_DELAY = 2000;
-    public final static int BOT_TURN_OBSERVER_DELAY = 20;
-    public final static int GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
-    public final static int NUM_SIMULATIONS = 10;
 
-    public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online) {
-        this.board = new Board();
+    public BotController(Board board, List<Player> currentPlayers, Player currentPlayer, int numberOfPlayers,
+            int playerTurnIndex) {
+        this.board = board;
         this.currentPlayers = currentPlayers;
         this.numberOfPlayers = currentPlayers.size();
-        this.playerTurnIndex = 0;
-        this.gameId = gameId;
-        this.newPlacedCells = new HashMap<>();
-
-        initPlayersDecks();
-
-        this.gameView = new GameView(this, currentPlayer);
-        this.onlineMode = online;
-        this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
-            try {
-                updateGameState();
-                updateNewPlacedCells();
-                updateStocks();
-                updateCashNet();
-                updateCurrentPlayer();
-                updateLastNotification();
-                updateKeepSellOrTradeStocks();
-
-                board.updatePlayerDeck(currentPlayer);
-                gameView.updatePlayerDeck();
-
-            } catch (Exception e) {
-                errorInterrupt(e);
-            } 
-        });
-
-        this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionListener) -> {
-            Player p = getCurrentPlayer();
-
-            if (!p.isBot()) {
-                return;
-            }
-
-            try {
-                BotController botController = new BotController(this);
-                MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
-                Action nextAction = monteCarlo.runMonteCarlo();
-
-                handleCellPlacing(nextAction, p);
-                
-            } catch (Exception e) {
-                errorInterrupt(e);
-            }
-        });
-
-        this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionListener) -> {
-            gameView.repaint();
-            gameView.revalidate();
-        });
-
-        if (online) {
-            onlineObserver.start();
-        } else {
-            botTurnTimer.start();
-        }
-
-        this.refresher.start();
+        this.playerTurnIndex = playerTurnIndex;
+        this.currentPlayer = currentPlayer;
     }
 
-    private void updateGameState() throws Exception {
-        boolean gameEnded = GameDatabaseConnection.isGameEnded(gameId);
-        if (gameEnded) {
-            endGame();
-        }
-    }
-
-    private void updateNewPlacedCells() throws Exception {
-        Map<Point, Corporation> newPlacedCells = GameDatabaseConnection.getNewPlacedCells(gameId, board);
-
-        if (!newPlacedCells.isEmpty()) {
-            board.updateNewPlacedCells(newPlacedCells);
-        }
-    }
-
-    private void updateStocks() throws Exception {
-        for (Player p : currentPlayers) {
-            GameDatabaseConnection.updateStocks(p, gameId);
-        }
-    }
-
-    private void updateCashNet() throws Exception {
-        Map<String, int[]> playersCashNet = GameDatabaseConnection.getPlayersCashNet(gameId);
-
-        for (String uid : playersCashNet.keySet()) {
-            int[] income = playersCashNet.get(uid);
-            int cash = income[0], net = income[1];
-
-            Player p = getPlayerFromUid(uid);
-            p.setCash(cash);
-            p.setNet(net);
-        }
-    }
-
-    private Player getPlayerFromUid(String uid) {
-        for (Player p : currentPlayers) {
-            if (p.getUID().equals(uid)) {
-                return p;
-            }
-        }
-
-        return null;
-    }
-
-    public void incPlayerTurnIndex() {
-        playerTurnIndex++;
-    }
-
-    private void setCurrentPlayer() throws Exception {
-        Player currentPlayer = currentPlayers.get(playerTurnIndex);
-
-        GameDatabaseConnection.setCurrentPlayer(gameId, currentPlayer.getUID());
-    }
-
-    private void setCashNet() throws Exception {
-        for (Player p : currentPlayers) {
-            GameDatabaseConnection.setCash(p.getCash(), p, gameId);
-            GameDatabaseConnection.setNet(p.getNet(), p, gameId);
-        }
-    }
-
-    private void setNewPlacedCells() throws Exception {
-        GameDatabaseConnection.setNewPlacedCells(newPlacedCells, gameId);
-        newPlacedCells.clear();
-    }
-
-    private void setNewEarnedStocks() throws Exception {
-        for (Player p : currentPlayers) {
-            GameDatabaseConnection.setStocks(p, gameId);
-        }
-    }
-
-    private void updateCurrentPlayer() throws Exception {
-        String uid = GameDatabaseConnection.getCurrentPlayer(gameId);
-
-        for (int i = 0; i < currentPlayers.size(); i++) {
-            Player p = currentPlayers.get(i);
-
-            if (p.getUID().equals(uid)) {
-                playerTurnIndex = i;
-                return;
-            }
-        }
-    }
-
-    private void updateLastNotification() throws Exception {
-        Map.Entry<String, Integer> notification = GameDatabaseConnection.getLastNotification(gameId);
-
-        if (notification == null) {
-            return;
-        }
-
-        if (lastNotification == null || !lastNotification.getValue().equals(notification.getValue())) {
-            gameView.showInfoNotification(notification.getKey());
-            lastNotification = notification;
-        }
-    }
-
-    private void updateKeepSellOrTradeStocks() {
-        try {
-            Map<Corporation, Long> stocks = GameDatabaseConnection.getKeepSellOrTradeStocks(gameId, lastKeepSellTradeStockTime);
-
-            if (stocks.isEmpty()) {
-                return;
-            }
-
-            long time = stocks.entrySet().iterator().next().getValue();
-            Corporation major = GameDatabaseConnection.getMajorCorporation(gameId, time);
-            Set<Corporation> adjacentCorporations = stocks.keySet();
-            Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(gameView.getPlayer(), adjacentCorporations);
-
-            if (stocksToKeepSellOrTrade.isEmpty()) {
-                return;
-            }
-
-            gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, major);
-            lastKeepSellTradeStockTime = time;
-
-        } catch (Exception e) {
-            errorInterrupt(e);
-        }
-    }
-
-    private void errorInterrupt(Exception e) {
-        GameFrame.showError(e, () -> {
-            endGame();
-            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
-            parent.dispose();
-        });
-    }
-
-    public GameView getGameView() {
-        return gameView;
+    public BotController(GameController controller) throws CloneNotSupportedException {
+        this.board = (Board) controller.getBoard().clone();
+        this.currentPlayers = new LinkedList<>(controller.getCurrentPlayers());
+        this.numberOfPlayers = controller.getNumberOfPlayers();
+        this.playerTurnIndex = controller.getPlayerTurnIndex();
+        this.currentPlayer = controller.getCurrentPlayer();
     }
 
     public Board getBoard() {
@@ -266,28 +70,73 @@ public class GameController {
         return currentPlayers;
     }
 
-    /**
-     * This function is used at the beginning of the game (where it is already
-     * supposed that there is enough board cells for everyone) to initialize players
-     * decks.
-     */
-    private void initPlayersDecks() {
-        for (Player player : currentPlayers) {
-            Point[] deck = new Point[Board.DECK_SIZE];
-            for (int i = 0; i < Board.DECK_SIZE; i++) {
-                Point randomChosenCell = board.getFromRemainingCells();
-                deck[i] = randomChosenCell;
-            }
-
-            player.setDeck(deck);
-        }
-    }
-
     private void buyStocks(Player player) {
         Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
         if (!possibleBuyingStocks.isEmpty()) {
-            gameView.chooseStocksToBuy(possibleBuyingStocks);
+            Map<Corporation, Integer> stocksToBuy = chooseStocksToBuy(possibleBuyingStocks, player);
+            buyChosenStocks(stocksToBuy, totalAmount(stocksToBuy), player);
         }
+    }
+
+    private Map<Corporation, Integer> chooseStocksToBuy(Map<Corporation, Integer> possibleBuyingStocks, Player charo) {
+        int cpt = 3;
+        Random randChoice = new Random();
+        Map<Corporation, Integer> stocksToBuy = new HashMap<>();
+        int price = 0;
+        while (cpt > 0) {
+            int moulaDuMec = charo.getCash();
+            if (moulaDuMec - price < minimalStockPrice(possibleBuyingStocks.keySet()))
+                break;
+            if (!randChoice.nextBoolean()) {
+                break;
+            }
+            Corporation randomCorp = randomCorporation(possibleBuyingStocks.keySet());
+            if (stocksToBuy.containsKey(randomCorp)) {
+                int amountToBuy = stocksToBuy.get(randomCorp);
+                stocksToBuy.put(randomCorp, amountToBuy + 1);
+            } else {
+                stocksToBuy.put(randomCorp, 1);
+            }
+            int amountToDecrement = possibleBuyingStocks.get(randomCorp);
+            if (amountToDecrement - 1 <= 0) {
+                possibleBuyingStocks.remove(randomCorp);
+            } else {
+                possibleBuyingStocks.put(randomCorp, amountToDecrement - 1);
+            }
+            price += board.getStockPrice(randomCorp);
+            cpt--;
+        }
+        return stocksToBuy;
+    }
+
+    private int minimalStockPrice(Set<Corporation> stocks) {
+        int minimalStockPrice = Integer.MAX_VALUE;
+        for (Corporation corp : stocks) {
+            int stockPrice = board.getStockPrice(corp);
+            if (stockPrice < minimalStockPrice)
+                minimalStockPrice = stockPrice;
+        }
+        return minimalStockPrice;
+    }
+
+    private Corporation randomCorporation(Set<Corporation> setCorporations) {
+        Random randCorp = new Random();
+        int corpInt = randCorp.nextInt(setCorporations.size());
+        int cpt = 0;
+        for (Corporation corp : setCorporations) {
+            if (cpt == corpInt)
+                return corp;
+            cpt++;
+        }
+        return null;
+    }
+
+    private int totalAmount(Map<Corporation, Integer> stocksToBuy) {
+        int sum = 0;
+        for (Corporation corp : stocksToBuy.keySet()) {
+            sum += board.getStockPrice(corp) * stocksToBuy.get(corp);
+        }
+        return sum;
     }
 
     /**
@@ -303,7 +152,7 @@ public class GameController {
      *          two stocks of Tower corporation and one of American one.
      *          The purpose of this function is to verify whether the player has
      *          enough cash to buy the wanted
-     *          combination in order to display a that tells him to
+     *          combination in order to display a notification that tells him to
      *          reconsider his choice because of
      *          lack of cash.
      */
@@ -389,7 +238,7 @@ public class GameController {
      *                     started
      * @see #placeCell(Point, Player)
      */
-    public void mergeCorporations(Set<Point> cellsToMerge, Action action, Player player) {
+    public void mergeCorporations(Set<Point> cellsToMerge, Action action, Player player, boolean random) {
         Set<Corporation> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
         Set<Corporation> adjacentCorporations = board.adjacentCorporations(action.getPoint());
 
@@ -400,53 +249,28 @@ public class GameController {
             Iterator<Corporation> iterator = maxCorporations.iterator();
             chosenCellCorporation = iterator.next();
         } else {
-
-            if (player.isHuman()) {
-                chosenCellCorporation = gameView.getCorporationChoice(maxCorporations.stream().toList());
-            } else {
-                chosenCellCorporation = maxCorporations.iterator().next();
-            }
+            chosenCellCorporation = randomCorporation(maxCorporations);
         }
 
         board.replaceCellCorporation(currentCell, chosenCellCorporation);
-        if (onlineMode) {
-            newPlacedCells.put(action.getPoint(), chosenCellCorporation);
-        }
         for (Point adj : cellsToMerge) {
             Cell adjacentCell = board.getCell(adj);
             if (!adjacentCell.isOwned() || !(adjacentCell.getCorporation() == chosenCellCorporation)) {
-                Map<Point, Corporation> replaced = board.replaceCorporationFrom(chosenCellCorporation, adj);
-                newPlacedCells.putAll(replaced);
-
-                if (onlineMode) {
-                    newPlacedCells.put(adj, chosenCellCorporation);
-                }
+                board.replaceCorporationFrom(chosenCellCorporation, adj);
             }
-        }
-
-        if (adjacentCorporations.size() > 1) {
-            gameView.showInfoNotification(
-                    GameNotifications.corporationMergingNotification(
-                            player.getPseudo(),
-                            chosenCellCorporation));
         }
 
         adjacentCorporations.remove(chosenCellCorporation);
 
         Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(player, adjacentCorporations);
-
-        if (onlineMode) {
-            try {
-                GameDatabaseConnection.setKeepSellOrTradeStocks(adjacentCorporations, gameId);
-                GameDatabaseConnection.setMajorCorporation(gameId, chosenCellCorporation);
-            } catch (Exception e) {
-                errorInterrupt(e);
-            }
-        }
-
         if (!stocksToKeepSellOrTrade.isEmpty()) {
-            if (player.isHuman()) {
-                gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, chosenCellCorporation);
+            if (random) {
+                Map<Corporation, Integer> mapTrade = new HashMap<>();
+                Map<Corporation, Integer> mapSell = new HashMap<>();
+
+                chooseKST(stocksToKeepSellOrTrade, mapTrade, mapSell);
+                sellStocks(mapSell, player);
+                tradeStocks(mapTrade, player, chosenCellCorporation);
             } else {
                 switch (action.getMergingChoice()) {
                     case SELL:
@@ -456,9 +280,50 @@ public class GameController {
                         tradeStocks(stocksToKeepSellOrTrade, player, chosenCellCorporation);
                         break;
                     default:
-                        break;  
+                        break;
                 }
             }
+        }
+
+    }
+
+    private void chooseKST(Map<Corporation, Integer> stocks, Map<Corporation, Integer> trade,
+            Map<Corporation, Integer> sell) {
+        Random rand = new Random();
+        while (!stocks.isEmpty()) {
+
+            for (Corporation c : stocks.keySet()) {
+                int amount = stocks.get(c);
+                if (amount == 0) {
+                    stocks.remove(c);
+                }
+            }
+
+            boolean putInMap1 = rand.nextBoolean();
+            Map<Corporation, Integer> choosenMap;
+            if (putInMap1) {
+                choosenMap = trade;
+            } else {
+                choosenMap = sell;
+            }
+            Corporation corp = randomCorporation(stocks.keySet());
+            int maxAmount = stocks.get(corp);
+            int randomAmount = rand.nextInt(maxAmount) + 1;
+            if (randomAmount != 0) {
+                if (choosenMap.containsKey(corp)) {
+                    int addAmount = choosenMap.get(corp);
+                    choosenMap.put(corp, addAmount + randomAmount);
+                } else {
+                    choosenMap.put(corp, randomAmount);
+                }
+                int oldAmount = stocks.get(corp);
+                if (oldAmount - randomAmount <= 0) {
+                    stocks.remove(corp);
+                } else {
+                    stocks.put(corp, oldAmount - randomAmount);
+                }
+            }
+
         }
     }
 
@@ -469,7 +334,9 @@ public class GameController {
         for (Corporation c : playerStocks.keySet()) {
             if (acquiredCorporations.contains(c)) {
                 int amount = playerStocks.get(c);
-                stocks.put(c, amount);
+                if (amount > 0) {
+                    stocks.put(c, amount);
+                }
             }
         }
 
@@ -486,18 +353,11 @@ public class GameController {
      * @param cellPosition  represents where to place a new cell.
      * @param currentPlayer represents the player that is about to place the cell.
      */
-    public void placeCell(Action action, Player currentPlayer) {
+    public void placeCell(Action action, Player currentPlayer, boolean random) {
         Cell currentCell = board.getCell(action.getPoint().getX(), action.getPoint().getY());
         Corporation placedCorporation;
 
         currentCell.setAsOccupied();
-
-        if (onlineMode) {
-            newPlacedCells.put(action.getPoint(), null);
-        }
-
-        gameView.showSuccessNotification(
-                GameNotifications.cellPlacingNotification(currentPlayer.getPseudo()));
 
         Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(action.getPoint());
         Set<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(action.getPoint());
@@ -514,37 +374,20 @@ public class GameController {
             // This initialization should be replaced later with the choice of the player
 
             List<Corporation> unplacedCorporations = board.unplacedCorporations();
-            
-            if (currentPlayer.isHuman()) {
-                placedCorporation = gameView.getCorporationChoice(unplacedCorporations);
-            } else {
-                placedCorporation = action.getCreatedCorporation();
-            }
 
+            placedCorporation = randomCorporation(new HashSet<>(unplacedCorporations));
             currentPlayer.addToEarnedStocks(placedCorporation, FOUNDING_STOCK_BONUS);
 
             board.replaceCellCorporation(currentCell, placedCorporation);
 
-            if (onlineMode) {
-                newPlacedCells.put(action.getPoint(), placedCorporation);
-            }
-
-            gameView.showInfoNotification(
-                    GameNotifications.corporationFoundingNotification(
-                            currentPlayer.getPseudo(),
-                            placedCorporation));
         } else {
-            mergeCorporations(adjacentOwnedCells, action, currentPlayer);
+            mergeCorporations(adjacentOwnedCells, action, currentPlayer, random);
             placedCorporation = currentCell.getCorporation();
         }
 
         for (Point adj : adjacentOccupiedCells) {
             Cell adjacentOccupiedCell = board.getCell(adj);
             board.replaceCellCorporation(adjacentOccupiedCell, placedCorporation);
-
-            if (onlineMode) {
-                newPlacedCells.put(adj, placedCorporation);
-            }
         }
     }
 
@@ -668,60 +511,20 @@ public class GameController {
      * @param cellPosition represents where to place a new cell.
      * @param player       represents the player that is about to place a new cell.
      */
-    public synchronized void handleCellPlacing(Action action, Player player) {
-
-        if (onlineMode) {
-            onlineObserver.stop();
-        }
-
+    public synchronized void handlePlayerTurn(Action action, Player player, boolean random) {
         resetNets();
-        placeCell(action, player);
-
+        placeCell(action, player, random);
         if (board.thereArePlacedCorporations()) {
-            if (player.isHuman()) {
-                buyStocks(player);
-            } else {
-                Map<Corporation, Integer> chosenStocksToBuy = action.getBoughtStocks();
-
-                if (!chosenStocksToBuy.isEmpty()) {
-                    int totalPrice = calculateStocksPrice(chosenStocksToBuy);
-                    buyChosenStocks(chosenStocksToBuy, totalPrice, player);
-                }
-            }
+            buyStocks(player);
         }
         adjustNets();
-
         board.updateDeadCells();
-        board.updatePlayerDeck(player);
 
-        if (board.isGameOver()) {
-            endGame();
+        for (Player p : currentPlayers) {
+            board.updatePlayerDeck(p);
         }
 
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
-        Player nextPlayer = currentPlayers.get(playerTurnIndex);
-
-        if (onlineMode) {
-            try {
-                String notification = GameNotifications.playerTurnNotification(nextPlayer.getPseudo());
-                GameDatabaseConnection.setLastNotification(gameId, notification);
-            } catch (Exception e) {
-                errorInterrupt(e);
-            }
-        }
-
-        if (onlineMode) {
-            try {
-                setNewEarnedStocks();
-                setNewPlacedCells();
-                setCashNet();
-                setCurrentPlayer();
-            } catch (Exception e) {
-                errorInterrupt(e);
-            }
-
-            onlineObserver.start();
-        }
     }
 
     /**
@@ -743,9 +546,7 @@ public class GameController {
             player.removeFromEarnedStocks(c, amount);
             player.addToCash(totalPriceForCorporation);
 
-            gameView.showSuccessNotification(
-                GameNotifications.soldStocksNotification(amount, c, totalPriceForCorporation)
-            );
+            // TODO : Send notification for selling stocks
         }
     }
 
@@ -766,32 +567,151 @@ public class GameController {
             player.removeFromEarnedStocks(c, amountToGive);
             player.addToEarnedStocks(major, amountToEarn);
 
-            gameView.showSuccessNotification(
-                GameNotifications.tradedStocksNotification(amountToGive, c, amountToEarn, major)
-            );
+            // TODO : Add notification for trading stocks
         }
     }
 
-    private void endGame() {
-        if (onlineMode) {
-            try {
-                if (gameId != null) {
-                    // GameDatabaseConnection.removeGame(gameId);
-                } else {
-                    throw new NullPointerException();
-                }      
-            } catch (Exception e) {
-                errorInterrupt(e);
+    public void simulateGame() {
+        while (!board.isGameOver()) {
+
+            Player currentPlayer = currentPlayers.get(playerTurnIndex);
+
+            Random r = new Random();
+            List<Point> possibleCells = new LinkedList<>();
+            Point[] deck = currentPlayer.getDeck();
+
+            for (int i = 0; i < Board.DECK_SIZE; i++) {
+                Point p = deck[i];
+                if (p != null) {
+                    possibleCells.add(p);
+                }
             }
 
-            onlineObserver.stop();
-        } else {
-            botTurnTimer.stop();
+            if (!possibleCells.isEmpty()) {
+                int randomIndex = r.nextInt(possibleCells.size());
+                Point cellPosition = possibleCells.get(randomIndex);
+
+                Action action = new Action(cellPosition, null, null, null);
+                handlePlayerTurn(action, currentPlayer, true);
+            } else {
+                break;
+            }
         }
 
-        refresher.stop();
+    }
 
-        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
-        parent.dispose();
+    public boolean currentPlayerWon() {
+        int maxMoney = 0;
+        int currentPlayerIncome = currentPlayer.getNet();
+        for (Player p : currentPlayers) {
+            int playerIncome = p.getNet();
+            if (playerIncome > maxMoney) {
+                maxMoney = playerIncome;
+            }
+        }
+
+        return currentPlayerIncome >= maxMoney;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        BotController clonedController = (BotController) super.clone();
+        clonedController.board = (Board) this.board.clone();
+        clonedController.currentPlayers = new ArrayList<>();
+
+        for (Player player : this.currentPlayers) {
+            clonedController.currentPlayers.add((Player) player.clone());
+        }
+
+        clonedController.currentPlayer = (Player) this.currentPlayer.clone();
+        return clonedController;
+    }
+
+    /**
+     * This function generates all the possible actions that a played can play.
+     * It is used in Monte-Carlo AI algorithm
+     * 
+     * @return a list of all the possible actions.
+     */
+    public List<Action> getPossibleActions() {
+        List<Action> possibleActions = new LinkedList<>();
+
+        for (Point p : currentPlayer.getDeck()) {
+            Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
+
+            List<Map<Corporation, Integer>> combinationsOfBuyingStocks = generateCombinations(possibleBuyingStocks,
+                    Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
+
+            for (MergingChoice choice : MergingChoice.values()) {
+                for (Map<Corporation, Integer> comb : combinationsOfBuyingStocks) {
+                    for (Corporation c : board.unplacedCorporations()) {
+                        Action possibleAction = new Action(p, c, comb, choice);
+
+                        possibleActions.add(possibleAction);
+                    }
+                }
+            }
+
+            /*
+             * This part includes the cases of not buying stocks for each choice of merging
+             * choices
+             */
+
+            for (MergingChoice choice : MergingChoice.values()) {
+                for (Corporation c : board.unplacedCorporations()) {
+                    Action emptyStockAction = new Action(p, c, new HashMap<>(), choice);
+
+                    possibleActions.add(emptyStockAction);
+                }
+            }
+
+        }
+
+        return possibleActions;
+    }
+
+    /**
+     * This method is a "helper" for {@link #getPossibleActions()} method.
+     * It generates all the possible combinations for a given map under a given
+     * threshold
+     * 
+     * @param inputMap  the map from which it will generate the combinations
+     * @param threshold the condition (in this case it represent the maximum of
+     *                  possible buying stocks)
+     * @return all the possible combinations of values of Map<Corporation, Integer>
+     *         such as
+     *         the sum of the values are less or equal to threshold
+     */
+    private List<Map<Corporation, Integer>> generateCombinations(Map<Corporation, Integer> inputMap,
+            int threshold) {
+        List<Map<Corporation, Integer>> combinations = new LinkedList<>();
+        generateCombinationsHelper(inputMap, threshold, new HashMap<>(), combinations);
+        return combinations;
+    }
+
+    /**
+     * Just a "helper" method for {@link #generateCombinations(Map, int)}
+     */
+    private void generateCombinationsHelper(Map<Corporation, Integer> inputMap, int threshold,
+            Map<Corporation, Integer> current, List<Map<Corporation, Integer>> combinations) {
+        int sum = current.values().stream().mapToInt(Integer::intValue).sum();
+        if (sum > threshold) {
+            return;
+        }
+
+        if (!current.isEmpty()) {
+            combinations.add(new HashMap<>(current));
+        }
+
+        for (Map.Entry<Corporation, Integer> entry : inputMap.entrySet()) {
+            Corporation key = entry.getKey();
+            int value = entry.getValue();
+
+            if (!current.containsKey(key)) {
+                current.put(key, value);
+                generateCombinationsHelper(inputMap, threshold, current, combinations);
+                current.remove(key);
+            }
+        }
     }
 }
