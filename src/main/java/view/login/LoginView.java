@@ -4,6 +4,7 @@ import control.auth.AlreadyRegisteredUserException;
 import control.auth.AuthController;
 import control.auth.NotExistingUserException;
 import control.auth.NotStrongEnoughPasswordException;
+import control.auth.TooLongPasswordException;
 import control.auth.WrongPasswordException;
 import control.game.GameController;
 import control.menu.MenuController;
@@ -35,7 +36,6 @@ import view.frame.GameFrame;
 import view.game.GameView;
 
 public class LoginView extends JPanel {
-
 
     private final JLabel titleLabel;
 
@@ -69,8 +69,8 @@ public class LoginView extends JPanel {
         };
 
         loginComponentContainer.setLayout(new BoxLayout(loginComponentContainer, BoxLayout.Y_AXIS));
-        loginComponentContainer.setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH/3,GameFrame.DEFAULT_HEIGHT*3/5));
-
+        loginComponentContainer
+                .setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH / 3, GameFrame.DEFAULT_HEIGHT * 3 / 5));
 
         titleLabel = new JLabel(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
@@ -78,32 +78,31 @@ public class LoginView extends JPanel {
 
         ImageIcon icon = new ImageIcon("src/main/ressources/images/menu/point-dexclamation.png");
         Image image = icon.getImage();
-        Image newImage = image.getScaledInstance(15,15,Image.SCALE_SMOOTH);
+        Image newImage = image.getScaledInstance(15, 15, Image.SCALE_SMOOTH);
         JPanel errorLabelContainer = new JPanel();
-        errorLabelContainer.setPreferredSize(new Dimension(400,36));
+        errorLabelContainer.setPreferredSize(new Dimension(400, 36));
         errorLabelContainer.setLayout(new GridBagLayout());
         GridBagConstraints errorLabelContainerContraints = new GridBagConstraints();
         errorLabelContainerContraints.gridx = 0;
         errorLabelContainerContraints.gridy = 0;
-        errorLabelContainerContraints.insets= new Insets(1,1,1,1);
+        errorLabelContainerContraints.insets = new Insets(1, 1, 1, 1);
         errorLabelContainerContraints.gridwidth = 400;
-        errorLabel = new JLabel(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE,new ImageIcon(newImage),JLabel.RIGHT);
-        errorLabel.setForeground(new Color(209,38,24));
+        errorLabel = new JLabel(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE, new ImageIcon(newImage),
+                JLabel.RIGHT);
+        errorLabel.setForeground(new Color(209, 38, 24));
         errorLabel.setAlignmentX(RIGHT_ALIGNMENT);
-        errorLabel.setPreferredSize(new Dimension(400,36));
+        errorLabel.setPreferredSize(new Dimension(400, 36));
         errorLabel.setVisible(false);
-        errorLabelContainer.add(errorLabel,errorLabelContainerContraints);
-
+        errorLabelContainer.add(errorLabel, errorLabelContainerContraints);
 
         FlatButton loginButton = new FlatButton();
         loginButton.setText(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
         loginButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
         loginButton.addActionListener((ActionListener) -> loginActionListener());
 
-
         FlatButton signInButton = new FlatButton();
         signInButton.setText(LoginInterfaceResources.SIGN_UP_BUTTON_TEXT);
-        signInButton.addActionListener((ActionListener)-> fromLoginMenuToSignInMenu());
+        signInButton.addActionListener((ActionListener) -> fromLoginMenuToSignInMenu());
         signInButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
         FlatButton createAccountButton = new FlatButton();
@@ -132,29 +131,25 @@ public class LoginView extends JPanel {
             parent.setContentPane(view);
         });
 
-
         emailArea = new EmailField();
         emailArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
-        emailArea.setPreferredSize(new Dimension(400,36));
+        emailArea.setPreferredSize(new Dimension(400, 36));
 
         originalBorder = emailArea.getBorder();
-
 
         pseudoArea = new PseudoField();
         pseudoArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
         pseudoArea.setVisible(false);
-        pseudoArea.setPreferredSize(new Dimension(400,36));
-
+        pseudoArea.setPreferredSize(new Dimension(400, 36));
 
         passwordArea = new PasswordField();
         passwordArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
-        passwordArea.setPreferredSize(new Dimension(400,36));
+        passwordArea.setPreferredSize(new Dimension(400, 36));
 
         offlineModeContainer = new JPanel();
         offlineModeContainer.add(offlineModeButton);
         offlineModeContainer.setPreferredSize(
-                new Dimension(GameFrame.DEFAULT_WIDTH/5,GameFrame.DEFAULT_HEIGHT/4)
-        );
+                new Dimension(GameFrame.DEFAULT_WIDTH / 5, GameFrame.DEFAULT_HEIGHT / 4));
 
         JPanel loginAndSignUpButtonContainer = new Form() {
             @Override
@@ -176,24 +171,24 @@ public class LoginView extends JPanel {
 
         loginButtons = new JPanel();
         loginButtons.add(loginAndSignUpButtonContainer);
-        loginButtons.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
+        loginButtons.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 15));
         loginButtons.add(offlineModeContainer);
 
         signUpButtons = new JPanel();
         signUpButtons.add(createAccountAndComeBackToLoginContainer);
-        signUpButtons.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
+        signUpButtons.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 15));
 
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(titleLabel);
         loginComponentContainer.add(Box.createHorizontalGlue());
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 15));
         loginComponentContainer.add(pseudoArea);
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 25));
         loginComponentContainer.add(emailArea);
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/25));
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 25));
         loginComponentContainer.add((passwordArea));
         loginComponentContainer.add((errorLabelContainer));
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT/15));
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 15));
         loginComponentContainer.add(loginButtons);
         loginComponentContainer.add(Box.createVerticalGlue());
 
@@ -202,9 +197,10 @@ public class LoginView extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 0, 0);
-        this.add(loginComponentContainer,gbc);
+        this.add(loginComponentContainer, gbc);
     }
-    public void fromLoginMenuToSignInMenu(){
+
+    public void fromLoginMenuToSignInMenu() {
         titleLabel.setText("SIGN UP");
         loginButtons.remove(offlineModeContainer);
         signUpButtons.add(offlineModeContainer);
@@ -212,15 +208,12 @@ public class LoginView extends JPanel {
         loginComponentContainer.add(signUpButtons);
         pseudoArea.setVisible(true);
         resetPlaceHolder();
-        System.out.println("height : "+errorLabel.getHeight()+"\nwidth : "+errorLabel.getWidth());
         hideError();
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
     }
 
-
-
-    public void fromSignInMenuToLoginMenu(){
+    public void fromSignInMenuToLoginMenu() {
         titleLabel.setText("LOGIN");
         signUpButtons.remove(offlineModeContainer);
         loginButtons.add(offlineModeContainer);
@@ -232,34 +225,39 @@ public class LoginView extends JPanel {
         loginComponentContainer.revalidate();
         loginComponentContainer.repaint();
     }
-    public void resetPlaceHolder(){
+
+    public void resetPlaceHolder() {
         pseudoArea.setText("");
         emailArea.setText("");
         passwordArea.setText("");
     }
 
-    public void printError(String message){
+    public void printError(String message) {
         errorLabel.setText(message);
-        emailArea.setBorder(BorderFactory.createMatteBorder(2,2,2,2,new Color(209,38,24)));
-        passwordArea.setBorder(BorderFactory.createMatteBorder(2,2,2,2,new Color(209,38,24)));
-        pseudoArea.setBorder(BorderFactory.createMatteBorder(2,2,2,2,new Color(209,38,24)));
+        emailArea.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, new Color(209, 38, 24)));
+        passwordArea.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, new Color(209, 38, 24)));
+        pseudoArea.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, new Color(209, 38, 24)));
         errorLabel.setVisible(true);
         loginComponentContainer.repaint();
     }
 
-    public void signUPActionListener(){
-        try{
-            if (pseudoArea.getText().isEmpty() || emailArea.getText().isEmpty() || charArrayToString(passwordArea.getPassword()).isEmpty()){
+    public void signUPActionListener() {
+        try {
+            if (pseudoArea.getText().isEmpty() || emailArea.getText().isEmpty()
+                    || charArrayToString(passwordArea.getPassword()).isEmpty()) {
                 printError(LoginInterfaceResources.EMPTY_FIELD);
                 return;
             }
-            String res = AuthController.signUpWithEmailAndPassword(emailArea.getText(),pseudoArea.getText(),charArrayToString(passwordArea.getPassword()));
+            String res = AuthController.signUpWithEmailAndPassword(emailArea.getText(), pseudoArea.getText(),
+                    charArrayToString(passwordArea.getPassword()));
             setSession(res);
-        }catch (AlreadyRegisteredUserException e){
+        } catch (AlreadyRegisteredUserException e) {
             printError(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE);
-        }catch (NotStrongEnoughPasswordException e){
+        } catch (NotStrongEnoughPasswordException e) {
             printError(LoginInterfaceResources.NOT_STRONG_ENOUGH_PASSWORD_MESSAGE);
-        }catch (Exception e){
+        } catch (TooLongPasswordException e) {
+            printError(LoginInterfaceResources.TOO_LONG_PASSWORD_MESSAGE);
+        } catch (Exception e) {
             GameFrame.showError(e, () -> {
                 GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
                 parent.dispose();
@@ -267,20 +265,22 @@ public class LoginView extends JPanel {
         }
     }
 
-    public void loginActionListener(){
+    public void loginActionListener() {
         try {
-            if (emailArea.getText().isEmpty() || charArrayToString(passwordArea.getPassword()).isEmpty()){
+            if (emailArea.getText().isEmpty() || charArrayToString(passwordArea.getPassword()).isEmpty()) {
                 printError(LoginInterfaceResources.EMPTY_FIELD);
                 return;
             }
-            String res = AuthController.loginWithEmailAndPassword(emailArea.getText(),charArrayToString(passwordArea.getPassword()));
+            String res = AuthController.loginWithEmailAndPassword(emailArea.getText(),
+                    charArrayToString(passwordArea.getPassword()));
             setSession(res);
-        }catch (NotExistingUserException e){
+        } catch (NotExistingUserException e) {
             printError(LoginInterfaceResources.NOT_EXISTING_USER_MESSAGE);
-        }catch (WrongPasswordException e){
+        } catch (WrongPasswordException e) {
             printError(LoginInterfaceResources.WRONG_PASSWORD_MESSAGE);
-        }catch (Exception e){
+        } catch (Exception e) {
             GameFrame.showError(e, () -> {
+                System.out.println(e.getMessage());
                 GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
                 parent.dispose();
             });
@@ -291,17 +291,15 @@ public class LoginView extends JPanel {
         menuController.setSession(uid);
     }
 
-    public static String charArrayToString(char[] c){
+    public static String charArrayToString(char[] c) {
         return String.copyValueOf(c);
     }
 
-    public void hideError(){
+    public void hideError() {
         passwordArea.setBorder(originalBorder);
         pseudoArea.setBorder(originalBorder);
         emailArea.setBorder(originalBorder);
         errorLabel.setVisible(false);
         loginComponentContainer.repaint();
     }
-
-
 }

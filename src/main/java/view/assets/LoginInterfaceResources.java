@@ -23,6 +23,8 @@ public class LoginInterfaceResources {
 
     public static final String WRONG_PASSWORD_MESSAGE = "Your password/email is wrong";
 
+    public static final String TOO_LONG_PASSWORD_MESSAGE = "Your password is too long (max 20 characters)";
+
     public static final String NOT_STRONG_ENOUGH_PASSWORD_MESSAGE = "To week password";
 
     public static final String PSEUDO_PLACEHOLDER_TEXT = "ENTER PSEUDO";
