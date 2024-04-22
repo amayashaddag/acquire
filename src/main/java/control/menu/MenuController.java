@@ -31,9 +31,7 @@ import view.window.GameFrame;
 public class MenuController {
     private final String FILE_OUTPUT = "src/main/ressources/session/game-session.ser";
 
-    // ONLY FOR TEST, // TODO : Should remove later
-    private PlayerCredentials session = new PlayerCredentials("SOME-WEIdzfezadzqdD-UID", "amayadzaeza@icloud.dz",
-            "arthur");
+    private PlayerCredentials session;
     private PrettyMenuView view;
 
     private Timer onlineObserver;
@@ -134,7 +132,6 @@ public class MenuController {
 
     public PlayerAnalytics getPlayerAnalytics(String uid) {
         try {
-            System.out.println("UID : " + uid); // TODO : fixit
             return GameDatabaseConnection.getPlayerAnalytics(uid);
         } catch (Exception e) {
             GameFrame.showError(e, () -> {
@@ -313,6 +310,7 @@ public class MenuController {
 
     public void setSession(String UID) throws Exception {
         this.session = getPlayerCredentials(UID);
+        System.out.println(session);
     }
 
     public void setSession(PlayerCredentials session) {

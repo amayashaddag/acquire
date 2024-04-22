@@ -11,7 +11,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SwingUtilities;
@@ -100,6 +99,12 @@ public class PrettyMenuView extends Form {
     }
 
     private void multiPlayer() {
+
+        if (!controller.isConnected()) {
+            displayLoginView();
+            return;
+        }
+
         mig.setComponentConstraints(panel, "x 60%, y 40%, w 30%, h 50%");
         revalidate();
         panel.removeAll();
@@ -151,7 +156,6 @@ public class PrettyMenuView extends Form {
         scrollPane.add(createGameBtn, btnContraints);
 
         List<PreGameAnalytics> list = controller.getAvailableGames();
-        System.out.println(list);
         if (list != null && !list.isEmpty()) {
             for (PreGameAnalytics p : list) {
                 JButton btn = new JButton();
@@ -187,6 +191,12 @@ public class PrettyMenuView extends Form {
     }
 
     private void ranking() {
+
+        if (!controller.isConnected()) {
+            displayLoginView();
+            return;
+        }
+
         mig.setComponentConstraints(panel, "x 60%, w 30%, h 50%");
         revalidate();
         panel.removeAll();
@@ -245,26 +255,28 @@ public class PrettyMenuView extends Form {
     }
 
     private void profile() {
+
+        if (!controller.isConnected()) {
+            displayLoginView();
+            return;
+        }
+
         mig.setComponentConstraints(panel, "x 50%, w 45%, h 70%");
         revalidate();
         panel.removeAll();
 
-        if (!controller.isConnected())
+        PlayerAnalytics p = controller.getPlayerAnalytics();
+        panel.setLayout(new GridLayout(3, 1));
+        panel.add(new JLabel("Pseudo : " + p.pseudo()));
+        panel.add(new JLabel("Won Games" + p.wonGames()));
+        panel.add(new JLabel("Played Games" + p.playedGames()));
+        JButton jb = new JButton("Change account");
+        jb.addActionListener((e) -> {
+            panel.removeAll();
             panel.add(new LoginView(controller));
-        else {
-            PlayerAnalytics p = controller.getPlayerAnalytics();
-            panel.setLayout(new GridLayout(3, 1));
-            panel.add(new JLabel("Pseudo : " + p.pseudo()));
-            panel.add(new JLabel("Won Games" + p.wonGames()));
-            panel.add(new JLabel("Played Games" + p.playedGames()));
-            JButton jb = new JButton("Change account");
-            jb.addActionListener((e) -> {
-                panel.removeAll();
-                panel.add(new LoginView(controller));
-                repaint();
-            });
-            panel.add(jb);
-        }
+            repaint();
+        });
+        panel.add(jb);
 
         panel.setVisible(true);
         repaint();
@@ -304,5 +316,14 @@ public class PrettyMenuView extends Form {
         g.add(this);
         g.repaint();
         g.revalidate();
+    }
+
+    private void displayLoginView() {
+        mig.setComponentConstraints(panel, "x 50%, w 45%, h 70%");
+        revalidate();
+        panel.removeAll();
+        panel.add(new LoginView(controller));
+        panel.setVisible(true);
+        repaint();
     }
 }
