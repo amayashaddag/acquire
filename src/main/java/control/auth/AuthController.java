@@ -1,6 +1,5 @@
 package control.auth;
 
-import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +31,8 @@ public class AuthController {
     private final static String REGISTERED_USERS_TABLE = "registered-users";
     private final static String ANALYTICS_TABLE = "analytics";
 
-    private final static int MINIMUM_LENGTH_PASSWORD = 5;
-    private final static String ALPHA_NUMERIC_AND_SYMBOLS_REGEX = "\"^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()-_=+\\\\\\\\|\\\\[{\\\\]};:'\\\",<.>/?]).+$\"";
+    private final static String ALPHA_NUMERIC_AND_SYMBOLS_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}$";
+    private final static int MAX_PASSWORD_LENGTH = 20;
 
     public static boolean alreadyRegisteredUser(String email) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(REGISTERED_USERS_TABLE)
@@ -47,26 +46,30 @@ public class AuthController {
         return true;
     }
 
-    public static String signUpWithEmailAndPassword(@Nonnull String email, @Nonnull String pseudo, @Nonnull String password) throws Exception {
+    public static String signUpWithEmailAndPassword(@Nonnull String email, @Nonnull String pseudo,
+            @Nonnull String password) throws Exception {
         if (alreadyRegisteredUser(email)) {
             throw new AlreadyRegisteredUserException();
+        }
+
+        if (password.length() > MAX_PASSWORD_LENGTH) {
+            throw new TooLongPasswordException();
         }
 
         if (!isStrongPassword(password)) {
             throw new NotStrongEnoughPasswordException();
         }
 
-        DocumentReference newUser = database.collection(password).document();
+        DocumentReference newUser = database.collection(REGISTERED_USERS_TABLE).document();
         String userId = newUser.getId();
-        String hashedPassword = sha256(userId);
 
         Map<String, Object> userCredentials = new HashMap<>();
         userCredentials.put(EMAIL_FIELD, email);
         userCredentials.put(PSEUDO_FIELD, pseudo);
-        userCredentials.put(PASSWORD_FIELD, hashedPassword);
+        userCredentials.put(PASSWORD_FIELD, password);
         userCredentials.put(USER_ID_FIELD, userId);
 
-        ApiFuture<WriteResult> writer = newUser.update(userCredentials);
+        ApiFuture<WriteResult> writer = newUser.set(userCredentials);
         writer.get();
 
         addToAnalytics(userId);
@@ -74,18 +77,7 @@ public class AuthController {
         return userId;
     }
 
-    private static String sha256(String input) throws Exception {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-        messageDigest.update(input.getBytes());
-        byte[] hashedBytes = messageDigest.digest();
-
-        return new String(hashedBytes);
-    }
-
     private static boolean isStrongPassword(String password) throws Exception {
-        if (password.length() <= MINIMUM_LENGTH_PASSWORD) {
-            return false;
-        }
 
         if (!password.matches(ALPHA_NUMERIC_AND_SYMBOLS_REGEX)) {
             return false;
@@ -104,14 +96,13 @@ public class AuthController {
         }
 
         QueryDocumentSnapshot doc = docs.get(0);
-        String registeredHashedPassword = (String) doc.get(PASSWORD_FIELD);
-        String hashedInputPassword = sha256(password);
+        String registeredPassword = (String) doc.get(PASSWORD_FIELD);
 
-        if (registeredHashedPassword == null) {
+        if (registeredPassword == null) {
             throw new NullPointerException();
         }
 
-        if (!registeredHashedPassword.equals(hashedInputPassword)) {
+        if (!registeredPassword.equals(password)) {
             throw new WrongPasswordException();
         }
 
