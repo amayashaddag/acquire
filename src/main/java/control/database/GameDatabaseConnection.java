@@ -118,9 +118,9 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static void removePlayer(Player player) throws Exception {
+    public static void removePlayer(String uid) throws Exception {
         CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
-        ApiFuture<QuerySnapshot> future = collection.whereEqualTo(UID_PLAYER_FIELD, player.getUID()).get();
+        ApiFuture<QuerySnapshot> future = collection.whereEqualTo(UID_PLAYER_FIELD, uid).get();
         QuerySnapshot snapshot = future.get();
 
         for (QueryDocumentSnapshot doc : snapshot) {
@@ -754,5 +754,4 @@ public class GameDatabaseConnection {
 
         writer.get();
     }
-
 }

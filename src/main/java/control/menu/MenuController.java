@@ -70,11 +70,7 @@ public class MenuController {
                 }
 
             } catch (Exception e) {
-                GameFrame.showError(e, () -> {
-                    GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                    onlineObserver.stop();
-                    parent.dispose();
-                });
+                errorInterrupt(e);
             }
         });
     }
@@ -94,10 +90,7 @@ public class MenuController {
         try {
             return AuthController.getPlayerCredentials(userId);
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
+            errorInterrupt(e);
 
             return null;
         }
@@ -134,10 +127,7 @@ public class MenuController {
         try {
             return GameDatabaseConnection.getPlayerAnalytics(uid);
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
+            errorInterrupt(e);
             return null;
         }
     }
@@ -150,10 +140,7 @@ public class MenuController {
         try {
             return GameDatabaseConnection.getRanking();
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
+            errorInterrupt(e);
             return null;
         }
     }
@@ -162,10 +149,7 @@ public class MenuController {
         try {
             return GameDatabaseConnection.getAvailableGames();
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
+            errorInterrupt(e);
             return null;
         }
     }
@@ -182,10 +166,7 @@ public class MenuController {
                 // TODO : Should show notification
             }
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
+            errorInterrupt(e);
         }
     }
 
@@ -215,12 +196,7 @@ public class MenuController {
 
             return currentPlayer;
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame.showError(e, () -> {
-                    GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                    parent.dispose();
-                });
-            });
+            errorInterrupt(e);
 
             return null;
         }
@@ -231,10 +207,7 @@ public class MenuController {
             PreGameAnalytics gameAnalytics = GameDatabaseConnection.createGame(session, numberOfPlayer);
             joinPreGame(gameAnalytics);
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
+            errorInterrupt(e);
         }
     }
 
@@ -246,30 +219,28 @@ public class MenuController {
                     joinedGameAnalytics.gameID(),
                     currentPlayer.getUID());
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
+            errorInterrupt(e);
         }
     }
 
-    public void avortMutiGame() {
+    public void abortMutiGame() {
         if (!view.aMultiGameIsLaunching())
             return;
         try {
             GameDatabaseConnection.removeGame(joinedGameAnalytics.gameID());
             joinedGameAnalytics = null;
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
+            errorInterrupt(e);
         }
         view.setAMultiGameIsLaunching(false);
     }
 
     public void quitGame() {
-        // TODO : a faire
+        try {
+            GameDatabaseConnection.removePlayer(session.uid());
+        } catch (Exception e) {
+            errorInterrupt(e);
+        }
         view.setHaveJoinAGame(false);
     }
 
@@ -281,10 +252,7 @@ public class MenuController {
             oos.close();
             fos.close();
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
+            errorInterrupt(e);
         }
     }
 
@@ -300,10 +268,7 @@ public class MenuController {
 
             fis.close();
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
-                parent.dispose();
-            });
+            errorInterrupt(e);
         }
 
     }
@@ -315,5 +280,13 @@ public class MenuController {
 
     public void setSession(PlayerCredentials session) {
         this.session = session;
+    }
+
+    private void errorInterrupt(Exception e) {
+        GameFrame.showError(e, () -> {
+            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+            onlineObserver.stop();
+            parent.dispose();
+        });
     }
 }

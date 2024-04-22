@@ -55,7 +55,7 @@ public class PrettyMenuView extends Form {
         menu3d.addMenuItem("RANKING", this::ranking);
         menu3d.addMenuItem("SETTING", this::settings);
         menu3d.addMenuItem("EXIT", this::exit);
-        menu3d.addGlobalEvent(controller::avortMutiGame);
+        menu3d.addGlobalEvent(controller::abortMutiGame);
         menu3d.addGlobalEvent(() -> panel.setVisible(false));
 
         panel.setVisible(false);
@@ -119,13 +119,13 @@ public class PrettyMenuView extends Form {
         if (aMultiGameIsLaunching && haveJoinAGame) {
             aMultiGameIsLaunching = false;
             haveJoinAGame = false;
-            controller.avortMutiGame();
+            controller.abortMutiGame();
             multiPlayer();
         } else if (aMultiGameIsLaunching) {
-            createGameBtn.setText("Avort game");
+            createGameBtn.setText("Abort game");
             createGameBtn.setBackground(Color.RED);
             createGameBtn.addActionListener((e) -> {
-                controller.avortMutiGame();
+                controller.abortMutiGame();
                 aMultiGameIsLaunching = false;
                 multiPlayer();
             });
