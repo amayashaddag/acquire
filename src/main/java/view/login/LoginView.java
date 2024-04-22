@@ -251,6 +251,8 @@ public class LoginView extends JPanel {
             String res = AuthController.signUpWithEmailAndPassword(emailArea.getText(), pseudoArea.getText(),
                     charArrayToString(passwordArea.getPassword()));
             setSession(res);
+
+            menuController.getView().multiPlayer();
         } catch (AlreadyRegisteredUserException e) {
             printError(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE);
         } catch (NotStrongEnoughPasswordException e) {
@@ -258,10 +260,7 @@ public class LoginView extends JPanel {
         } catch (TooLongPasswordException e) {
             printError(LoginInterfaceResources.TOO_LONG_PASSWORD_MESSAGE);
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
-                parent.dispose();
-            });
+            errorInterrupt(e);
         }
     }
 
@@ -274,16 +273,14 @@ public class LoginView extends JPanel {
             String res = AuthController.loginWithEmailAndPassword(emailArea.getText(),
                     charArrayToString(passwordArea.getPassword()));
             setSession(res);
+
+            menuController.getView().multiPlayer();
         } catch (NotExistingUserException e) {
             printError(LoginInterfaceResources.NOT_EXISTING_USER_MESSAGE);
         } catch (WrongPasswordException e) {
             printError(LoginInterfaceResources.WRONG_PASSWORD_MESSAGE);
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                System.out.println(e.getMessage());
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
-                parent.dispose();
-            });
+            errorInterrupt(e);
         }
     }
 
@@ -301,5 +298,13 @@ public class LoginView extends JPanel {
         emailArea.setBorder(originalBorder);
         errorLabel.setVisible(false);
         loginComponentContainer.repaint();
+    }
+
+    private void errorInterrupt(Exception e) {
+        GameFrame.showError(e, () -> {
+            System.out.println(e.getMessage());
+            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
+            parent.dispose();
+        });
     }
 }

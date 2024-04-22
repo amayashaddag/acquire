@@ -86,7 +86,7 @@ public class PrettyMenuView extends Form {
         aMultiGameIsLaunching = b;
     }
 
-    private void singlePlayer() {
+    public void singlePlayer() {
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
@@ -98,7 +98,7 @@ public class PrettyMenuView extends Form {
         }).start();
     }
 
-    private void multiPlayer() {
+    public void multiPlayer() {
 
         if (!controller.isConnected()) {
             displayLoginView();
@@ -190,7 +190,7 @@ public class PrettyMenuView extends Form {
         repaint();
     }
 
-    private void ranking() {
+    public void ranking() {
 
         if (!controller.isConnected()) {
             displayLoginView();
@@ -254,7 +254,7 @@ public class PrettyMenuView extends Form {
         repaint();
     }
 
-    private void profile() {
+    public void profile() {
 
         if (!controller.isConnected()) {
             displayLoginView();
@@ -282,11 +282,11 @@ public class PrettyMenuView extends Form {
         repaint();
     }
 
-    private void settings() {
+    public void settings() {
 
     }
 
-    private void exit() {
+    public void exit() {
         new Thread(() -> {
             try {
                 Thread.sleep(500);

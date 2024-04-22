@@ -96,6 +96,10 @@ public class MenuController {
         }
     }
 
+    public PrettyMenuView getView() {
+        return view;
+    }
+
     public boolean isConnected() {
         return session != null;
     }
