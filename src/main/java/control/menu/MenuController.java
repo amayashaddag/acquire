@@ -148,6 +148,7 @@ public class MenuController {
 
     public void setSession(String UID) throws Exception {
         this.session = getPlayerAnalytics(UID);
+        System.out.println(session);
     }
 
     public void setSession(PlayerAnalytics session) {

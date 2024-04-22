@@ -20,9 +20,7 @@ public class Debug extends JFrame {
             MenuController menuController = new MenuController();
             menuController.start();
         } catch (Exception e) {
-            GameFrame.showError(e, () -> {
-                frame.dispose();
-            });
+            GameFrame.showError(e, frame::dispose);
         }
         // TODO : Igor mange ton caca
     }

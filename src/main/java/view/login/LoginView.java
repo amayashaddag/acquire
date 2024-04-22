@@ -6,6 +6,7 @@ import control.auth.NotExistingUserException;
 import control.auth.NotStrongEnoughPasswordException;
 import control.auth.WrongPasswordException;
 import control.game.GameController;
+import control.menu.MenuController;
 import model.game.Player;
 import view.assets.Fonts;
 import view.assets.LoginInterfaceResources;
@@ -43,6 +44,7 @@ public class LoginView extends JPanel {
     private final JPanel loginComponentContainer;
 
     private final JLabel errorLabel;
+    private final MenuController menuController;
 
     JPanel offlineModeContainer;
 
@@ -55,7 +57,9 @@ public class LoginView extends JPanel {
 
     Border originalBorder;
 
-    public LoginView() {
+    public LoginView(MenuController menuController) {
+
+        this.menuController = menuController;
 
         loginComponentContainer = new Form() {
             @Override
@@ -250,6 +254,7 @@ public class LoginView extends JPanel {
                 return;
             }
             String res = AuthController.signUpWithEmailAndPassword(emailArea.getText(),pseudoArea.getText(),charArrayToString(passwordArea.getPassword()));
+            setSession(res);
         }catch (AlreadyRegisteredUserException e){
             printError(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE);
         }catch (NotStrongEnoughPasswordException e){
@@ -269,6 +274,7 @@ public class LoginView extends JPanel {
                 return;
             }
             String res = AuthController.loginWithEmailAndPassword(emailArea.getText(),charArrayToString(passwordArea.getPassword()));
+            setSession(res);
         }catch (NotExistingUserException e){
             printError(LoginInterfaceResources.NOT_EXISTING_USER_MESSAGE);
         }catch (WrongPasswordException e){
@@ -279,6 +285,10 @@ public class LoginView extends JPanel {
                 parent.dispose();
             });
         }
+    }
+
+    private void setSession(String uid) throws Exception {
+        menuController.setSession(uid);
     }
 
     public static String charArrayToString(char[] c){

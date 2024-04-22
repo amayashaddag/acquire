@@ -52,9 +52,9 @@ public class AuthController {
             throw new AlreadyRegisteredUserException();
         }
 
-        if (!isStrongPassword(password)) {
+        /* if (!isStrongPassword(password)) {
             throw new NotStrongEnoughPasswordException();
-        }
+        } */
 
         DocumentReference newUser = database.collection(password).document();
         String userId = newUser.getId();
@@ -66,7 +66,7 @@ public class AuthController {
         userCredentials.put(PASSWORD_FIELD, hashedPassword);
         userCredentials.put(USER_ID_FIELD, userId);
 
-        ApiFuture<WriteResult> writer = newUser.update(userCredentials);
+        ApiFuture<WriteResult> writer = newUser.set(userCredentials);
         writer.get();
 
         addToAnalytics(userId);

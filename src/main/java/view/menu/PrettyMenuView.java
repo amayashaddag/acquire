@@ -135,7 +135,7 @@ public class PrettyMenuView extends Form {
         panel.removeAll();
 
         if (!controller.isConnected())
-            panel.add(new LoginView());
+            panel.add(new LoginView(controller));
         else {
             PlayerAnalytics p = controller.getPlayerAnalyticsSession();
             panel.setLayout(new GridLayout(4, 1));
@@ -146,7 +146,7 @@ public class PrettyMenuView extends Form {
             JButton jb = new JButton("Change account");
             jb.addActionListener((e) -> {
                 panel.removeAll();
-                panel.add(new LoginView());
+                panel.add(new LoginView(controller));
                 repaint();
             });
             panel.add(jb);
