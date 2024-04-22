@@ -269,6 +269,10 @@ public class LoginView extends JPanel {
 
     public void signUPActionListener(){
         try{
+            if (pseudoArea.getText().isEmpty() || emailArea.getText().isEmpty() || charArrayToString(passwordArea.getPassword()).isEmpty()){
+                printError(LoginInterfaceResources.NOT_STRONG_ENOUGH_PASSWORD_MESSAGE);
+                return;
+            }
             String res = AuthController.signUpWithEmailAndPassword(emailArea.getText(),pseudoArea.getText(),charArrayToString(passwordArea.getPassword()));
         }catch (AlreadyRegisteredUserException e){
             printError(LoginInterfaceResources.ALREADY_REGISTERED_USER_MESSAGE);
