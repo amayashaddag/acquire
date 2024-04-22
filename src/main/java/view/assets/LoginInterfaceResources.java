@@ -14,6 +14,7 @@ public class LoginInterfaceResources {
 
     public static final String OFFLINE_BUTTON_TEXT = "PLAY OFFLINE";
 
+    public static final String EMPTY_FIELD = "You havn't fill all the fields";
     public static final String PASSWORD_SHOWING_IMAGE_PATH = "src/main/ressources/images/login/eye.png";
 
     public static final String NOT_EXISTING_USER_MESSAGE = "Couldn't found your account";
