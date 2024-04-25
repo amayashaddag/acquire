@@ -22,8 +22,8 @@ import view.game.GameView;
  * @version 0.1
  */
 public class GameFrame extends JFrame {
-    public final static int DEFAULT_WIDTH = 1280;
-    public final static int DEFAULT_HEIGHT = 720;
+    public final static int DEFAULT_WIDTH = 1200;
+    public final static int DEFAULT_HEIGHT = 900;
     public final static int MAX_LINES_TO_PRINT = 10;
 
     public final static String TITLE = "Acquire";
