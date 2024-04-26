@@ -47,10 +47,11 @@ public class GameView extends Form {
 
         this.setLayout(new BorderLayout());
         this.at = new AffineTransform();
-        
         this.jetonsPanel = new JetonsPanel(this);
         this.mouseListener = new MouseManager(this);
         this.playerBoard = new PlayerBoard(this);
+        ChatPanel chatPanel= new ChatPanel();
+        add(chatPanel,BorderLayout.SOUTH);
     }
 
     public Player getPlayer() {
