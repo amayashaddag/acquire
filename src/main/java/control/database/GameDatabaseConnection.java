@@ -86,7 +86,7 @@ public class GameDatabaseConnection {
                 .whereEqualTo(UID_FIELD, c.uid()).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
         if (!docs.isEmpty()) {
-            throw new Exception();
+            removePlayer(c.uid());
         }
 
         HashMap<String, Object> newPlayer = new HashMap<>();

@@ -130,6 +130,8 @@ public class GameController {
         for (Player p : currentPlayers) {
             GameDatabaseConnection.updateStocks(p, gameId);
         }
+
+        board.updateStocks(currentPlayers);
     }
 
     private void updateCashNet() throws Exception {

@@ -45,6 +45,10 @@ public class MenuController {
 
         this.onlineObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
+
+                view.repaint();
+                view.revalidate();
+
                 if (joinedGameAnalytics == null) {
                     onlineObserver.stop();
                     return;

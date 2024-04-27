@@ -570,6 +570,22 @@ public class Board {
         }
     }
 
+    public void updateStocks(List<Player> stockOwners) {
+        for (Corporation c : Corporation.values()) {
+            int remainingStocksAmount = INITIAL_STOCKS_PER_COMPANY;
+
+            for (Player p : stockOwners) {
+                remainingStocksAmount -= p.getStocks(c);
+            }
+
+            if (remainingStocksAmount < 0) {
+                remainingStocksAmount = 0;
+            }
+
+            remainingStocks.replace(c, remainingStocksAmount);
+        }
+    }
+
     @Override 
     public Object clone() throws CloneNotSupportedException {
 
