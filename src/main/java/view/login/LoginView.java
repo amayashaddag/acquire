@@ -37,29 +37,26 @@ import view.window.GameFrame;
 
 public class LoginView extends JPanel {
 
+    private final JLabel errorLabel;
     private final JLabel titleLabel;
 
-    PseudoField pseudoArea;
-
+    private final JPanel offlineModeContainer;
     private final JPanel loginComponentContainer;
+    private final JPanel signUpButtons;
+    private final JPanel loginButtons;
 
-    private final JLabel errorLabel;
+
+    private final PseudoField pseudoArea;
+    private final PasswordField passwordArea;
+    private final EmailField emailArea;
+    private final Border originalBorder;
+
     private final MenuController menuController;
-
-    JPanel offlineModeContainer;
-
-    JPanel signUpButtons;
-
-    JPanel loginButtons;
-    PasswordField passwordArea;
-
-    EmailField emailArea;
-
-    Border originalBorder;
 
     public LoginView(MenuController menuController) {
         super();
         this.setOpaque(false);
+
         this.menuController = menuController;
 
         loginComponentContainer = new Form() {
@@ -72,6 +69,7 @@ public class LoginView extends JPanel {
         loginComponentContainer.setLayout(new BoxLayout(loginComponentContainer, BoxLayout.Y_AXIS));
         loginComponentContainer
                 .setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH / 3, GameFrame.DEFAULT_HEIGHT * 3 / 5));
+        loginComponentContainer.setOpaque(false);
 
         titleLabel = new JLabel(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
@@ -95,6 +93,7 @@ public class LoginView extends JPanel {
         errorLabel.setPreferredSize(new Dimension(400, 36));
         errorLabel.setVisible(false);
         errorLabelContainer.add(errorLabel, errorLabelContainerContraints);
+        errorLabelContainer.setOpaque(false);
 
         FlatButton loginButton = new FlatButton();
         loginButton.setText(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
@@ -151,6 +150,7 @@ public class LoginView extends JPanel {
         offlineModeContainer.add(offlineModeButton);
         offlineModeContainer.setPreferredSize(
                 new Dimension(GameFrame.DEFAULT_WIDTH / 5, GameFrame.DEFAULT_HEIGHT / 4));
+        offlineModeContainer.setOpaque(false);
 
         JPanel loginAndSignUpButtonContainer = new Form() {
             @Override
@@ -169,15 +169,18 @@ public class LoginView extends JPanel {
         };
         createAccountAndComeBackToLoginContainer.add(comeBackToLoginButton);
         createAccountAndComeBackToLoginContainer.add(createAccountButton);
+        createAccountAndComeBackToLoginContainer.setOpaque(false);
 
         loginButtons = new JPanel();
         loginButtons.add(loginAndSignUpButtonContainer);
         loginButtons.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 15));
         loginButtons.add(offlineModeContainer);
+        loginButtons.setOpaque(false);
 
         signUpButtons = new JPanel();
         signUpButtons.add(createAccountAndComeBackToLoginContainer);
         signUpButtons.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 15));
+        signUpButtons.setOpaque(false);
 
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(titleLabel);
@@ -192,6 +195,7 @@ public class LoginView extends JPanel {
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 15));
         loginComponentContainer.add(loginButtons);
         loginComponentContainer.add(Box.createVerticalGlue());
+        loginComponentContainer.setOpaque(false);
 
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
