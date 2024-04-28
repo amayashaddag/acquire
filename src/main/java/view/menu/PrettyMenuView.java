@@ -38,6 +38,8 @@ public class PrettyMenuView extends Form {
     private final MenuController controller;
     private final Menu3D menu3d = new Menu3D();
     private final JPanel panel = new JPanel();
+
+    private JLabel connectedLabel = new JLabel();
     private final MigLayout mig = new MigLayout("al center, filly");
     private boolean aMultiGameIsLaunching = false;
     private boolean haveJoinAGame = false;
@@ -61,6 +63,9 @@ public class PrettyMenuView extends Form {
         panel.setVisible(false);
         panel.setOpaque(false);
 
+        connectedLabel.setText("disconnected");
+
+        add(connectedLabel,"x 0%, y 0%, w 10%, h 5%");
         add(menu3d, "x 10%, y 40%, w 25%, h 50%");
         add(panel, "x 60%, y 40%, w 30%, h 50%");
         repaint();
