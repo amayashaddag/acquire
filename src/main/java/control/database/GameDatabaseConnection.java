@@ -34,6 +34,34 @@ import model.tools.Point;
 import model.tools.PreGameAnalytics;
 
 public class GameDatabaseConnection {
+
+    private static class Couple<E, F> implements Map.Entry<E, F> {
+
+        private E key;
+        private F value;
+
+        public Couple(E key, F value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public E getKey() {
+            return key;
+        }
+
+        @Override
+        public F getValue() {
+            return value;
+        }
+
+        @Override
+        public F setValue(F arg0) {
+            return value = arg0;
+        }
+
+    }
+
     private static final Firestore database = FirestoreClient.getFirestore();
 
     private static final String UID_PLAYER_FIELD = "uid";
@@ -52,6 +80,7 @@ public class GameDatabaseConnection {
     private static final String CASH_FIELD = "cash";
     private static final String NET_FIELD = "net";
     private static final String NOTIFICATION_MESSAGE_FIELD = "message";
+    private static final String CHAT_MESSAGE_FIELD = "message";
     private static final String TIME_FIELD = "time";
     private final static String BEST_SCORE_FIELD = "best-score";
     private final static String PLAYED_GAMES_FIELD = "played-games";
@@ -65,7 +94,8 @@ public class GameDatabaseConnection {
     private static final String NOTIFICATIONS_TABLE = "notifications";
     private final static String ANALYTICS_TABLE = "analytics";
     private final static String KEEP_SELL_TRADE_STOCKS_TABLE = "keep-sell-trade-stocks";
-    private final static String MAJOR_CORPORATINO_TABLE = "major-corporation";
+    private final static String MAJOR_CORPORATION_TABLE = "major-corporation";
+    private final static String CHAT_TABLE = "chat";
 
     private static final List<String> ALL_TABLES = new LinkedList<>();
     static {
@@ -78,7 +108,8 @@ public class GameDatabaseConnection {
                 NOTIFICATIONS_TABLE,
                 ANALYTICS_TABLE,
                 KEEP_SELL_TRADE_STOCKS_TABLE,
-                MAJOR_CORPORATINO_TABLE);
+                MAJOR_CORPORATION_TABLE,
+                CHAT_TABLE);
     }
 
     public static void addPlayer(String gameId, PlayerCredentials c) throws Exception {
@@ -444,29 +475,7 @@ public class GameDatabaseConnection {
             throw new Exception();
         }
 
-        return new Map.Entry<String, Integer>() {
-
-            private String key = notificationMessage;
-            private Integer value = notificationTime.intValue();
-
-            @Override
-            public String getKey() {
-                return key;
-            }
-
-            @Override
-            public Integer getValue() {
-                return value;
-            }
-
-            @Override
-            public Integer setValue(Integer arg0) {
-                Integer oldValue = value;
-                value = arg0;
-                return oldValue;
-            }
-
-        };
+        return new Couple<>(notificationMessage, notificationTime.intValue());
     }
 
     public static void setLastNotification(String gameId, String notificationMessage) throws Exception {
@@ -713,7 +722,7 @@ public class GameDatabaseConnection {
     }
 
     public static Corporation getMajorCorporation(String gameId, long time) throws Exception {
-        ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATINO_TABLE)
+        ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATION_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -730,7 +739,7 @@ public class GameDatabaseConnection {
     }
 
     public static void setMajorCorporation(String gameId, Corporation major, long time) throws Exception {
-        ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATINO_TABLE)
+        ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATION_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
         Map<String, Object> majorFields = new HashMap<>();
@@ -742,7 +751,7 @@ public class GameDatabaseConnection {
         majorFields.put(TIME_FIELD, time);
 
         if (docs.isEmpty()) {
-            majorRef = database.collection(MAJOR_CORPORATINO_TABLE).document();
+            majorRef = database.collection(MAJOR_CORPORATION_TABLE).document();
             writer = majorRef.set(majorFields);
         } else {
             majorRef = docs.get(0).getReference();
@@ -750,5 +759,70 @@ public class GameDatabaseConnection {
         }
 
         writer.get();
+    }
+
+    public static void sendChat(String chat, String uid, String pseudo, String gameId, long time) throws Exception {
+        DocumentReference doc = database.collection(CHAT_TABLE).document();
+        Map<String, Object> messageFields = new HashMap<>();
+
+        messageFields.put(CHAT_MESSAGE_FIELD, chat);
+        messageFields.put(UID_FIELD, uid);
+        messageFields.put(GAME_ID_FIELD, gameId);
+        messageFields.put(TIME_FIELD, time);
+        messageFields.put(PSEUDO_PLAYER_FIELD, pseudo);
+
+        ApiFuture<WriteResult> writer = doc.set(messageFields);
+        writer.get();
+    }
+
+    public static List<Map.Entry<Map.Entry<String, String>, Long>> readNewMessages(String gameId, String uid,
+            long lastTime) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(CHAT_TABLE)
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .whereNotEqualTo(UID_FIELD, uid)
+                .get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+        List<Map.Entry<Map.Entry<String, String>, Long>> newMessages = new LinkedList<>();
+
+        if (docs.isEmpty()) {
+            return newMessages;
+        }
+
+        for (QueryDocumentSnapshot doc : docs) {
+            Long time = (Long) doc.get(TIME_FIELD);
+
+            if (time == null) {
+                throw new NullPointerException();
+            }
+
+            if (time <= lastTime) {
+                continue;
+            }
+
+            String pseudo = (String) doc.get(PSEUDO_PLAYER_FIELD);
+            String message = (String) doc.get(CHAT_MESSAGE_FIELD);
+
+            if (pseudo == null || message == null) {
+                throw new NullPointerException();
+            }
+
+            Map.Entry<String, String> m = new Couple<>(pseudo, message);
+            Map.Entry<Map.Entry<String, String>, Long> messageContent = new Couple<>(m, time);
+
+            newMessages.add(messageContent);
+        }
+
+        List<Map.Entry<Map.Entry<String, String>, Long>> sortedNewMessages = newMessages.stream()
+                .sorted((arg0, arg1) -> {
+                    if (arg0.getValue() < arg1.getValue()) {
+                        return -1;
+                    } else if (arg0.getValue() == arg1.getValue()) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                }).toList();
+        
+        return sortedNewMessages;
     }
 }

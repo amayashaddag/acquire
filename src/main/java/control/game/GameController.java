@@ -35,13 +35,18 @@ public class GameController {
     private final String gameId;
     private final boolean onlineMode;
     private final Timer onlineObserver;
+    private final Timer chatObserver;
     private final Timer botTurnTimer;
     private final Timer refresher;
     private final Map<Point, Corporation> newPlacedCells;
 
     private Map.Entry<String, Integer> lastNotification;
     private long lastKeepSellTradeStockTime;
+    private long lastChatMessageTime;
     private int playerTurnIndex;
+
+    private Map<Corporation, Integer> registredStocksToKeepSellTrade;
+    private Corporation registredMajorCorporation;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
     public final static int ONLINE_OBSERVER_DELAY = 2000;
@@ -79,7 +84,7 @@ public class GameController {
             } 
         });
 
-        this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionListener) -> {
+        this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
             Player p = getCurrentPlayer();
 
             if (!p.isBot()) {
@@ -98,13 +103,18 @@ public class GameController {
             }
         });
 
-        this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionListener) -> {
+        this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
+            // TODO : Implement
+        });
+
+        this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
             gameView.repaint();
             gameView.revalidate();
         });
 
         if (online) {
             onlineObserver.start();
+            chatObserver.start();
         } else {
             botTurnTimer.start();
         }
@@ -214,32 +224,24 @@ public class GameController {
 
     private void updateKeepSellOrTradeStocks() {
         try {
-            System.out.println("FIRST");
             Map<Corporation, Long> stocks = GameDatabaseConnection.getKeepSellOrTradeStocks(gameId, lastKeepSellTradeStockTime);
 
             if (stocks.isEmpty()) {
                 return;
             }
 
-            System.out.println("SECOND");
-
             long time = stocks.entrySet().iterator().next().getValue();
             Corporation major = GameDatabaseConnection.getMajorCorporation(gameId, time);
             Set<Corporation> adjacentCorporations = stocks.keySet();
             Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(gameView.getPlayer(), adjacentCorporations);
 
-            System.out.println("THIRD");
-
             if (stocksToKeepSellOrTrade.isEmpty()) {
                 return;
             }
 
-            System.out.println("FOURTH");
-
-            gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, major);
+            registredStocksToKeepSellTrade = stocksToKeepSellOrTrade;
+            registredMajorCorporation = major;
             lastKeepSellTradeStockTime = time;
-
-            System.out.println("LAST");
 
         } catch (Exception e) {
             errorInterrupt(e);
@@ -685,6 +687,10 @@ public class GameController {
 
         if (onlineMode) {
             onlineObserver.stop();
+
+            if (registredStocksToKeepSellTrade != null) {
+                gameView.chooseSellingKeepingOrTradingStocks(registredStocksToKeepSellTrade, registredMajorCorporation);
+            }
         }
 
         resetNets();
@@ -788,16 +794,17 @@ public class GameController {
     private void endGame() {
         if (onlineMode) {
             try {
+
+                onlineObserver.stop();
+
                 if (gameId != null) {
-                    // GameDatabaseConnection.removeGame(gameId);
+                    GameDatabaseConnection.removeGame(gameId);
                 } else {
                     throw new NullPointerException();
                 }      
             } catch (Exception e) {
                 errorInterrupt(e);
             }
-
-            onlineObserver.stop();
         } else {
             botTurnTimer.stop();
         }
@@ -806,5 +813,14 @@ public class GameController {
 
         GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
         parent.dispose();
+    }
+
+    public void sendChat(String chat, Player p) {
+        try {
+            long currentTime = Instant.now().toEpochMilli();
+            GameDatabaseConnection.sendChat(chat, p.getUID(), p.getPseudo(), gameId, currentTime);
+        } catch (Exception e) {
+            errorInterrupt(e);
+        }
     }
 }
