@@ -667,7 +667,7 @@ public class GameDatabaseConnection {
             throw new NullPointerException();
         }
 
-        if (currentTime.longValue() == lastTime) {
+        if (currentTime.longValue() <= lastTime) {
             return stocks;
         }
 
@@ -685,9 +685,7 @@ public class GameDatabaseConnection {
         return stocks;
     }
 
-    public static void setKeepSellOrTradeStocks(Set<Corporation> stocks, String gameId) throws Exception {
-        long time = Instant.now().toEpochMilli();
-
+    public static void setKeepSellOrTradeStocks(Set<Corporation> stocks, String gameId, long time) throws Exception {
         for (Corporation c : stocks) {
             Map<String, Object> stockFields = new HashMap<>();
             stockFields.put(GAME_ID_FIELD, gameId);
@@ -731,14 +729,13 @@ public class GameDatabaseConnection {
         return major;
     }
 
-    public static void setMajorCorporation(String gameId, Corporation major) throws Exception {
+    public static void setMajorCorporation(String gameId, Corporation major, long time) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATINO_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
         Map<String, Object> majorFields = new HashMap<>();
         DocumentReference majorRef;
         ApiFuture<WriteResult> writer;
-        long time = Instant.now().toEpochMilli();
 
         majorFields.put(GAME_ID_FIELD, gameId);
         majorFields.put(CORPORATION_FIELD, major.toString());

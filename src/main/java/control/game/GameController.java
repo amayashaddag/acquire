@@ -1,5 +1,6 @@
 package control.game;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -213,23 +214,32 @@ public class GameController {
 
     private void updateKeepSellOrTradeStocks() {
         try {
+            System.out.println("FIRST");
             Map<Corporation, Long> stocks = GameDatabaseConnection.getKeepSellOrTradeStocks(gameId, lastKeepSellTradeStockTime);
 
             if (stocks.isEmpty()) {
                 return;
             }
 
+            System.out.println("SECOND");
+
             long time = stocks.entrySet().iterator().next().getValue();
             Corporation major = GameDatabaseConnection.getMajorCorporation(gameId, time);
             Set<Corporation> adjacentCorporations = stocks.keySet();
             Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(gameView.getPlayer(), adjacentCorporations);
 
+            System.out.println("THIRD");
+
             if (stocksToKeepSellOrTrade.isEmpty()) {
                 return;
             }
 
+            System.out.println("FOURTH");
+
             gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, major);
             lastKeepSellTradeStockTime = time;
+
+            System.out.println("LAST");
 
         } catch (Exception e) {
             errorInterrupt(e);
@@ -439,8 +449,9 @@ public class GameController {
 
         if (onlineMode) {
             try {
-                GameDatabaseConnection.setKeepSellOrTradeStocks(adjacentCorporations, gameId);
-                GameDatabaseConnection.setMajorCorporation(gameId, chosenCellCorporation);
+                lastKeepSellTradeStockTime = Instant.now().toEpochMilli();
+                GameDatabaseConnection.setKeepSellOrTradeStocks(adjacentCorporations, gameId, lastKeepSellTradeStockTime);
+                GameDatabaseConnection.setMajorCorporation(gameId, chosenCellCorporation, lastKeepSellTradeStockTime);
             } catch (Exception e) {
                 errorInterrupt(e);
             }
