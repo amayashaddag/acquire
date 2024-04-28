@@ -63,11 +63,14 @@ public class PrettyMenuView extends Form {
         panel.setVisible(false);
         panel.setOpaque(false);
 
-        connectedLabel.setText("disconnected");
+        connectedLabel.setText("Disconnected");
+        connectedLabel.setForeground(new Color(209, 38, 24));
+        connectedLabel.setFont(Fonts.BOLD_PARAGRAPH_FONT);
 
-        add(connectedLabel,"x 0%, y 0%, w 10%, h 5%");
+        add(connectedLabel,"x 90%, y 1%, w 10%, h 5%");
         add(menu3d, "x 10%, y 40%, w 25%, h 50%");
         add(panel, "x 60%, y 40%, w 30%, h 50%");
+        //disconnectedToConnectedLabel("Arthur est un caca aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         repaint();
     }
 
@@ -195,6 +198,8 @@ public class PrettyMenuView extends Form {
         repaint();
     }
 
+
+
     public void ranking() {
 
         if (!controller.isConnected()) {
@@ -289,6 +294,21 @@ public class PrettyMenuView extends Form {
 
     public void settings() {
 
+    }
+
+    public void disconnectedToConnectedLabel(String pseudo){
+        String xPos = String.valueOf(93 - pseudo.length());
+        this.remove(connectedLabel);
+        connectedLabel.setText("Connected as "+pseudo);
+        connectedLabel.setForeground(new Color(0,255,0));
+        add(connectedLabel,"x "+xPos+"%, y 1%, w 10%, h 5%");
+    }
+
+    public void connectedToDisconnectedLabel(){
+        this.remove(connectedLabel);
+        connectedLabel.setText("disconnected");
+        connectedLabel.setForeground(new Color(209, 38, 24));
+        add(connectedLabel,"x 90%, y 1%, w 10%, h 5%");
     }
 
     public void exit() {

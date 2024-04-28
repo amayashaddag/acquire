@@ -283,6 +283,7 @@ public class MenuController {
 
     public void setSession(String UID) throws Exception {
         this.session = getPlayerCredentials(UID);
+        view.disconnectedToConnectedLabel(session.pseudo());
         System.out.println(session);
     }
 
