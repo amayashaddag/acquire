@@ -5,13 +5,14 @@ import javax.swing.SwingUtilities;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import control.menu.MenuController;
+import view.endgame.ExitMenu;
 import view.frame.GameFrame;
 
 public class Debug extends JFrame {
 
     public static void main(String[] args) {
         FlatDarculaLaf.setup();
-        GameFrame frame = GameFrame.currentFrame;
+        JFrame frame = new ExitMenu();
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
 
         try {
