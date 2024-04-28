@@ -319,10 +319,13 @@ public class PrettyMenuView extends Form {
     }
 
     private void displayLoginView() {
-        mig.setComponentConstraints(panel, "x 50%, w 45%, h 70%");
+        mig.setComponentConstraints(panel, "x 50%, y 40%, w 45%, h 50%");
         revalidate();
         panel.removeAll();
-        panel.add(new LoginView(controller));
+        panel.setOpaque(false);
+        LoginView lv = new LoginView(controller);
+        lv.setOpaque(false);
+        panel.add(lv);
         panel.setVisible(true);
         repaint();
     }

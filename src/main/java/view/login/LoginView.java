@@ -58,7 +58,8 @@ public class LoginView extends JPanel {
     Border originalBorder;
 
     public LoginView(MenuController menuController) {
-
+        super();
+        this.setOpaque(false);
         this.menuController = menuController;
 
         loginComponentContainer = new Form() {
