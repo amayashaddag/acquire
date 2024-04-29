@@ -775,7 +775,7 @@ public class GameDatabaseConnection {
         writer.get();
     }
 
-    public static List<Map.Entry<Map.Entry<String, String>, Long>> readNewMessages(String gameId, String uid,
+    public static List<Map.Entry<Map.Entry<String, String>, Long>> getNewChats(String gameId, String uid,
             long lastTime) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(CHAT_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)

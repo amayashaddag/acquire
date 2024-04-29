@@ -104,7 +104,7 @@ public class GameController {
         });
 
         this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
-            // TODO : Implement
+            updateChat();
         });
 
         this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
@@ -143,6 +143,19 @@ public class GameController {
         }
 
         board.updateStocks(currentPlayers);
+    }
+
+    private void updateChat() {
+        try {
+            Player p = gameView.getPlayer();
+            List<Map.Entry<Map.Entry<String, String>, Long>> newChats = 
+                    GameDatabaseConnection.getNewChats(gameId, p.getUID(), lastChatMessageTime);
+            
+            // TODO : Implement
+
+        } catch (Exception e) {
+
+        }
     }
 
     private void updateCashNet() throws Exception {
