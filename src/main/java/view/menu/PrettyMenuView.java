@@ -70,7 +70,6 @@ public class PrettyMenuView extends Form {
         add(connectedLabel,"x 90%, y 1%, w 10%, h 5%");
         add(menu3d, "x 10%, y 40%, w 25%, h 50%");
         add(panel, "x 60%, y 40%, w 30%, h 50%");
-        //disconnectedToConnectedLabel("Arthur est un caca aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         repaint();
     }
 
@@ -297,7 +296,7 @@ public class PrettyMenuView extends Form {
     }
 
     public void disconnectedToConnectedLabel(String pseudo){
-        String xPos = String.valueOf(93 - pseudo.length());
+        String xPos = String.valueOf(85 - pseudo.length()*0.75);
         this.remove(connectedLabel);
         connectedLabel.setText("Connected as "+pseudo);
         connectedLabel.setForeground(new Color(0,255,0));
