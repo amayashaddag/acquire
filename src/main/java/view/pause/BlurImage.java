@@ -1,5 +1,8 @@
 package view.pause;
 import javax.swing.*;
+
+import com.formdev.flatlaf.FlatDarculaLaf;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,10 +23,10 @@ public class BlurImage extends JFrame {
 
         try {
             // Charger l'image
-            BufferedImage backgroundImage = ImageIO.read(new File("background.jpeg"));
+            BufferedImage backgroundImage = ImageIO.read(new File("src/main/ressources/images/menu/background.jpeg"));
 
             // Appliquer le flou gaussien à l'image
-            BufferedImage blurredImage = applyGaussianBlur(backgroundImage, 1, 2);
+            BufferedImage blurredImage = applyGaussianBlur(backgroundImage, 10, 2);
 
             // Utiliser un JPanel personnalisé pour afficher l'image floue en arrière-plan
             JPanel backgroundPanel = new JPanel() {
@@ -40,7 +43,7 @@ public class BlurImage extends JFrame {
 
             // Création des boutons "Resume" et "Back To Menu"
             JButton resumeButton = new JButton("Resume");
-            JButton backButton = new JButton("Back To Menu");
+            JButton backButton = new JButton("Disconnect");
 
             // Configuration des contraintes pour centrer les boutons
             GridBagConstraints gbc = new GridBagConstraints();
@@ -103,6 +106,9 @@ public class BlurImage extends JFrame {
     }
 
     public static void main(String[] args) {
+
+        FlatDarculaLaf.setup();
+
         SwingUtilities.invokeLater(() -> {
             new BlurImage().setVisible(true);
         });
