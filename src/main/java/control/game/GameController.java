@@ -666,7 +666,7 @@ public class GameController {
         }
     }
 
-    private void endGame() {
+    public void endGame() {
         if (onlineMode) {
             try {
                 if (gameId != null) {
