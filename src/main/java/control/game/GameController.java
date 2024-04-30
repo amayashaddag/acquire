@@ -68,7 +68,13 @@ public class GameController {
         this.onlineMode = online;
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
-                updateGameState();
+                boolean result = updateGameState();
+
+                if (result) {
+                    return;
+                }
+
+                updateChat();
                 updateNewPlacedCells();
                 updateStocks();
                 updateCashNet();
@@ -117,16 +123,19 @@ public class GameController {
             chatObserver.start();
         } else {
             botTurnTimer.start();
+            this.refresher.start();
         }
-
-        this.refresher.start();
     }
 
-    private void updateGameState() throws Exception {
+    private boolean updateGameState() throws Exception {
         boolean gameEnded = GameDatabaseConnection.isGameEnded(gameId);
+
         if (gameEnded) {
             endGame();
+            return true;
         }
+
+        return false;
     }
 
     private void updateNewPlacedCells() throws Exception {
@@ -150,6 +159,10 @@ public class GameController {
             Player p = gameView.getPlayer();
             List<Map.Entry<Map.Entry<String, String>, Long>> newChats = 
                     GameDatabaseConnection.getNewChats(gameId, p.getUID(), lastChatMessageTime);
+
+            for (Map.Entry<Map.Entry<String, String>, Long> chat : newChats) {
+                System.out.println(chat.getKey().getKey() + " : " + chat.getKey().getValue());
+            }
             
             // TODO : Implement
 
@@ -539,7 +552,6 @@ public class GameController {
             // This part of the function supposes that a cell can be place in the given
             // position
             // Therefore, unplacedCorporations is supposed to never be empty
-            // This initialization should be replaced later with the choice of the player
 
             List<Corporation> unplacedCorporations = board.unplacedCorporations();
             
@@ -703,6 +715,8 @@ public class GameController {
 
             if (registredStocksToKeepSellTrade != null) {
                 gameView.chooseSellingKeepingOrTradingStocks(registredStocksToKeepSellTrade, registredMajorCorporation);
+                registredStocksToKeepSellTrade = null;
+                registredMajorCorporation = null;
             }
         }
 
@@ -809,6 +823,7 @@ public class GameController {
             try {
 
                 onlineObserver.stop();
+                chatObserver.stop();
 
                 if (gameId != null) {
                     GameDatabaseConnection.removeGame(gameId);
@@ -820,9 +835,8 @@ public class GameController {
             }
         } else {
             botTurnTimer.stop();
+            refresher.stop();
         }
-
-        refresher.stop();
 
         GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
         parent.dispose();

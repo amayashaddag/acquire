@@ -545,8 +545,6 @@ public class BotController implements Cloneable {
             board.addToRemainingStocks(c, amount);
             player.removeFromEarnedStocks(c, amount);
             player.addToCash(totalPriceForCorporation);
-
-            // TODO : Send notification for selling stocks
         }
     }
 
@@ -566,8 +564,6 @@ public class BotController implements Cloneable {
             board.removeFromRemainingStocks(major, amountToEarn);
             player.removeFromEarnedStocks(c, amountToGive);
             player.addToEarnedStocks(major, amountToEarn);
-
-            // TODO : Add notification for trading stocks
         }
     }
 

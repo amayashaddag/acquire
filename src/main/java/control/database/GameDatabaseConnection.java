@@ -777,12 +777,10 @@ public class GameDatabaseConnection {
 
     public static List<Map.Entry<Map.Entry<String, String>, Long>> getNewChats(String gameId, String uid,
             long lastTime) throws Exception {
-
-        // TODO : Vaut mieux les récupérer en sorted que de les trier manuellement
-        
         ApiFuture<QuerySnapshot> reader = database.collection(CHAT_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .whereNotEqualTo(UID_FIELD, uid)
+                .orderBy(TIME_FIELD)
                 .get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
         List<Map.Entry<Map.Entry<String, String>, Long>> newMessages = new LinkedList<>();
@@ -814,18 +812,7 @@ public class GameDatabaseConnection {
 
             newMessages.add(messageContent);
         }
-
-        List<Map.Entry<Map.Entry<String, String>, Long>> sortedNewMessages = newMessages.stream()
-                .sorted((arg0, arg1) -> {
-                    if (arg0.getValue() < arg1.getValue()) {
-                        return -1;
-                    } else if (arg0.getValue() == arg1.getValue()) {
-                        return 0;
-                    } else {
-                        return 1;
-                    }
-                }).toList();
         
-        return sortedNewMessages;
+        return newMessages;
     }
 }
