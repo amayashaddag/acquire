@@ -439,6 +439,56 @@ public class GameDatabaseConnection {
         }
     }
 
+    public static void updateAnalytics(String gameId, String winnerUserId) throws Exception {
+        ApiFuture<QuerySnapshot> gamePlayersReader = database.collection(PLAYER_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> gamePlayers = gamePlayersReader.get().getDocuments();
+
+        if (gamePlayers.isEmpty()) {
+            return;
+        }
+
+        for (QueryDocumentSnapshot doc : gamePlayers) {
+            String userId = (String) doc.get(UID_FIELD);
+            Long actualScore = (Long) doc.get(NET_FIELD);
+
+            if (userId == null || actualScore == null) {
+                throw new NullPointerException();
+            }
+
+            ApiFuture<QuerySnapshot> analyticsReader = database.collection(ANALYTICS_TABLE)
+                    .whereEqualTo(UID_FIELD, userId).get();
+            List<QueryDocumentSnapshot> analytics = analyticsReader.get().getDocuments();
+            DocumentSnapshot playerAnalytics = analytics.get(0);
+
+            Long playedGames = (Long) playerAnalytics.get(PLAYED_GAMES_FIELD);
+            Long wonGames = (Long) playerAnalytics.get(WON_GAMES_FIELD);
+            Long bestScore = (Long) playerAnalytics.get(BEST_SCORE_FIELD);
+
+            if (playedGames == null || wonGames == null || bestScore == null) {
+                throw new NullPointerException();
+            }
+
+            playedGames++;
+            if (winnerUserId.equals(userId)) {
+                wonGames++;
+
+                if (bestScore < actualScore) {
+                    bestScore = actualScore;
+                }
+            }
+
+            Map<String, Object> updatedAnalytics = new HashMap<>();
+            updatedAnalytics.put(BEST_SCORE_FIELD, bestScore);
+            updatedAnalytics.put(WON_GAMES_FIELD, wonGames);
+            updatedAnalytics.put(PLAYED_GAMES_FIELD, playedGames);
+
+            DocumentReference ref = playerAnalytics.getReference();
+            ref.update(updatedAnalytics);
+
+        }
+    }
+
     public static void clear() throws Exception {
         for (String table : ALL_TABLES) {
             if (table == null) {
@@ -587,6 +637,9 @@ public class GameDatabaseConnection {
 
             players.add(analytics);
         }
+
+
+        // TODO : Rewrite by sorting in DB
 
         players.sort(new Comparator<PlayerAnalytics>() {
 
