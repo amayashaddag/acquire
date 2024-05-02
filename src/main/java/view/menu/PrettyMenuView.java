@@ -311,7 +311,9 @@ public class PrettyMenuView extends Form {
         // remove(menu3d);
         // repaint();
         view.game.BlurPane bb = new view.game.BlurPane(this);
-        bb.blurWith(new JButton("teztaeza"));
+        JButton jv = new JButton("Stop");
+        jv.addActionListener((e) -> bb.blur(false));
+        bb.blurWith(jv);
         // bb.add(new JLabel("test 1,2,1,2"));
         // bb.repaint();
         // ((GameFrame) SwingUtilities.getWindowAncestor(this)).setGlassPane(new view.game.BlurPane());

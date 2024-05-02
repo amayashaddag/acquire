@@ -1,5 +1,6 @@
 package view.game;
 
+import model.tools.AutoSetter;
 import view.window.*;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -12,6 +13,7 @@ import java.awt.Component;
  * @author Arthur Deck
  */
 @SuppressWarnings("serial")
+@AutoSetter(typeParam = GameView.class)
 public class BlurPane extends JPanel {
     public BlurPane(Form form) {
         setOpaque(false);
@@ -32,12 +34,12 @@ public class BlurPane extends JPanel {
         super.paint(g);
     }
 
-    public void blur() {
-        ((GameFrame) SwingUtilities.getWindowAncestor(form)).getGlassPane().setVisible(true);
+    public void blur(boolean b) {
+        ((GameFrame) SwingUtilities.getWindowAncestor(form)).getGlassPane().setVisible(b);
     }
 
     public void blurWith(Component panel) {
-        blur();
+        blur(true);
         removeAll();
         add(panel);
         repaint();

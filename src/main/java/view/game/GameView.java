@@ -36,6 +36,7 @@ public class GameView extends Form {
     final private JetonsPanel jetonsPanel;
     final private MouseManager mouseListener;
     final private PlayerBoard playerBoard;
+    final private BlurPane blurPane;
 
     AffineTransform at;
 
@@ -51,6 +52,7 @@ public class GameView extends Form {
         this.jetonsPanel = new JetonsPanel(this);
         this.mouseListener = new MouseManager(this);
         this.playerBoard = new PlayerBoard(this);
+        this.blurPane = new BlurPane(this);
     }
 
     public Player getPlayer() {
