@@ -7,7 +7,6 @@ import model.game.Board;
 import model.game.Cell;
 import net.miginfocom.swing.MigLayout;
 import model.tools.Point;
-
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -42,6 +41,7 @@ public class GameView extends Form {
 
     public GameView(GameController controller, Player player) {
         super();
+
         this.controller = controller;
         this.player = player;
 

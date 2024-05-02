@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 
 import com.formdev.flatlaf.FlatClientProperties;
@@ -38,7 +39,7 @@ import view.window.GameFrame;
 public class PrettyMenuView extends Form {
     private final MenuController controller;
     private final Menu3D menu3d = new Menu3D();
-    private final JPanel panel = new JPanel();
+    private final JPanel panel;
     private final MigLayout mig = new MigLayout("al center, filly");
     private boolean aMultiGameIsLaunching = false;
     private boolean haveJoinAGame = false;
@@ -49,8 +50,24 @@ public class PrettyMenuView extends Form {
 
         this.controller = controller;
         setLayout(mig);
-        menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
 
+        UIManager.put("Button.background", MenuRessources.Assets.getColor("blue"));
+        UIManager.put("Label.font", view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
+
+        this.panel = new JPanel() {
+            @Override
+            public void setOpaque(boolean isOpaque) {
+                if (isOpaque)
+                    setBorder(new ColorableArcableFlatBorder(MenuRessources.Assets.getColor("blue").darker(), 10));
+                else
+                    setBorder(null);
+        
+                super.setOpaque(isOpaque);
+            }
+        };
+        panel.setBackground(MenuRessources.Assets.getColor("blue"));
+
+        menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
         menu3d.addMenuItem("MULTI PLAYER", this::multiPlayer);
         menu3d.addMenuItem("PROFIL", this::profile);
@@ -193,7 +210,6 @@ public class PrettyMenuView extends Form {
     }
 
     public void ranking() {
-
         if (!controller.isConnected()) {
             displayLoginView();
             return;
@@ -259,17 +275,14 @@ public class PrettyMenuView extends Form {
     public void profile() {
 
         if (!controller.isConnected()) {
-            // displayLoginView();
-            // return;
+            displayLoginView();
+            return;
         }
 
         mig.setComponentConstraints(panel, "x 60%, y 40%, w 20%, h 30%");
         panel.removeAll();
-        panel.setBackground(MenuRessources.Assets.getColor("blue"));
-        panel.setBorder(new ColorableArcableFlatBorder(MenuRessources.Assets.getColor("blue").darker(), 10));
 
-        // PlayerAnalytics p = controller.getPlayerAnalytics();
-        PlayerAnalytics p = new PlayerAnalytics("arthur", 5, 4, 3, 2);
+        PlayerAnalytics p = controller.getPlayerAnalytics();
         panel.setLayout(new MigLayout("al center, insets 10, wrap 1"));
         panel.add(new JLabel("Pseudo : " + p.pseudo()));
         panel.add(new JLabel("Won Games" + p.wonGames()));
