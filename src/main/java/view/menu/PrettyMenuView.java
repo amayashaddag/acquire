@@ -24,6 +24,7 @@ import model.tools.PreGameAnalytics;
 import net.miginfocom.swing.MigLayout;
 import view.assets.Fonts;
 import view.assets.MenuRessources;
+import view.game.ColorableArcableFlatBorder;
 import view.login.LoginView;
 import view.window.Form;
 import view.window.GameFrame;
@@ -45,6 +46,7 @@ public class PrettyMenuView extends Form {
 
     public PrettyMenuView(MenuController controller) {
         super();
+
         this.controller = controller;
         setLayout(mig);
         menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
@@ -257,20 +259,23 @@ public class PrettyMenuView extends Form {
     public void profile() {
 
         if (!controller.isConnected()) {
-            displayLoginView();
-            return;
+            // displayLoginView();
+            // return;
         }
 
-        mig.setComponentConstraints(panel, "x 50%, w 45%, h 70%");
-        revalidate();
+        mig.setComponentConstraints(panel, "x 60%, y 40%, w 20%, h 30%");
         panel.removeAll();
+        panel.setBackground(MenuRessources.Assets.getColor("blue"));
+        panel.setBorder(new ColorableArcableFlatBorder(MenuRessources.Assets.getColor("blue").darker(), 10));
 
-        PlayerAnalytics p = controller.getPlayerAnalytics();
-        panel.setLayout(new GridLayout(3, 1));
+        // PlayerAnalytics p = controller.getPlayerAnalytics();
+        PlayerAnalytics p = new PlayerAnalytics("arthur", 5, 4, 3, 2);
+        panel.setLayout(new MigLayout("al center, insets 10, wrap 1"));
         panel.add(new JLabel("Pseudo : " + p.pseudo()));
         panel.add(new JLabel("Won Games" + p.wonGames()));
         panel.add(new JLabel("Played Games" + p.playedGames()));
         JButton jb = new JButton("Change account");
+        jb.setBackground(MenuRessources.Assets.getColor("blue").darker());
         jb.addActionListener((e) -> {
             panel.removeAll();
             panel.add(new LoginView(controller));
@@ -278,7 +283,10 @@ public class PrettyMenuView extends Form {
         });
         panel.add(jb);
 
+        panel.setOpaque(true);
         panel.setVisible(true);
+        panel.revalidate();
+        revalidate();
         repaint();
     }
 

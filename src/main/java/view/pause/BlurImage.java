@@ -1,4 +1,5 @@
 package view.pause;
+
 import javax.swing.*;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
@@ -23,7 +24,7 @@ public class BlurImage extends JFrame {
 
         try {
             // Charger l'image
-            BufferedImage backgroundImage = ImageIO.read(new File("src/main/ressources/images/menu/background.jpeg"));
+            BufferedImage backgroundImage = ImageIO.read(new File("src/main/ressources/images/menu/background.png"));
 
             // Appliquer le flou gaussien à l'image
             BufferedImage blurredImage = applyGaussianBlur(backgroundImage, 10, 2);
