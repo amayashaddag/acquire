@@ -18,6 +18,7 @@ import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
 import model.tools.Action;
+import model.tools.Couple;
 import model.tools.Point;
 import view.game.GameNotifications;
 import view.game.GameView;
@@ -40,7 +41,7 @@ public class GameController {
     private final Timer refresher;
     private final Map<Point, Corporation> newPlacedCells;
 
-    private Map.Entry<String, Integer> lastNotification;
+    private long lastNotificationTime;
     private long lastKeepSellTradeStockTime;
     private long lastChatMessageTime;
     private int playerTurnIndex;
@@ -74,7 +75,6 @@ public class GameController {
                     return;
                 }
 
-                updateChat();
                 updateNewPlacedCells();
                 updateStocks();
                 updateCashNet();
@@ -156,18 +156,23 @@ public class GameController {
 
     private void updateChat() {
         try {
+
+            System.out.println("Searching for chats");
+
             Player p = gameView.getPlayer();
-            List<Map.Entry<Map.Entry<String, String>, Long>> newChats = 
+            List<Couple<Couple<String, String>, Long>> newChats = 
                     GameDatabaseConnection.getNewChats(gameId, p.getUID(), lastChatMessageTime);
 
-            for (Map.Entry<Map.Entry<String, String>, Long> chat : newChats) {
+            for (Couple<Couple<String, String>, Long> chat : newChats) {
                 System.out.println(chat.getKey().getKey() + " : " + chat.getKey().getValue());
             }
+
+            lastChatMessageTime = newChats.get(newChats.size() - 1).getValue();
             
             // TODO : Implement
 
         } catch (Exception e) {
-
+            errorInterrupt(e);
         }
     }
 
@@ -236,15 +241,15 @@ public class GameController {
     }
 
     private void updateLastNotification() throws Exception {
-        Map.Entry<String, Integer> notification = GameDatabaseConnection.getLastNotification(gameId);
+        Couple<String, Long> notification = GameDatabaseConnection.getLastNotification(gameId);
 
         if (notification == null) {
             return;
         }
 
-        if (lastNotification == null || !lastNotification.getValue().equals(notification.getValue())) {
+        if (lastNotificationTime != notification.getValue()) {
             gameView.showInfoNotification(notification.getKey());
-            lastNotification = notification;
+            lastNotificationTime = notification.getValue();
         }
     }
 
@@ -849,5 +854,60 @@ public class GameController {
         } catch (Exception e) {
             errorInterrupt(e);
         }
+    }
+
+
+    /**
+     * @return a list of (String, Integer) which represent the pseudo and total cash 
+     * of each player.
+     */
+    public List<Couple<String, Integer>> getCurrentCashes() {
+        List<Couple<String, Integer>> currentCashes = new LinkedList<>();
+
+        for (Player p : currentPlayers) {
+            currentCashes.add(new Couple<String,Integer>(p.getPseudo(), p.getCash()));
+        }
+
+        return currentCashes;
+    }
+
+    /**
+     * @return a list of (String, Integer) which represent the pseudo and total net
+     * of each player.
+     */
+    public List<Couple<String, Integer>> getCurrentNets() {
+        List<Couple<String, Integer>> currentNets = new LinkedList<>();
+
+        for (Player p : currentPlayers) {
+            currentNets.add(new Couple<String,Integer>(p.getPseudo(), p.getNet()));
+        }
+
+        return currentNets;
+    }
+
+    /**
+     * @return total cash in game.
+     */
+    public int getTotalCash() {
+        int totalCash = 0;
+
+        for (Player p : currentPlayers) {
+            totalCash += p.getCash();
+        }
+
+        return totalCash;
+    }
+
+    /**
+     * @return total net in game.
+     */
+    public int getTotalNet() {
+        int totalNet = 0;
+
+        for (Player p : currentPlayers) {
+            totalNet += p.getCash();
+        }
+
+        return totalNet;
     }
 }

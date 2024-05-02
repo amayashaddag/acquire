@@ -28,39 +28,13 @@ import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
+import model.tools.Couple;
 import model.tools.PlayerAnalytics;
 import model.tools.PlayerCredentials;
 import model.tools.Point;
 import model.tools.PreGameAnalytics;
 
 public class GameDatabaseConnection {
-
-    private static class Couple<E, F> implements Map.Entry<E, F> {
-
-        private E key;
-        private F value;
-
-        public Couple(E key, F value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        @Override
-        public E getKey() {
-            return key;
-        }
-
-        @Override
-        public F getValue() {
-            return value;
-        }
-
-        @Override
-        public F setValue(F arg0) {
-            return value = arg0;
-        }
-
-    }
 
     private static final Firestore database = FirestoreClient.getFirestore();
 
@@ -508,7 +482,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static Map.Entry<String, Integer> getLastNotification(String gameId) throws Exception {
+    public static Couple<String, Long> getLastNotification(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(NOTIFICATIONS_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -525,7 +499,7 @@ public class GameDatabaseConnection {
             throw new Exception();
         }
 
-        return new Couple<>(notificationMessage, notificationTime.intValue());
+        return new Couple<>(notificationMessage, notificationTime);
     }
 
     public static void setLastNotification(String gameId, String notificationMessage) throws Exception {
@@ -637,9 +611,6 @@ public class GameDatabaseConnection {
 
             players.add(analytics);
         }
-
-
-        // TODO : Rewrite by sorting in DB
 
         players.sort(new Comparator<PlayerAnalytics>() {
 
@@ -828,15 +799,13 @@ public class GameDatabaseConnection {
         writer.get();
     }
 
-    public static List<Map.Entry<Map.Entry<String, String>, Long>> getNewChats(String gameId, String uid,
+    public static List<Couple<Couple<String, String>, Long>> getNewChats(String gameId, String uid,
             long lastTime) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(CHAT_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
-                .whereNotEqualTo(UID_FIELD, uid)
-                .orderBy(TIME_FIELD)
                 .get();
+        List<Couple<Couple<String, String>, Long>> newMessages = new LinkedList<>();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
-        List<Map.Entry<Map.Entry<String, String>, Long>> newMessages = new LinkedList<>();
 
         if (docs.isEmpty()) {
             return newMessages;
@@ -844,12 +813,14 @@ public class GameDatabaseConnection {
 
         for (QueryDocumentSnapshot doc : docs) {
             Long time = (Long) doc.get(TIME_FIELD);
+            String messageUid = (String) doc.get(UID_FIELD);
 
-            if (time == null) {
+
+            if (time == null || messageUid == null) {
                 throw new NullPointerException();
             }
 
-            if (time <= lastTime) {
+            if (time <= lastTime || messageUid.equals(uid)) {
                 continue;
             }
 
@@ -860,12 +831,21 @@ public class GameDatabaseConnection {
                 throw new NullPointerException();
             }
 
-            Map.Entry<String, String> m = new Couple<>(pseudo, message);
-            Map.Entry<Map.Entry<String, String>, Long> messageContent = new Couple<>(m, time);
+            Couple<String, String> m = new Couple<>(pseudo, message);
+            Couple<Couple<String, String>, Long> messageContent = new Couple<>(m, time);
 
             newMessages.add(messageContent);
         }
-        
+
+        newMessages = newMessages.stream().sorted(new Comparator<Couple<Couple<String, String>, Long>>() {
+
+            @Override
+            public int compare(Couple<Couple<String, String>, Long> arg0, Couple<Couple<String, String>, Long> arg1) {
+                return arg0.getValue().intValue() - arg1.getValue().intValue();
+            }
+            
+        }).toList();
+
         return newMessages;
     }
 }
