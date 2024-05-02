@@ -25,6 +25,6 @@ public class Debug extends JFrame {
         } catch (Exception e) {
             GameFrame.showError(e, frame::dispose);
         }
-        // TODO : Igor mange ton caca
+        
     }
 }

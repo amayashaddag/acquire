@@ -118,7 +118,6 @@ public class PrettyMenuView extends Form {
     }
 
     public void multiPlayer() {
-
         if (!controller.isConnected()) {
             displayLoginView();
             return;
@@ -273,7 +272,6 @@ public class PrettyMenuView extends Form {
     }
 
     public void profile() {
-
         if (!controller.isConnected()) {
             displayLoginView();
             return;
@@ -304,7 +302,14 @@ public class PrettyMenuView extends Form {
     }
 
     public void settings() {
-
+        // TODO : pour les test 
+        mig.setComponentConstraints(panel, "x 0, y 0, w 100%, h 0%");
+        panel.removeAll();
+        panel.add(new view.game.EndGame());
+        panel.repaint();
+        panel.setVisible(true);
+        remove(menu3d);
+        repaint();
     }
 
     public void exit() {
@@ -327,7 +332,6 @@ public class PrettyMenuView extends Form {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.RED);
         g.drawImage(MenuRessources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
     }
 
