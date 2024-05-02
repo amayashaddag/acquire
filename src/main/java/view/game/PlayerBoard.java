@@ -74,6 +74,7 @@ public class PlayerBoard extends javax.swing.JPanel {
             this(p, INITIAL_DIMENSION, ZOOM_DIMENSION);
         }
 
+        @Deprecated
         private String getPlayersActionsHTMLString(Player p) {
             String res = "";
             HashMap<Corporation, Integer> earnedStocks = p.getEarnedStocks();
@@ -101,35 +102,7 @@ public class PlayerBoard extends javax.swing.JPanel {
                 // TODO : afficher pp joueur
                 this.setText(player.getPseudo());
             } else if (this.getSize().equals(this.zoomingDimension)) {
-                if (player.equals(PlayerBoard.this.g.getPlayer()))
-                    this.setText("""
-                                    <html>
-                                      <table>
-                                      <tr>
-                                        <td><b>Name</td>
-                                        <td>"""+player.getPseudo()+"""
-                                      </td>
-                                      </tr>
-                                      <tr>
-                                        <td><b>Cash</td>
-                                        <td>"""+player.getCash()+"""
-                                      $</td>
-                                      </tr>
-                                      <tr>
-                                         <td><b>Net</td>
-                                         <td>"""+player.getNet()+"""
-                                      $</td>
-                                      </tr>
-                                      <tr>
-                                        <center>
-                                          """+getPlayersActionsHTMLString(player)+"""
-                                        </center>
-                                      </tr>
-                                    </table>
-                                    </html>
-                                    """);
-                else
-                    this.setText("""
+                this.setText("""
                                     <html>
                                       <table>
                                       <tr>

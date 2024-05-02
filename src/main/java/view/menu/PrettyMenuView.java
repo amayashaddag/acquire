@@ -303,13 +303,19 @@ public class PrettyMenuView extends Form {
 
     public void settings() {
         // TODO : pour les test 
-        mig.setComponentConstraints(panel, "x 0, y 0, w 100%, h 0%");
-        panel.removeAll();
-        panel.add(new view.game.EndGame());
-        panel.repaint();
-        panel.setVisible(true);
-        remove(menu3d);
-        repaint();
+        // mig.setComponentConstraints(panel, "x 0, y 0, w 100%, h 0%");
+        // panel.removeAll();
+        // panel.add(new view.game.EndGame());
+        // panel.repaint();
+        // panel.setVisible(true);
+        // remove(menu3d);
+        // repaint();
+        view.game.BlurPane bb = new view.game.BlurPane(this);
+        bb.blurWith(new JButton("teztaeza"));
+        // bb.add(new JLabel("test 1,2,1,2"));
+        // bb.repaint();
+        // ((GameFrame) SwingUtilities.getWindowAncestor(this)).setGlassPane(new view.game.BlurPane());
+        // ((GameFrame) SwingUtilities.getWindowAncestor(this)).getGlassPane().setVisible(true);
     }
 
     public void exit() {
