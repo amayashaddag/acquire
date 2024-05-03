@@ -1,10 +1,12 @@
 package view.assets;
 
-import java.awt.Image;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
+import model.game.Corporation;
+import view.assets.GameResources;
 import javax.imageio.ImageIO;
 
 /**
@@ -26,7 +28,7 @@ public class MenuRessources {
      * ! Specials characters are not allowed (except
      * '-' and '_')!
      */
-    public class Assets {
+    public static class Assets {
         static {
             File dir = new File(MAIN_PATH + RESSOURCES_PATH + IMAGES_PATH);
 
@@ -72,5 +74,25 @@ public class MenuRessources {
         }
 
         public static Image BACKGROUND;
+
+        public static Color getColor(String s) {
+            Corporation corp;
+            if (s.equals("red"))
+                corp = Corporation.AMERICAN;
+            else if (s.equals("cyan"))
+                corp = Corporation.IMPERIAL;
+            else if (s.equals("yellow"))
+                corp = Corporation.FESTIVAL;
+            else if (s.equals("blue"))
+                corp = Corporation.SACKSON;
+            else if (s.equals("green"))
+                corp = Corporation.TOWER;
+            else if (s.equals("orange"))
+                corp = Corporation.WORLDWIDE;
+            else if (s.equals("purple"))
+                corp = Corporation.CONTINENTAL;
+            else return null;
+            return view.assets.GameResources.Assets.getCorpColor(corp);
+        }
     }
 }

@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.swing.SpinnerNumberModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -14,16 +13,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
-
 import com.formdev.flatlaf.FlatClientProperties;
-
 import control.menu.MenuController;
 import model.tools.PlayerAnalytics;
 import model.tools.PreGameAnalytics;
 import net.miginfocom.swing.MigLayout;
 import view.assets.Fonts;
 import view.assets.MenuRessources;
+import view.game.ColorableArcableFlatBorder;
 import view.login.LoginView;
 import view.window.Form;
 import view.window.GameFrame;
@@ -37,7 +36,7 @@ import view.window.GameFrame;
 public class PrettyMenuView extends Form {
     private final MenuController controller;
     private final Menu3D menu3d = new Menu3D();
-    private final JPanel panel = new JPanel();
+    private final JPanel panel;
     private final MigLayout mig = new MigLayout("al center, filly");
     private boolean aMultiGameIsLaunching = false;
     private boolean haveJoinAGame = false;
@@ -45,10 +44,27 @@ public class PrettyMenuView extends Form {
 
     public PrettyMenuView(MenuController controller) {
         super();
+
         this.controller = controller;
         setLayout(mig);
-        menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
 
+        UIManager.put("Button.background", MenuRessources.Assets.getColor("blue"));
+        UIManager.put("Label.font", view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
+
+        this.panel = new JPanel() {
+            @Override
+            public void setOpaque(boolean isOpaque) {
+                if (isOpaque)
+                    setBorder(new ColorableArcableFlatBorder(MenuRessources.Assets.getColor("blue").darker(), 10));
+                else
+                    setBorder(null);
+        
+                super.setOpaque(isOpaque);
+            }
+        };
+        panel.setBackground(MenuRessources.Assets.getColor("blue"));
+
+        menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
         menu3d.addMenuItem("MULTI PLAYER", this::multiPlayer);
         menu3d.addMenuItem("PROFIL", this::profile);
@@ -99,7 +115,6 @@ public class PrettyMenuView extends Form {
     }
 
     public void multiPlayer() {
-
         if (!controller.isConnected()) {
             displayLoginView();
             return;
@@ -191,7 +206,6 @@ public class PrettyMenuView extends Form {
     }
 
     public void ranking() {
-
         if (!controller.isConnected()) {
             displayLoginView();
             return;
@@ -255,22 +269,21 @@ public class PrettyMenuView extends Form {
     }
 
     public void profile() {
-
         if (!controller.isConnected()) {
             displayLoginView();
             return;
         }
 
-        mig.setComponentConstraints(panel, "x 50%, w 45%, h 70%");
-        revalidate();
+        mig.setComponentConstraints(panel, "x 60%, y 40%, w 20%, h 30%");
         panel.removeAll();
 
         PlayerAnalytics p = controller.getPlayerAnalytics();
-        panel.setLayout(new GridLayout(3, 1));
+        panel.setLayout(new MigLayout("al center, insets 10, wrap 1"));
         panel.add(new JLabel("Pseudo : " + p.pseudo()));
         panel.add(new JLabel("Won Games" + p.wonGames()));
         panel.add(new JLabel("Played Games" + p.playedGames()));
         JButton jb = new JButton("Change account");
+        jb.setBackground(MenuRessources.Assets.getColor("blue").darker());
         jb.addActionListener((e) -> {
             panel.removeAll();
             panel.add(new LoginView(controller));
@@ -278,12 +291,30 @@ public class PrettyMenuView extends Form {
         });
         panel.add(jb);
 
+        panel.setOpaque(true);
         panel.setVisible(true);
+        panel.revalidate();
+        revalidate();
         repaint();
     }
 
     public void settings() {
-
+        // TODO : pour les test 
+        // mig.setComponentConstraints(panel, "x 0, y 0, w 100%, h 0%");
+        // panel.removeAll();
+        // panel.add(new view.game.EndGame());
+        // panel.repaint();
+        // panel.setVisible(true);
+        // remove(menu3d);
+        // repaint();
+        view.game.BlurPane bb = new view.game.BlurPane(this);
+        JButton jv = new JButton("Stop");
+        jv.addActionListener((e) -> bb.blur(false));
+        bb.blurWith(jv);
+        // bb.add(new JLabel("test 1,2,1,2"));
+        // bb.repaint();
+        // ((GameFrame) SwingUtilities.getWindowAncestor(this)).setGlassPane(new view.game.BlurPane());
+        // ((GameFrame) SwingUtilities.getWindowAncestor(this)).getGlassPane().setVisible(true);
     }
 
     public void exit() {
@@ -306,7 +337,6 @@ public class PrettyMenuView extends Form {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.RED);
         g.drawImage(MenuRessources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
     }
 

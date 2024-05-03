@@ -37,7 +37,7 @@ public class GameResources {
      * ! Specials characters are not allowed (except
      * '-' and '_')!
      */
-    public class Assets {
+    public static class Assets {
         static {
             File dir = new File(MAIN_PATH + RESSOURCES_PATH + IMAGES_PATH);
 

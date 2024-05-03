@@ -69,7 +69,6 @@ public class LoginView extends JPanel {
         loginComponentContainer.setLayout(new BoxLayout(loginComponentContainer, BoxLayout.Y_AXIS));
         loginComponentContainer
                 .setPreferredSize(new Dimension(GameFrame.DEFAULT_WIDTH / 3, GameFrame.DEFAULT_HEIGHT * 3 / 5));
-        loginComponentContainer.setOpaque(false);
 
         titleLabel = new JLabel(LoginInterfaceResources.LOGIN_BUTTON_TEXT);
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
@@ -160,6 +159,7 @@ public class LoginView extends JPanel {
         };
         loginAndSignUpButtonContainer.add(loginButton);
         loginAndSignUpButtonContainer.add(signInButton);
+        loginAndSignUpButtonContainer.setOpaque(false);
 
         JPanel createAccountAndComeBackToLoginContainer = new Form() {
             @Override
@@ -185,7 +185,7 @@ public class LoginView extends JPanel {
         loginComponentContainer.add(Box.createHorizontalGlue());
         loginComponentContainer.add(titleLabel);
         loginComponentContainer.add(Box.createHorizontalGlue());
-        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 15));
+        loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 25));
         loginComponentContainer.add(pseudoArea);
         loginComponentContainer.add(Box.createVerticalStrut(GameFrame.DEFAULT_HEIGHT / 25));
         loginComponentContainer.add(emailArea);
@@ -196,13 +196,7 @@ public class LoginView extends JPanel {
         loginComponentContainer.add(loginButtons);
         loginComponentContainer.add(Box.createVerticalGlue());
         loginComponentContainer.setOpaque(false);
-
-        this.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.insets = new Insets(0, 0, 0, 0);
-        this.add(loginComponentContainer, gbc);
+        this.add(loginComponentContainer);
     }
 
     public void fromLoginMenuToSignInMenu() {
