@@ -66,11 +66,6 @@ public class PausePane extends BlurPane {
     private void init2() {
         Color color = Color.decode("#f97316");
         barChart1 = new HorizontalBarChart();
-        JLabel header1 = new JLabel("Stocks");
-        header1.putClientProperty(FlatClientProperties.STYLE, ""
-                + "font:+1;"
-                + "border:0,0,5,0");
-        barChart1.setHeader(header1);
         barChart1.setBarColor(color);
         barChart1.setDataset(createData());
         JPanel panel1 = new JPanel(new BorderLayout());
