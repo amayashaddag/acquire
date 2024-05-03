@@ -10,6 +10,8 @@ import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.text.DecimalFormat;
+
 import raven.chart.bar.HorizontalBarChart;
 import java.awt.Color;
 import raven.chart.data.category.DefaultCategoryDataset;
@@ -64,8 +66,15 @@ public class PausePane extends BlurPane {
     HorizontalBarChart barChart1; // For player's actions
 
     private void init2() {
+        class HBC extends HorizontalBarChart {
+            HBC() {
+                super();
+                super.valuesFormat = new DecimalFormat();
+            }
+        }
+
         Color color = Color.decode("#f97316");
-        barChart1 = new HorizontalBarChart();
+        barChart1 = new HBC();
         barChart1.setBarColor(color);
         barChart1.setDataset(createData());
         JPanel panel1 = new JPanel(new BorderLayout());

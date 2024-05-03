@@ -47,7 +47,8 @@ public class PrettyMenuView extends Form {
         this.controller = controller;
         setLayout(mig);
 
-        UIManager.put("Component.background", MenuResources.Assets.getColor("blue"));
+        UIManager.put("Button.background", MenuResources.Assets.getColor("blue"));
+        UIManager.put("Label.background", MenuResources.Assets.getColor("blue"));
         UIManager.put("Label.font", view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
 
         this.panel = new JPanel() {
