@@ -1,5 +1,6 @@
 package control.game;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
 import model.tools.Action;
+import model.tools.Couple;
 import model.tools.Point;
 import view.game.GameNotifications;
 import view.game.GameView;
@@ -34,13 +36,18 @@ public class GameController {
     private final String gameId;
     private final boolean onlineMode;
     private final Timer onlineObserver;
+    private final Timer chatObserver;
     private final Timer botTurnTimer;
     private final Timer refresher;
     private final Map<Point, Corporation> newPlacedCells;
 
-    private Map.Entry<String, Integer> lastNotification;
+    private long lastNotificationTime;
     private long lastKeepSellTradeStockTime;
+    private long lastChatMessageTime;
     private int playerTurnIndex;
+
+    private Map<Corporation, Integer> registredStocksToKeepSellTrade;
+    private Corporation registredMajorCorporation;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
     public final static int ONLINE_OBSERVER_DELAY = 2000;
@@ -62,7 +69,12 @@ public class GameController {
         this.onlineMode = online;
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
-                updateGameState();
+                boolean result = updateGameState();
+
+                if (result) {
+                    return;
+                }
+
                 updateNewPlacedCells();
                 updateStocks();
                 updateCashNet();
@@ -78,7 +90,7 @@ public class GameController {
             } 
         });
 
-        this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionListener) -> {
+        this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
             Player p = getCurrentPlayer();
 
             if (!p.isBot()) {
@@ -97,25 +109,33 @@ public class GameController {
             }
         });
 
-        this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionListener) -> {
+        this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
+            updateChat();
+        });
+
+        this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
             gameView.repaint();
             gameView.revalidate();
         });
 
         if (online) {
             onlineObserver.start();
+            chatObserver.start();
         } else {
             botTurnTimer.start();
+            this.refresher.start();
         }
-
-        this.refresher.start();
     }
 
-    private void updateGameState() throws Exception {
+    private boolean updateGameState() throws Exception {
         boolean gameEnded = GameDatabaseConnection.isGameEnded(gameId);
+
         if (gameEnded) {
             endGame();
+            return true;
         }
+
+        return false;
     }
 
     private void updateNewPlacedCells() throws Exception {
@@ -132,6 +152,28 @@ public class GameController {
         }
 
         board.updateStocks(currentPlayers);
+    }
+
+    private void updateChat() {
+        try {
+
+            System.out.println("Searching for chats");
+
+            Player p = gameView.getPlayer();
+            List<Couple<Couple<String, String>, Long>> newChats = 
+                    GameDatabaseConnection.getNewChats(gameId, p.getUID(), lastChatMessageTime);
+
+            for (Couple<Couple<String, String>, Long> chat : newChats) {
+                System.out.println(chat.getKey().getKey() + " : " + chat.getKey().getValue());
+            }
+
+            lastChatMessageTime = newChats.get(newChats.size() - 1).getValue();
+            
+            // TODO : Implement
+
+        } catch (Exception e) {
+            errorInterrupt(e);
+        }
     }
 
     private void updateCashNet() throws Exception {
@@ -199,15 +241,15 @@ public class GameController {
     }
 
     private void updateLastNotification() throws Exception {
-        Map.Entry<String, Integer> notification = GameDatabaseConnection.getLastNotification(gameId);
+        Couple<String, Long> notification = GameDatabaseConnection.getLastNotification(gameId);
 
         if (notification == null) {
             return;
         }
 
-        if (lastNotification == null || !lastNotification.getValue().equals(notification.getValue())) {
+        if (lastNotificationTime != notification.getValue()) {
             gameView.showInfoNotification(notification.getKey());
-            lastNotification = notification;
+            lastNotificationTime = notification.getValue();
         }
     }
 
@@ -228,7 +270,8 @@ public class GameController {
                 return;
             }
 
-            gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, major);
+            registredStocksToKeepSellTrade = stocksToKeepSellOrTrade;
+            registredMajorCorporation = major;
             lastKeepSellTradeStockTime = time;
 
         } catch (Exception e) {
@@ -439,8 +482,9 @@ public class GameController {
 
         if (onlineMode) {
             try {
-                GameDatabaseConnection.setKeepSellOrTradeStocks(adjacentCorporations, gameId);
-                GameDatabaseConnection.setMajorCorporation(gameId, chosenCellCorporation);
+                lastKeepSellTradeStockTime = Instant.now().toEpochMilli();
+                GameDatabaseConnection.setKeepSellOrTradeStocks(adjacentCorporations, gameId, lastKeepSellTradeStockTime);
+                GameDatabaseConnection.setMajorCorporation(gameId, chosenCellCorporation, lastKeepSellTradeStockTime);
             } catch (Exception e) {
                 errorInterrupt(e);
             }
@@ -513,7 +557,6 @@ public class GameController {
             // This part of the function supposes that a cell can be place in the given
             // position
             // Therefore, unplacedCorporations is supposed to never be empty
-            // This initialization should be replaced later with the choice of the player
 
             List<Corporation> unplacedCorporations = board.unplacedCorporations();
             
@@ -674,6 +717,12 @@ public class GameController {
 
         if (onlineMode) {
             onlineObserver.stop();
+
+            if (registredStocksToKeepSellTrade != null) {
+                gameView.chooseSellingKeepingOrTradingStocks(registredStocksToKeepSellTrade, registredMajorCorporation);
+                registredStocksToKeepSellTrade = null;
+                registredMajorCorporation = null;
+            }
         }
 
         resetNets();
@@ -777,23 +826,88 @@ public class GameController {
     private void endGame() {
         if (onlineMode) {
             try {
+
+                onlineObserver.stop();
+                chatObserver.stop();
+
                 if (gameId != null) {
-                    // GameDatabaseConnection.removeGame(gameId);
+                    GameDatabaseConnection.removeGame(gameId);
                 } else {
                     throw new NullPointerException();
                 }      
             } catch (Exception e) {
                 errorInterrupt(e);
             }
-
-            onlineObserver.stop();
         } else {
             botTurnTimer.stop();
+            refresher.stop();
         }
-
-        refresher.stop();
 
         GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
         parent.dispose();
+    }
+
+    public void sendChat(String chat, Player p) {
+        try {
+            long currentTime = Instant.now().toEpochMilli();
+            GameDatabaseConnection.sendChat(chat, p.getUID(), p.getPseudo(), gameId, currentTime);
+        } catch (Exception e) {
+            errorInterrupt(e);
+        }
+    }
+
+
+    /**
+     * @return a list of (String, Integer) which represent the pseudo and total cash 
+     * of each player.
+     */
+    public List<Couple<String, Integer>> getCurrentCashes() {
+        List<Couple<String, Integer>> currentCashes = new LinkedList<>();
+
+        for (Player p : currentPlayers) {
+            currentCashes.add(new Couple<String,Integer>(p.getPseudo(), p.getCash()));
+        }
+
+        return currentCashes;
+    }
+
+    /**
+     * @return a list of (String, Integer) which represent the pseudo and total net
+     * of each player.
+     */
+    public List<Couple<String, Integer>> getCurrentNets() {
+        List<Couple<String, Integer>> currentNets = new LinkedList<>();
+
+        for (Player p : currentPlayers) {
+            currentNets.add(new Couple<String,Integer>(p.getPseudo(), p.getNet()));
+        }
+
+        return currentNets;
+    }
+
+    /**
+     * @return total cash in game.
+     */
+    public int getTotalCash() {
+        int totalCash = 0;
+
+        for (Player p : currentPlayers) {
+            totalCash += p.getCash();
+        }
+
+        return totalCash;
+    }
+
+    /**
+     * @return total net in game.
+     */
+    public int getTotalNet() {
+        int totalNet = 0;
+
+        for (Player p : currentPlayers) {
+            totalNet += p.getCash();
+        }
+
+        return totalNet;
     }
 }

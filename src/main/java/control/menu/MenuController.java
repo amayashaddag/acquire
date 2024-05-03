@@ -59,15 +59,6 @@ public class MenuController {
                     return;
                 }
 
-                if (GameDatabaseConnection.isGameFull(joinedGameAnalytics.gameID())) {
-                    GameDatabaseConnection.startGame(joinedGameAnalytics.gameID());
-                    Player currentPlayer = joinGame();
-                    GameDatabaseConnection.setCurrentPlayer(
-                            joinedGameAnalytics.gameID(),
-                            currentPlayer.getUID());
-                    return;
-                }
-
                 if (GameDatabaseConnection.isGameEnded(joinedGameAnalytics.gameID())) {
                     joinedGameAnalytics = null;
                     return;

@@ -28,12 +28,14 @@ import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
+import model.tools.Couple;
 import model.tools.PlayerAnalytics;
 import model.tools.PlayerCredentials;
 import model.tools.Point;
 import model.tools.PreGameAnalytics;
 
 public class GameDatabaseConnection {
+
     private static final Firestore database = FirestoreClient.getFirestore();
 
     private static final String UID_PLAYER_FIELD = "uid";
@@ -52,6 +54,7 @@ public class GameDatabaseConnection {
     private static final String CASH_FIELD = "cash";
     private static final String NET_FIELD = "net";
     private static final String NOTIFICATION_MESSAGE_FIELD = "message";
+    private static final String CHAT_MESSAGE_FIELD = "message";
     private static final String TIME_FIELD = "time";
     private final static String BEST_SCORE_FIELD = "best-score";
     private final static String PLAYED_GAMES_FIELD = "played-games";
@@ -65,7 +68,8 @@ public class GameDatabaseConnection {
     private static final String NOTIFICATIONS_TABLE = "notifications";
     private final static String ANALYTICS_TABLE = "analytics";
     private final static String KEEP_SELL_TRADE_STOCKS_TABLE = "keep-sell-trade-stocks";
-    private final static String MAJOR_CORPORATINO_TABLE = "major-corporation";
+    private final static String MAJOR_CORPORATION_TABLE = "major-corporation";
+    private final static String CHAT_TABLE = "chat";
 
     private static final List<String> ALL_TABLES = new LinkedList<>();
     static {
@@ -78,7 +82,8 @@ public class GameDatabaseConnection {
                 NOTIFICATIONS_TABLE,
                 ANALYTICS_TABLE,
                 KEEP_SELL_TRADE_STOCKS_TABLE,
-                MAJOR_CORPORATINO_TABLE);
+                MAJOR_CORPORATION_TABLE,
+                CHAT_TABLE);
     }
 
     public static void addPlayer(String gameId, PlayerCredentials c) throws Exception {
@@ -408,6 +413,56 @@ public class GameDatabaseConnection {
         }
     }
 
+    public static void updateAnalytics(String gameId, String winnerUserId) throws Exception {
+        ApiFuture<QuerySnapshot> gamePlayersReader = database.collection(PLAYER_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId).get();
+        List<QueryDocumentSnapshot> gamePlayers = gamePlayersReader.get().getDocuments();
+
+        if (gamePlayers.isEmpty()) {
+            return;
+        }
+
+        for (QueryDocumentSnapshot doc : gamePlayers) {
+            String userId = (String) doc.get(UID_FIELD);
+            Long actualScore = (Long) doc.get(NET_FIELD);
+
+            if (userId == null || actualScore == null) {
+                throw new NullPointerException();
+            }
+
+            ApiFuture<QuerySnapshot> analyticsReader = database.collection(ANALYTICS_TABLE)
+                    .whereEqualTo(UID_FIELD, userId).get();
+            List<QueryDocumentSnapshot> analytics = analyticsReader.get().getDocuments();
+            DocumentSnapshot playerAnalytics = analytics.get(0);
+
+            Long playedGames = (Long) playerAnalytics.get(PLAYED_GAMES_FIELD);
+            Long wonGames = (Long) playerAnalytics.get(WON_GAMES_FIELD);
+            Long bestScore = (Long) playerAnalytics.get(BEST_SCORE_FIELD);
+
+            if (playedGames == null || wonGames == null || bestScore == null) {
+                throw new NullPointerException();
+            }
+
+            playedGames++;
+            if (winnerUserId.equals(userId)) {
+                wonGames++;
+
+                if (bestScore < actualScore) {
+                    bestScore = actualScore;
+                }
+            }
+
+            Map<String, Object> updatedAnalytics = new HashMap<>();
+            updatedAnalytics.put(BEST_SCORE_FIELD, bestScore);
+            updatedAnalytics.put(WON_GAMES_FIELD, wonGames);
+            updatedAnalytics.put(PLAYED_GAMES_FIELD, playedGames);
+
+            DocumentReference ref = playerAnalytics.getReference();
+            ref.update(updatedAnalytics);
+
+        }
+    }
+
     public static void clear() throws Exception {
         for (String table : ALL_TABLES) {
             if (table == null) {
@@ -427,7 +482,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static Map.Entry<String, Integer> getLastNotification(String gameId) throws Exception {
+    public static Couple<String, Long> getLastNotification(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(NOTIFICATIONS_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -444,29 +499,7 @@ public class GameDatabaseConnection {
             throw new Exception();
         }
 
-        return new Map.Entry<String, Integer>() {
-
-            private String key = notificationMessage;
-            private Integer value = notificationTime.intValue();
-
-            @Override
-            public String getKey() {
-                return key;
-            }
-
-            @Override
-            public Integer getValue() {
-                return value;
-            }
-
-            @Override
-            public Integer setValue(Integer arg0) {
-                Integer oldValue = value;
-                value = arg0;
-                return oldValue;
-            }
-
-        };
+        return new Couple<>(notificationMessage, notificationTime);
     }
 
     public static void setLastNotification(String gameId, String notificationMessage) throws Exception {
@@ -667,7 +700,7 @@ public class GameDatabaseConnection {
             throw new NullPointerException();
         }
 
-        if (currentTime.longValue() == lastTime) {
+        if (currentTime.longValue() <= lastTime) {
             return stocks;
         }
 
@@ -685,9 +718,7 @@ public class GameDatabaseConnection {
         return stocks;
     }
 
-    public static void setKeepSellOrTradeStocks(Set<Corporation> stocks, String gameId) throws Exception {
-        long time = Instant.now().toEpochMilli();
-
+    public static void setKeepSellOrTradeStocks(Set<Corporation> stocks, String gameId, long time) throws Exception {
         for (Corporation c : stocks) {
             Map<String, Object> stockFields = new HashMap<>();
             stockFields.put(GAME_ID_FIELD, gameId);
@@ -715,7 +746,7 @@ public class GameDatabaseConnection {
     }
 
     public static Corporation getMajorCorporation(String gameId, long time) throws Exception {
-        ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATINO_TABLE)
+        ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATION_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -731,21 +762,20 @@ public class GameDatabaseConnection {
         return major;
     }
 
-    public static void setMajorCorporation(String gameId, Corporation major) throws Exception {
-        ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATINO_TABLE)
+    public static void setMajorCorporation(String gameId, Corporation major, long time) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATION_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
         Map<String, Object> majorFields = new HashMap<>();
         DocumentReference majorRef;
         ApiFuture<WriteResult> writer;
-        long time = Instant.now().toEpochMilli();
 
         majorFields.put(GAME_ID_FIELD, gameId);
         majorFields.put(CORPORATION_FIELD, major.toString());
         majorFields.put(TIME_FIELD, time);
 
         if (docs.isEmpty()) {
-            majorRef = database.collection(MAJOR_CORPORATINO_TABLE).document();
+            majorRef = database.collection(MAJOR_CORPORATION_TABLE).document();
             writer = majorRef.set(majorFields);
         } else {
             majorRef = docs.get(0).getReference();
@@ -753,5 +783,69 @@ public class GameDatabaseConnection {
         }
 
         writer.get();
+    }
+
+    public static void sendChat(String chat, String uid, String pseudo, String gameId, long time) throws Exception {
+        DocumentReference doc = database.collection(CHAT_TABLE).document();
+        Map<String, Object> messageFields = new HashMap<>();
+
+        messageFields.put(CHAT_MESSAGE_FIELD, chat);
+        messageFields.put(UID_FIELD, uid);
+        messageFields.put(GAME_ID_FIELD, gameId);
+        messageFields.put(TIME_FIELD, time);
+        messageFields.put(PSEUDO_PLAYER_FIELD, pseudo);
+
+        ApiFuture<WriteResult> writer = doc.set(messageFields);
+        writer.get();
+    }
+
+    public static List<Couple<Couple<String, String>, Long>> getNewChats(String gameId, String uid,
+            long lastTime) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(CHAT_TABLE)
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .get();
+        List<Couple<Couple<String, String>, Long>> newMessages = new LinkedList<>();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        if (docs.isEmpty()) {
+            return newMessages;
+        }
+
+        for (QueryDocumentSnapshot doc : docs) {
+            Long time = (Long) doc.get(TIME_FIELD);
+            String messageUid = (String) doc.get(UID_FIELD);
+
+
+            if (time == null || messageUid == null) {
+                throw new NullPointerException();
+            }
+
+            if (time <= lastTime || messageUid.equals(uid)) {
+                continue;
+            }
+
+            String pseudo = (String) doc.get(PSEUDO_PLAYER_FIELD);
+            String message = (String) doc.get(CHAT_MESSAGE_FIELD);
+
+            if (pseudo == null || message == null) {
+                throw new NullPointerException();
+            }
+
+            Couple<String, String> m = new Couple<>(pseudo, message);
+            Couple<Couple<String, String>, Long> messageContent = new Couple<>(m, time);
+
+            newMessages.add(messageContent);
+        }
+
+        newMessages = newMessages.stream().sorted(new Comparator<Couple<Couple<String, String>, Long>>() {
+
+            @Override
+            public int compare(Couple<Couple<String, String>, Long> arg0, Couple<Couple<String, String>, Long> arg1) {
+                return arg0.getValue().intValue() - arg1.getValue().intValue();
+            }
+            
+        }).toList();
+
+        return newMessages;
     }
 }
