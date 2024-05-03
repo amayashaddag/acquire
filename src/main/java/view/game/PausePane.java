@@ -1,28 +1,20 @@
 package view.game;
 
-import view.game.BlurPane;
 import javax.swing.JPanel;
-import javax.swing.JLabel;
 import model.game.Player;
 import model.tools.AutoSetter;
 import view.window.GameFrame;
-import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.DecimalFormat;
-
 import raven.chart.bar.HorizontalBarChart;
 import java.awt.Color;
-import raven.chart.data.category.DefaultCategoryDataset;
 import raven.chart.data.pie.DefaultPieDataset;
 import java.awt.BorderLayout;
 import com.formdev.flatlaf.FlatClientProperties;
 import java.util.Map;
 import model.game.Corporation;
-import javax.swing.JComponent;
-import java.awt.Component;
-import javax.swing.JLayeredPane;
 
 /**
  * @author Arthur Deck
@@ -70,6 +62,7 @@ public class PausePane extends BlurPane {
             HBC() {
                 super();
                 super.valuesFormat = new DecimalFormat();
+                setBackground(Color.RED);
             }
         }
 

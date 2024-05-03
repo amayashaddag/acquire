@@ -109,12 +109,14 @@ public class Menu3D extends JComponent {
     }
 
     private void runEvent() {
-        for (Runnable event : globalsEvents) {
-            event.run();
-        }
-        for (EventMenu event : events) {
-            event.menuSelected(pressedIndex);
-        }
+        new Thread(() -> {
+            for (Runnable event : globalsEvents) {
+                event.run();
+            }
+            for (EventMenu event : events) {
+                event.menuSelected(pressedIndex);
+            }
+        }).start();
     }
 
     public void addGlobalEvent(Runnable event) {

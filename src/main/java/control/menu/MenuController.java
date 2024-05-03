@@ -20,7 +20,7 @@ import model.tools.PlayerCredentials;
 import model.tools.PreGameAnalytics;
 import view.assets.MenuResources;
 import view.game.GameView;
-import view.menu.PrettyMenuView;
+import view.menu.MenuView;
 import view.window.GameFrame;
 
 /**
@@ -33,7 +33,7 @@ public class MenuController {
     private final String FILE_OUTPUT = "src/main/ressources/session/game-session.ser";
 
     private PlayerCredentials session;
-    private PrettyMenuView view;
+    private MenuView view;
 
     private Timer onlineObserver;
     private PreGameAnalytics joinedGameAnalytics;
@@ -72,7 +72,7 @@ public class MenuController {
     }
 
     public void start() {
-        view = new PrettyMenuView(this);
+        view = new MenuView(this);
         view.show();
         view.repaint();
         view.revalidate();
@@ -92,7 +92,7 @@ public class MenuController {
         }
     }
 
-    public PrettyMenuView getView() {
+    public MenuView getView() {
         return view;
     }
 
