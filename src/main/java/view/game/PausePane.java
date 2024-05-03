@@ -18,6 +18,9 @@ import java.awt.BorderLayout;
 import com.formdev.flatlaf.FlatClientProperties;
 import java.util.Map;
 import model.game.Corporation;
+import javax.swing.JComponent;
+import java.awt.Component;
+import javax.swing.JLayeredPane;
 
 /**
  * @author Arthur Deck
@@ -63,7 +66,6 @@ public class PausePane extends BlurPane {
     private void init2() {
         barChart1 = new HorizontalBarChart();
         JLabel header1 = new JLabel("Actions");
-        header1.setOpaque(false);
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1;"
                 + "border:0,0,5,0");
@@ -72,10 +74,11 @@ public class PausePane extends BlurPane {
         barChart1.setDataset(createData());
         JPanel panel1 = new JPanel(new BorderLayout());
         panel1.putClientProperty(FlatClientProperties.STYLE, ""
-                + "border:5,5,5,5,$Component.borderColor,,20");
+                + "border:5,5,5,5,Component.borderColor,,20");
         panel1.add(barChart1);
-        panel1.setOpaque(false);
-        barChart1.setOpaque(false);
+        try {
+            panel1.setBorder(new ColorableArcableFlatBorder(Color.decode("#f97316"),10));
+        } catch(Exception e) {} // Normal
         add(panel1, "split 2,gap 0 20");
     }
 
