@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 import model.game.Corporation;
-import view.assets.GameResources;
 import javax.imageio.ImageIO;
 
 /**
@@ -15,7 +14,7 @@ import javax.imageio.ImageIO;
  * @author Arthur Deck
  * @version 0.1
  */
-public class MenuRessources {
+public class MenuResources {
     public static final String MAIN_PATH = "src/main/";
     public static final String RESSOURCES_PATH = "ressources/";
     public static final String IMAGES_PATH = "images/menu/";
@@ -94,5 +93,11 @@ public class MenuRessources {
             else return null;
             return view.assets.GameResources.Assets.getCorpColor(corp);
         }
+    }
+
+    public static final String JOINED_GAME_MESSAGE = "You successfully joined a game.";
+
+    public static String loggedInMessage(String pseudo) {
+        return "You successfully logged as " + pseudo  + ".";
     }
 }

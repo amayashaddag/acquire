@@ -6,8 +6,7 @@ import java.awt.event.KeyListener;
 /**
  * @author Arthur Deck
  */
-@Deprecated 
-@AutoSetter(typeParam = GameView.class)
+@Deprecated
 public class KeyManager implements KeyListener {
     public KeyManager(GameView g) {
         this.g = g;

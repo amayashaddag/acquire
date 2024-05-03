@@ -69,30 +69,34 @@ public class GameController {
 
         this.gameView = new GameView(this, currentPlayer);
         this.onlineMode = online;
-        this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
-            try {
-                boolean result = updateGameState();
-
-                if (result) {
-                    return;
-                }
-
-                updateNewPlacedCells();
-                updateStocks();
-                updateCashNet();
-                updateCurrentPlayer();
-                updateLastNotification();
-                updateKeepSellOrTradeStocks();
-
-                board.updatePlayerDeck(currentPlayer);
-                gameView.updatePlayerDeck();
-
-            } catch (Exception e) {
-                errorInterrupt(e);
-            } 
-        });
 
         Executor executor = Executors.newSingleThreadExecutor();
+
+        this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
+            executor.execute(() -> {
+                try {
+                    boolean result = updateGameState();
+    
+                    if (result) {
+                        return;
+                    }
+    
+                    updateNewPlacedCells();
+                    updateStocks();
+                    updateCashNet();
+                    updateCurrentPlayer();
+                    updateLastNotification();
+                    updateKeepSellOrTradeStocks();
+    
+                    board.updatePlayerDeck(currentPlayer);
+                    gameView.updatePlayerDeck();
+    
+                } catch (Exception e) {
+                    errorInterrupt(e);
+                } 
+            });
+        });
+
         this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
             executor.execute(() -> {
                 Player p = getCurrentPlayer();
@@ -107,7 +111,6 @@ public class GameController {
                     Action nextAction = monteCarlo.runMonteCarlo();
         
                     handleCellPlacing(nextAction, p);
-                    gameView.repaint();
                 } catch (Exception e) {
                     errorInterrupt(e);
                 }
@@ -115,11 +118,12 @@ public class GameController {
         });
 
         this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
-            updateChat();
+            // updateChat();
         });
 
         this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
             gameView.setFocusable(true);
+            gameView.repaint();
         });
 
         if (online) {
@@ -252,7 +256,7 @@ public class GameController {
         }
 
         if (lastNotificationTime != notification.getValue()) {
-            gameView.showInfoNotification(notification.getKey());
+            GameFrame.showInfoNotification(notification.getKey());
             lastNotificationTime = notification.getValue();
         }
     }
@@ -474,7 +478,7 @@ public class GameController {
         }
 
         if (adjacentCorporations.size() > 1) {
-            gameView.showInfoNotification(
+            GameFrame.showInfoNotification(
                     GameNotifications.corporationMergingNotification(
                             player.getPseudo(),
                             chosenCellCorporation));
@@ -546,7 +550,7 @@ public class GameController {
             newPlacedCells.put(action.getPoint(), null);
         }
 
-        gameView.showSuccessNotification(
+        GameFrame.showSuccessNotification(
                 GameNotifications.cellPlacingNotification(currentPlayer.getPseudo()));
 
         Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(action.getPoint());
@@ -578,7 +582,7 @@ public class GameController {
                 newPlacedCells.put(action.getPoint(), placedCorporation);
             }
 
-            gameView.showInfoNotification(
+            GameFrame.showInfoNotification(
                     GameNotifications.corporationFoundingNotification(
                             currentPlayer.getPseudo(),
                             placedCorporation));
@@ -749,6 +753,8 @@ public class GameController {
         board.updateDeadCells();
         board.updatePlayerDeck(player);
 
+
+
         if (board.isGameOver()) {
             endGame();
         }
@@ -798,7 +804,7 @@ public class GameController {
             player.removeFromEarnedStocks(c, amount);
             player.addToCash(totalPriceForCorporation);
 
-            gameView.showSuccessNotification(
+            GameFrame.showSuccessNotification(
                 GameNotifications.soldStocksNotification(amount, c, totalPriceForCorporation)
             );
         }
@@ -821,7 +827,7 @@ public class GameController {
             player.removeFromEarnedStocks(c, amountToGive);
             player.addToEarnedStocks(major, amountToEarn);
 
-            gameView.showSuccessNotification(
+            GameFrame.showSuccessNotification(
                 GameNotifications.tradedStocksNotification(amountToGive, c, amountToEarn, major)
             );
         }

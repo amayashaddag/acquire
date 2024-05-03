@@ -228,14 +228,14 @@ public class GameView extends Form {
             int totalPriceToPay = controller.calculateStocksPrice(panier);
 
             if (c > 3 || c < 0)
-                showErrorNotification(GameNotifications.CANNOT_BUY_MORE_THAN_THREE);
+                GameFrame.showErrorNotification(GameNotifications.CANNOT_BUY_MORE_THAN_THREE);
             else if (player.hasEnoughCash(totalPriceToPay)) {
                 controller.buyChosenStocks(panier, totalPriceToPay, player);
                 synchronized (monitor) {
                     monitor.notify();
                 }
             } else
-                showErrorNotification(GameNotifications.NOT_ENOUGH_CASH);
+                GameFrame.showErrorNotification(GameNotifications.NOT_ENOUGH_CASH);
         });
 
         JPanel btnPanel = new JPanel();
@@ -430,22 +430,6 @@ public class GameView extends Form {
     public void setOn(GameFrame g) {
         this.setSize(g.getWidth(), g.getHeight());
         g.getContentPane().add(this);
-    }
-
-    public void showSuccessNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.TOP_RIGHT, msg);
-    }
-
-    public void showErrorNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.ERROR, Notifications.Location.TOP_RIGHT, msg);
-    }
-    
-    public void showInfoNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_RIGHT, msg);
-    }
-
-    public void showWarningNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.WARNING, Notifications.Location.TOP_RIGHT, msg);
     }
 
     /**

@@ -20,7 +20,7 @@ import model.tools.PlayerAnalytics;
 import model.tools.PreGameAnalytics;
 import net.miginfocom.swing.MigLayout;
 import view.assets.Fonts;
-import view.assets.MenuRessources;
+import view.assets.MenuResources;
 import view.game.ColorableArcableFlatBorder;
 import view.login.LoginView;
 import view.window.Form;
@@ -47,21 +47,21 @@ public class PrettyMenuView extends Form {
         this.controller = controller;
         setLayout(mig);
 
-        UIManager.put("Component.background", MenuRessources.Assets.getColor("blue"));
+        UIManager.put("Component.background", MenuResources.Assets.getColor("blue"));
         UIManager.put("Label.font", view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
 
         this.panel = new JPanel() {
             @Override
             public void setOpaque(boolean isOpaque) {
                 if (isOpaque)
-                    setBorder(new ColorableArcableFlatBorder(MenuRessources.Assets.getColor("blue").darker(), 10));
+                    setBorder(new ColorableArcableFlatBorder(MenuResources.Assets.getColor("blue").darker(), 10));
                 else
                     setBorder(null);
         
                 super.setOpaque(isOpaque);
             }
         };
-        panel.setBackground(MenuRessources.Assets.getColor("blue"));
+        panel.setBackground(MenuResources.Assets.getColor("blue"));
 
         menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
@@ -282,7 +282,7 @@ public class PrettyMenuView extends Form {
         panel.add(new JLabel("Won Games" + p.wonGames()));
         panel.add(new JLabel("Played Games" + p.playedGames()));
         JButton jb = new JButton("Change account");
-        jb.setBackground(MenuRessources.Assets.getColor("blue").darker());
+        jb.setBackground(MenuResources.Assets.getColor("blue").darker());
         jb.addActionListener((e) -> {
             panel.removeAll();
             panel.add(new LoginView(controller));
@@ -336,7 +336,7 @@ public class PrettyMenuView extends Form {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(MenuRessources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
+        g.drawImage(MenuResources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
     }
 
     @Override

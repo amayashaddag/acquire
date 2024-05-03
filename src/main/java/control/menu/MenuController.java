@@ -18,6 +18,7 @@ import model.game.Player;
 import model.tools.PlayerAnalytics;
 import model.tools.PlayerCredentials;
 import model.tools.PreGameAnalytics;
+import view.assets.MenuResources;
 import view.game.GameView;
 import view.menu.PrettyMenuView;
 import view.window.GameFrame;
@@ -162,7 +163,7 @@ public class MenuController {
                 this.joinedGameAnalytics = gameAnalytics;
                 this.onlineObserver.start();
             } else {
-                // TODO : Should show notification
+                GameFrame.showInfoNotification(MenuResources.JOINED_GAME_MESSAGE);
             }
         } catch (Exception e) {
             errorInterrupt(e);
@@ -273,12 +274,14 @@ public class MenuController {
     }
 
     public void setSession(String UID) throws Exception {
-        this.session = getPlayerCredentials(UID);
-        System.out.println(session);
+        PlayerCredentials credentials = getPlayerCredentials(UID);
+        setSession(credentials);
     }
 
     public void setSession(PlayerCredentials session) {
         this.session = session;
+        saveSession();
+        GameFrame.showInfoNotification(MenuResources.loggedInMessage(session.pseudo()));
     }
 
     private void errorInterrupt(Exception e) {
