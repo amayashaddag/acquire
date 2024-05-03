@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -90,23 +92,26 @@ public class GameController {
             } 
         });
 
+        Executor executor = Executors.newSingleThreadExecutor();
         this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
-            Player p = getCurrentPlayer();
-
-            if (!p.isBot()) {
-                return;
-            }
-
-            try {
-                BotController botController = new BotController(this);
-                MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
-                Action nextAction = monteCarlo.runMonteCarlo();
-
-                handleCellPlacing(nextAction, p);
-                
-            } catch (Exception e) {
-                errorInterrupt(e);
-            }
+            executor.execute(() -> {
+                Player p = getCurrentPlayer();
+        
+                if (!p.isBot()) {
+                    return;
+                }
+        
+                try {
+                    BotController botController = new BotController(this);
+                    MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
+                    Action nextAction = monteCarlo.runMonteCarlo();
+        
+                    handleCellPlacing(nextAction, p);
+                    gameView.repaint();
+                } catch (Exception e) {
+                    errorInterrupt(e);
+                }
+            });
         });
 
         this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
@@ -114,8 +119,7 @@ public class GameController {
         });
 
         this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
-            gameView.repaint();
-            gameView.revalidate();
+            gameView.setFocusable(true);
         });
 
         if (online) {
