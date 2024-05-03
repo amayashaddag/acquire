@@ -8,24 +8,38 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.SwingUtilities;
 import java.awt.Component;
+import javax.swing.JFrame;
 
 /**
  * @author Arthur Deck
  */
 @SuppressWarnings("serial")
-@AutoSetter(typeParam = GameView.class)
+@AutoSetter(typeParam = Form.class)
 public class BlurPane extends JPanel {
+    public BlurPane() {super();}
+
     public BlurPane(Form form) {
-        setOpaque(false);
-        setBackground(new Color(0, 0, 0, 190));
-        ((GameFrame) SwingUtilities.getWindowAncestor(form)).setGlassPane(this);
-        this.form = form;
-        setLayout(new MigLayout("al center, filly"));
-        glassPane = ((GameFrame) SwingUtilities.getWindowAncestor(form)).getGlassPane();
+        super();
+        init(form);
     }
 
-    final Form form;
-    final Component glassPane;
+    public void init(Form form) {
+        setOpaque(false);
+        setBackground(new Color(0, 0, 0, 190));
+        this.form = form;
+        this.frame = ((JFrame) SwingUtilities.getWindowAncestor(form));
+        frame.setGlassPane(this);
+        setLayout(new MigLayout("al center, filly"));
+        glassPane = frame.getGlassPane();
+    }
+
+    Form form;
+    Component glassPane;
+    JFrame frame;
+
+    public JFrame getJFrame() {
+        return frame;
+    }
 
     @Override
     public final void paint(Graphics g) {

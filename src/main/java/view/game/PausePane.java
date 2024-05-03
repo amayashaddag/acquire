@@ -1,0 +1,84 @@
+package view.game;
+
+import view.game.BlurPane;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import model.game.Player;
+import model.tools.AutoSetter;
+import javax.swing.Timer;
+import view.window.GameFrame;
+import javax.swing.SwingUtilities;
+import net.miginfocom.swing.MigLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import raven.chart.bar.HorizontalBarChart;
+import java.awt.Color;
+import raven.chart.data.category.DefaultCategoryDataset;
+import raven.chart.data.pie.DefaultPieDataset;
+import java.awt.BorderLayout;
+import com.formdev.flatlaf.FlatClientProperties;
+
+
+/**
+ * @author Arthur Deck
+ */
+@AutoSetter(typeParam = GameView.class)
+public class PausePane extends BlurPane {
+    public PausePane(GameView gv) {
+        this.g = gv;
+        this.player = g.getPlayer();
+        setLayout(new MigLayout("al center, filly"));
+        init2();
+        new Timer(100, (e)-> {
+            init(gv);
+            getJFrame().addKeyListener(new KeyListener() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    pause();
+                }
+    
+                @Override
+                public void keyReleased(KeyEvent e) {}
+                @Override
+                public void keyTyped(KeyEvent e) {}
+                });
+        }).start();
+    }
+
+    final GameView g;
+    final Player player;
+    HorizontalBarChart barChart1; // For player's actions
+
+    private void init2() {
+        barChart1 = new HorizontalBarChart();
+        JLabel header1 = new JLabel("Monthly Income");
+        header1.putClientProperty(FlatClientProperties.STYLE, ""
+                + "font:+1;"
+                + "border:0,0,5,0");
+        barChart1.setHeader(header1);
+        barChart1.setBarColor(Color.decode("#f97316"));
+        barChart1.setDataset(createData());
+        JPanel panel1 = new JPanel(new BorderLayout());
+        panel1.putClientProperty(FlatClientProperties.STYLE, ""
+                + "border:5,5,5,5,$Component.borderColor,,20");
+        panel1.add(barChart1);
+        add(panel1, "split 2,gap 0 20");
+    }
+
+    private DefaultPieDataset createData() {
+        DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+        
+        dataset.addValue("February", 10);
+        return dataset;
+    }
+
+    public void pause() {
+        if (!isBlur()) {
+            g.setEnabled(false);
+            blur(true);
+        } else {
+            blur(false);
+            g.setEnabled(true);
+        }
+    }
+}

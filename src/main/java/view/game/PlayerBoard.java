@@ -99,7 +99,6 @@ public class PlayerBoard extends javax.swing.JPanel {
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), this.arc, this.arc);
 
             if (this.getSize().equals(this.initialDimension)) {
-                // TODO : afficher pp joueur
                 this.setText(player.getPseudo());
             } else if (this.getSize().equals(this.zoomingDimension)) {
                 this.setText("""

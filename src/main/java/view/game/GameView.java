@@ -21,6 +21,7 @@ import raven.toast.Notifications;
 import view.assets.GameResources;
 import view.window.Form;
 import view.window.GameFrame;
+import view.game.PausePane;
 
 /**
  * The panel which has the map
@@ -36,7 +37,7 @@ public class GameView extends Form {
     final private JetonsPanel jetonsPanel;
     final private MouseManager mouseListener;
     final private PlayerBoard playerBoard;
-    final private BlurPane blurPane;
+    final private PausePane pausePane;
 
     AffineTransform at;
 
@@ -52,7 +53,7 @@ public class GameView extends Form {
         this.jetonsPanel = new JetonsPanel(this);
         this.mouseListener = new MouseManager(this);
         this.playerBoard = new PlayerBoard(this);
-        this.blurPane = new BlurPane(this);
+        this.pausePane = new PausePane(this);
     }
 
     public Player getPlayer() {
@@ -61,6 +62,10 @@ public class GameView extends Form {
 
     public GameController getController() {
         return controller;
+    }
+
+    public void pause() {
+        pausePane.pause();
     }
     
     @Override
