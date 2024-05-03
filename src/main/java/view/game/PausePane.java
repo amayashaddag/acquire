@@ -27,18 +27,21 @@ public class PausePane extends BlurPane {
     public PausePane(GameView gv) {
         this.g = gv;
         this.player = g.getPlayer();
-        setLayout(new MigLayout("al center, filly"));
+        setLayout(new MigLayout("al center, filly, wrap"));
         init2();
         new Timer(100, (e)-> {
             init(gv);
             getJFrame().addKeyListener(new KeyListener() {
                 @Override
                 public void keyPressed(KeyEvent e) {
-                    pause();
+                    if (!keyPressed)
+                        pause();
                 }
     
                 @Override
-                public void keyReleased(KeyEvent e) {}
+                public void keyReleased(KeyEvent e) {
+                    keyPressed = false;
+                }
                 @Override
                 public void keyTyped(KeyEvent e) {}
                 });
@@ -47,11 +50,12 @@ public class PausePane extends BlurPane {
 
     final GameView g;
     final Player player;
+    boolean keyPressed;
     HorizontalBarChart barChart1; // For player's actions
 
     private void init2() {
         barChart1 = new HorizontalBarChart();
-        JLabel header1 = new JLabel("Monthly Income");
+        JLabel header1 = new JLabel("Actions");
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1;"
                 + "border:0,0,5,0");
@@ -75,6 +79,7 @@ public class PausePane extends BlurPane {
     public void pause() {
         if (!isBlur()) {
             g.setEnabled(false);
+            barChart1.setDataset(createData());
             blur(true);
         } else {
             blur(false);
