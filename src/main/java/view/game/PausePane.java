@@ -34,8 +34,10 @@ public class PausePane extends BlurPane {
             getJFrame().addKeyListener(new KeyListener() {
                 @Override
                 public void keyPressed(KeyEvent e) {
-                    if (!keyPressed)
+                    if (!keyPressed) {
                         pause();
+                        keyPressed = true;
+                    }  
                 }
     
                 @Override
@@ -66,6 +68,7 @@ public class PausePane extends BlurPane {
         panel1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
         panel1.add(barChart1);
+        panel1.setOpaque(false);
         add(panel1, "split 2,gap 0 20");
     }
 
