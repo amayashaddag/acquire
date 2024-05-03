@@ -5,7 +5,6 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import model.game.Player;
 import model.tools.AutoSetter;
-import javax.swing.Timer;
 import view.window.GameFrame;
 import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
@@ -17,7 +16,8 @@ import raven.chart.data.category.DefaultCategoryDataset;
 import raven.chart.data.pie.DefaultPieDataset;
 import java.awt.BorderLayout;
 import com.formdev.flatlaf.FlatClientProperties;
-
+import java.util.Map;
+import model.game.Corporation;
 
 /**
  * @author Arthur Deck
@@ -29,24 +29,29 @@ public class PausePane extends BlurPane {
         this.player = g.getPlayer();
         setLayout(new MigLayout("al center, filly, wrap"));
         init2();
-        new Timer(100, (e)-> {
-            init(gv);
-            getJFrame().addKeyListener(new KeyListener() {
-                @Override
-                public void keyPressed(KeyEvent e) {
-                    if (!keyPressed) {
-                        pause();
-                        keyPressed = true;
-                    }  
-                }
-    
-                @Override
-                public void keyReleased(KeyEvent e) {
-                    keyPressed = false;
-                }
-                @Override
-                public void keyTyped(KeyEvent e) {}
+        new Thread(()-> {
+            try {
+                Thread.sleep(10);
+                init(gv); 
+                getJFrame().addKeyListener(new KeyListener() {
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        if (!keyPressed) {
+                            pause();
+                            keyPressed = true;
+                        }  
+                    }
+        
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                        keyPressed = false;
+                    }
+                    @Override
+                    public void keyTyped(KeyEvent e) {}
                 });
+            } catch (InterruptedException e2) {
+                GameFrame.showError(e2, this::repaint);
+            }
         }).start();
     }
 
@@ -58,6 +63,7 @@ public class PausePane extends BlurPane {
     private void init2() {
         barChart1 = new HorizontalBarChart();
         JLabel header1 = new JLabel("Actions");
+        header1.setOpaque(false);
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1;"
                 + "border:0,0,5,0");
@@ -69,13 +75,15 @@ public class PausePane extends BlurPane {
                 + "border:5,5,5,5,$Component.borderColor,,20");
         panel1.add(barChart1);
         panel1.setOpaque(false);
+        barChart1.setOpaque(false);
         add(panel1, "split 2,gap 0 20");
     }
 
     private DefaultPieDataset createData() {
         DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-        
-        dataset.addValue("February", 10);
+        Map<Corporation, Integer> stocks = player.getEarnedStocks();
+        for (Corporation c : stocks.keySet()) 
+            dataset.addValue(c.toString(), stocks.get(c));
         return dataset;
     }
 

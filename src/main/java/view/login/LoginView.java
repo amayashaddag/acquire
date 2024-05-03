@@ -6,7 +6,7 @@ import control.auth.NotExistingUserException;
 import control.auth.NotStrongEnoughPasswordException;
 import control.auth.TooLongPasswordException;
 import control.auth.WrongPasswordException;
-import control.game.GameController;
+import control.game.GameController; 
 import control.menu.MenuController;
 import model.game.Player;
 import view.assets.Fonts;

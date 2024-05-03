@@ -40,7 +40,7 @@ public class EndGame extends JPanel {
         createBarChart();
     }
 
-    private void createPieChart() {
+    private void createPieChart() { 
         pieChart1 = new PieChart();
         JLabel header1 = new JLabel("Cash");
         header1.putClientProperty(FlatClientProperties.STYLE, ""

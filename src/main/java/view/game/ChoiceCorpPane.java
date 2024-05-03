@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
 
-/**
+/** 
  * A panel used for ask what corporation the player want.
  *
  * @see GameView#getCorporationChoice(List)

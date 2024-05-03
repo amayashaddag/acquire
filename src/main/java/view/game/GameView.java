@@ -394,7 +394,7 @@ public class GameView extends Form {
                     toTrade.put(entry.getKey(), entry.getValue());
                 }
             }
-
+ 
         controller.sellStocks(toSell, player);
         controller.tradeStocks(toTrade, player, major);
 

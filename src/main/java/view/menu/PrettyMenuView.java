@@ -2,7 +2,6 @@ package view.menu;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.GridLayout;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.SpinnerNumberModel;
@@ -48,7 +47,7 @@ public class PrettyMenuView extends Form {
         this.controller = controller;
         setLayout(mig);
 
-        UIManager.put("Button.background", MenuRessources.Assets.getColor("blue"));
+        UIManager.put("Component.background", MenuRessources.Assets.getColor("blue"));
         UIManager.put("Label.font", view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
 
         this.panel = new JPanel() {

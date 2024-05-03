@@ -10,7 +10,7 @@ import java.awt.*;
  * A pane which show a Tower.
  *
  * @author Arthur Deck
- * @version 1
+ * @version 1 
  */
 public class GlowingItemCorp extends PanelGlowingGradient {
     private final Corporation corp;
