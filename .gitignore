@@ -6,3 +6,4 @@ out/
 debug/
 *.class
 *.xml
+src/main/ressources/session/game-session.ser

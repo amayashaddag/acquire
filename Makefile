@@ -34,8 +34,11 @@ PROCESS:=model/processor
 processor:
 	@javac -cp "$(JAVA_MAIN):$(LIB)/*" -d $(OUT) $(JAVA_MAIN)/$(PROCESS)/*
 
-debug: clean processor
+debug-compile: clean processor
 	@javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -processor model.processor.AutoSetterProcessor -d $(OUT) src/main/java/app/launcher/Debug.java
+	@java -cp "$(OUT):$(LIB)/*" app.launcher.Debug
+
+debug-run:
 	@java -cp "$(OUT):$(LIB)/*" app.launcher.Debug
 
 quickdeb: clean
