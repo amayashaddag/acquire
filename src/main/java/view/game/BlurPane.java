@@ -21,9 +21,11 @@ public class BlurPane extends JPanel {
         ((GameFrame) SwingUtilities.getWindowAncestor(form)).setGlassPane(this);
         this.form = form;
         setLayout(new MigLayout("al center, filly"));
+        glassPane = ((GameFrame) SwingUtilities.getWindowAncestor(form)).getGlassPane();
     }
 
     final Form form;
+    final Component glassPane;
 
     @Override
     public final void paint(Graphics g) {
@@ -35,7 +37,7 @@ public class BlurPane extends JPanel {
     }
 
     public void blur(boolean b) {
-        ((GameFrame) SwingUtilities.getWindowAncestor(form)).getGlassPane().setVisible(b);
+        glassPane.setVisible(b);
     }
 
     public void blurWith(Component panel) {
@@ -44,4 +46,6 @@ public class BlurPane extends JPanel {
         add(panel);
         repaint();
     }
+
+    public boolean isBlur() {return glassPane.isVisible();}
 }
