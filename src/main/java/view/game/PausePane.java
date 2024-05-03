@@ -64,21 +64,20 @@ public class PausePane extends BlurPane {
     HorizontalBarChart barChart1; // For player's actions
 
     private void init2() {
+        Color color = Color.decode("#f97316");
         barChart1 = new HorizontalBarChart();
-        JLabel header1 = new JLabel("Actions");
+        JLabel header1 = new JLabel("Stocks");
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1;"
                 + "border:0,0,5,0");
         barChart1.setHeader(header1);
-        barChart1.setBarColor(Color.decode("#f97316"));
+        barChart1.setBarColor(color);
         barChart1.setDataset(createData());
         JPanel panel1 = new JPanel(new BorderLayout());
         panel1.putClientProperty(FlatClientProperties.STYLE, ""
-                + "border:5,5,5,5,Component.borderColor,,20");
+                + "border:5,5,5,5,$Component.borderColor,,20");
         panel1.add(barChart1);
-        try {
-            panel1.setBorder(new ColorableArcableFlatBorder(Color.decode("#f97316"),10));
-        } catch(Exception e) {} // Normal
+        panel1.setBorder(new ColorableArcableFlatBorder((java.awt.Color)color,10));
         add(panel1, "split 2,gap 0 20");
     }
 
