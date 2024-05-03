@@ -111,6 +111,9 @@ public class GameController {
                     Action nextAction = monteCarlo.runMonteCarlo();
         
                     handleCellPlacing(nextAction, p);
+
+                    GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+                    parent.setFocusable(true);
                 } catch (Exception e) {
                     errorInterrupt(e);
                 }
