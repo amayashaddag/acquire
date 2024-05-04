@@ -52,9 +52,8 @@ public class MenuView extends Form {
         setLayout(mig);
 
         mainLeftColor = MenuResources.Assets.getColor("blue");
-        UIManager.put("Button.background", mainLeftColor);
-        UIManager.put("Label.background", mainLeftColor);
-        UIManager.put("Label.font", view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
+        saveUI();
+        changeUi();
 
         this.panel = new JPanel() {
             @Override
@@ -87,6 +86,24 @@ public class MenuView extends Form {
         repaint();
     }
 
+    private void changeUi() {
+        UIManager.put("Button.background", mainLeftColor);
+        UIManager.put("Label.background", mainLeftColor);
+        UIManager.put("Label.font", view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
+    }
+
+    private Color Button_background;
+    private Color Label_background;
+    private void saveUI() {
+        Button_background = (Color) UIManager.get("Button.background", null);
+        Label_background = (Color) UIManager.get("Label.background", null);
+    }
+
+    public void undoUI() {
+        UIManager.put("Button.background", Button_background);
+        UIManager.put("Label.background", Label_background);
+    }
+
     public boolean haveJoinAGame() {
         return haveJoinAGame;
     }
@@ -114,6 +131,7 @@ public class MenuView extends Form {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
+                undoUI();
                 controller.startSingleGame();
             }
         }).start();
@@ -143,7 +161,7 @@ public class MenuView extends Form {
             multiPlayer();
         } else if (aMultiGameIsLaunching) {
             createGameBtn.setText("Abort game");
-            createGameBtn.setBackground(Color.RED);
+            createGameBtn.setBackground(MenuResources.Assets.getColor("red"));
             createGameBtn.addActionListener((e) -> {
                 controller.abortMutiGame();
                 aMultiGameIsLaunching = false;
@@ -151,14 +169,14 @@ public class MenuView extends Form {
             });
 
             JButton startBtn = new JButton("Start Game");
-            startBtn.setBackground(Color.GREEN);
+            startBtn.setBackground(MenuResources.Assets.getColor("green"));
             startBtn.addActionListener((e) -> {
                 controller.launchMultiGame();
             });
             scrollPane.add(startBtn, btnContraints);
         } else if (haveJoinAGame) {
             JButton startBtn = new JButton("Quit queue");
-            startBtn.setBackground(Color.GREEN);
+            startBtn.setBackground(MenuResources.Assets.getColor("red"));
             startBtn.addActionListener((e) -> {
                 controller.quitGame();
                 haveJoinAGame = false;
@@ -166,7 +184,7 @@ public class MenuView extends Form {
             scrollPane.add(startBtn, btnContraints);
         } else {
             createGameBtn.setText("Create new game");
-            createGameBtn.setBackground(Color.GREEN);
+            createGameBtn.setBackground(MenuResources.Assets.getColor("green"));
             createGameBtn.addActionListener((e) -> {
                 controller.createMultiGame(numberOfPlayerByGame);
                 aMultiGameIsLaunching = true;

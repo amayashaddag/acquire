@@ -101,6 +101,8 @@ public class MenuController {
     }
 
     public void startSingleGame() {
+        view.undoUI();
+
         List<Player> players = new LinkedList<>();
 
         Player p = Player.createHumanPlayer("Player", null);
@@ -212,6 +214,8 @@ public class MenuController {
     }
 
     public void launchMultiGame() {
+        view.undoUI();
+
         try {
             GameDatabaseConnection.startGame(joinedGameAnalytics.gameID());
             Player currentPlayer = joinGame();

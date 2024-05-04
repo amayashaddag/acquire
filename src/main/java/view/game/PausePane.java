@@ -15,6 +15,7 @@ import java.awt.BorderLayout;
 import com.formdev.flatlaf.FlatClientProperties;
 import java.util.Map;
 import model.game.Corporation;
+import javax.swing.JButton;
 
 /**
  * @author Arthur Deck
@@ -25,10 +26,9 @@ public class PausePane extends BlurPane {
         this.g = gv;
         this.player = g.getPlayer();
         setLayout(new MigLayout("al center, filly, wrap"));
-        init2();
         new Thread(()-> {
             try {
-                Thread.sleep(10);
+                Thread.sleep(100);
                 init(gv); 
                 getJFrame().addKeyListener(new KeyListener() {
                     @Override
@@ -46,6 +46,7 @@ public class PausePane extends BlurPane {
                     @Override
                     public void keyTyped(KeyEvent e) {}
                 });
+                init2();
             } catch (InterruptedException e2) {
                 GameFrame.showError(e2, this::repaint);
             }
@@ -62,7 +63,6 @@ public class PausePane extends BlurPane {
             HBC() {
                 super();
                 super.valuesFormat = new DecimalFormat();
-                setBackground(Color.RED);
             }
         }
 
@@ -76,6 +76,9 @@ public class PausePane extends BlurPane {
         panel1.add(barChart1);
         panel1.setBorder(new ColorableArcableFlatBorder((java.awt.Color)color,10));
         add(panel1, "split 2,gap 0 20");
+
+        JButton quitBtn = new JButton("Exit");
+        add(quitBtn, "x 90%, y 2%, gap 10");
     }
 
     private DefaultPieDataset createData() {
