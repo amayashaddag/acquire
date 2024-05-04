@@ -56,8 +56,9 @@ public class GameController {
     public final static int FOUNDING_STOCK_BONUS = 1;
     public final static int ONLINE_OBSERVER_DELAY = 2000;
     public final static int BOT_TURN_OBSERVER_DELAY = 20;
+    public final static int BOT_TURN_DELAY = 500;
     public final static int GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
-    public final static int NUM_SIMULATIONS = 10;
+    public final static int NUM_SIMULATIONS = 3;
 
     public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online) {
         this.board = new Board();
@@ -100,31 +101,43 @@ public class GameController {
         });
 
         this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
-            Player p = getCurrentPlayer();
+            executor.execute(() -> {
+                Player p = getCurrentPlayer();
 
-            if (!p.isBot()) {
-                return;
-            }
+                for (Point point : p.getDeck()) {
+                    System.out.print(point + " ");
+                }
+                System.out.println();
+                System.out.println(board.getRemainingCells());
 
-            if (p.isEmptyDeck()) {
-                endGame();
-                return;
-            }
+                if (!p.isBot()) {
+                    return;
+                }
 
-            try {
-                BotController botController = new BotController(this);
-                MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
-                Action nextAction = monteCarlo.runMonteCarlo();
+                if (p.isEmptyDeck()) {
+                    endGame();
+                    return;
+                }
 
-                handleCellPlacing(nextAction, p);
+                try {
 
-                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+                    Thread.sleep(BOT_TURN_DELAY);
 
-                parent.setFocusable(true);
-                gameView.repaint();
-            } catch (Exception e) {
-                errorInterrupt(e);
-            }
+                    BotController botController = new BotController(this);
+                    MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
+                    Action nextAction = monteCarlo.runMonteCarlo();
+
+                    handleCellPlacing(nextAction, p);
+
+                    GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+
+                    parent.setFocusable(true);
+                    gameView.repaint();
+                } catch (Exception e) {
+                    errorInterrupt(e);
+                    e.printStackTrace();
+                }
+            });
         });
 
         this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
@@ -173,21 +186,16 @@ public class GameController {
 
     private void updateChat() {
         try {
-
-            System.out.println("Searching for chats");
-
             Player p = gameView.getPlayer();
             List<Couple<Couple<String, String>, Long>> newChats = GameDatabaseConnection.getNewChats(gameId, p.getUID(),
                     lastChatMessageTime);
 
-            for (Couple<Couple<String, String>, Long> chat : newChats) {
-                System.out.println(chat.getKey().getKey() + " : " + chat.getKey().getValue());
+            if (newChats.isEmpty()) {
+                return;
             }
 
             lastChatMessageTime = newChats.get(newChats.size() - 1).getValue();
-
             // TODO : Implement
-
         } catch (Exception e) {
             errorInterrupt(e);
         }
@@ -553,9 +561,6 @@ public class GameController {
      * @param currentPlayer represents the player that is about to place the cell.
      */
     public void placeCell(Action action, Player currentPlayer) {
-
-        System.out.println(action);
-
         Cell currentCell = board.getCell(action.getPoint().getX(), action.getPoint().getY());
         Corporation placedCorporation;
 
@@ -777,6 +782,7 @@ public class GameController {
 
         if (board.isGameOver()) {
             endGame();
+            return;
         }
 
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
@@ -854,7 +860,6 @@ public class GameController {
     private void endGame() {
         if (onlineMode) {
             try {
-                stopObservers();
                 if (gameId != null) {
                     GameDatabaseConnection.removeGame(gameId);
                 } else {
@@ -863,14 +868,10 @@ public class GameController {
             } catch (Exception e) {
                 errorInterrupt(e);
             }
-        } else {
-            botTurnTimer.stop();
-            refresher.stop();
         }
 
-        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
-        // TODO : Should display end-game view
-        parent.dispose();
+        exitGame();
+        // TODO : Should display end-game menu later
     }
 
     public void sendChat(String chat, Player p) {
@@ -948,8 +949,6 @@ public class GameController {
 
     public void exitGame() {
 
-        gameView.pause();
-        
         if (onlineMode) {
             try {
                 Player p = gameView.getPlayer();

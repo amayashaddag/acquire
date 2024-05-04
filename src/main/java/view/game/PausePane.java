@@ -82,6 +82,7 @@ public class PausePane extends BlurPane {
 
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener((ActionListener) -> {
+            g.pause();
             g.getController().exitGame();
         });
         add(exitButton, "x 90%, y 2%, gap 10");

@@ -12,7 +12,7 @@ import model.tools.Action;
  * @version 1.0
  */
 public class MonteCarloAlgorithm {
-
+    
     private final BotController botController;
     private final int numSimulations;
 
@@ -25,6 +25,8 @@ public class MonteCarloAlgorithm {
 
         Map<Action, Integer> actionScores = new HashMap<>();
         List<Action> possibleActions = botController.getPossibleActions();
+
+        System.out.println(possibleActions.size());
 
         for (Action action : possibleActions) {
             int totalMoneyEarned = 0;

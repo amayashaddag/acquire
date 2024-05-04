@@ -32,6 +32,8 @@ public class BotController implements Cloneable {
 
     private int playerTurnIndex;
     public final static int FOUNDING_STOCK_BONUS = 1;
+    private static final int MAX_TURNS_NUMBER = 10;
+    private static final int MAX_NUMBER_OF_GENERATED_COMBINATIONS = 300;
 
     public BotController(Board board, List<Player> currentPlayers, Player currentPlayer, int numberOfPlayers,
             int playerTurnIndex) {
@@ -568,7 +570,9 @@ public class BotController implements Cloneable {
     }
 
     public void simulateGame() {
-        while (!board.isGameOver()) {
+        int turnsCounter = 0;
+
+        while (turnsCounter < MAX_TURNS_NUMBER && !board.isGameOver()) {
 
             Player currentPlayer = currentPlayers.get(playerTurnIndex);
 
@@ -592,6 +596,8 @@ public class BotController implements Cloneable {
             } else {
                 break;
             }
+
+            turnsCounter++;
         }
 
     }
@@ -631,6 +637,7 @@ public class BotController implements Cloneable {
      */
     public List<Action> getPossibleActions() {
         List<Action> possibleActions = new LinkedList<>();
+        int numberOfGeneratedCombinations = 0;
 
         for (Point p : currentPlayer.getDeck()) {
             Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
@@ -638,29 +645,34 @@ public class BotController implements Cloneable {
             List<Map<Corporation, Integer>> combinationsOfBuyingStocks = generateCombinations(possibleBuyingStocks,
                     Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
 
-            for (MergingChoice choice : MergingChoice.values()) {
-                for (Map<Corporation, Integer> comb : combinationsOfBuyingStocks) {
-                    for (Corporation c : board.unplacedCorporations()) {
-                        Action possibleAction = new Action(p, c, comb, choice);
+            for (Map<Corporation, Integer> comb : combinationsOfBuyingStocks) {
+                for (Corporation c : board.unplacedCorporations()) {
 
-                        possibleActions.add(possibleAction);
+                    int stocksPrice = calculateStocksPrice(comb);
+                    Action possibleAction = null;
+
+                    if (currentPlayer.hasEnoughCash(stocksPrice)) {
+                        if (board.adjacentOwnedCells(p).size() > 1) {
+                            for (MergingChoice mergingChoice : MergingChoice.values()) {
+                                if (currentPlayer.hasEnoughCash(stocksPrice)) {
+                                    possibleAction = new Action(p, c, comb, mergingChoice);
+                                }
+                            }
+                        } else {
+                            possibleAction = new Action(p, c, comb, null);
+                        }
+
+                        if (possibleAction != null) {
+                            possibleActions.add(possibleAction);
+                            numberOfGeneratedCombinations++;
+                        }
+
+                        if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
+                            return possibleActions;
+                        }
                     }
                 }
             }
-
-            /*
-             * This part includes the cases of not buying stocks for each choice of merging
-             * choices
-             */
-
-            for (MergingChoice choice : MergingChoice.values()) {
-                for (Corporation c : board.unplacedCorporations()) {
-                    Action emptyStockAction = new Action(p, c, new HashMap<>(), choice);
-
-                    possibleActions.add(emptyStockAction);
-                }
-            }
-
         }
 
         return possibleActions;
@@ -678,36 +690,36 @@ public class BotController implements Cloneable {
      *         such as
      *         the sum of the values are less or equal to threshold
      */
-    private List<Map<Corporation, Integer>> generateCombinations(Map<Corporation, Integer> inputMap,
-            int threshold) {
+    private List<Map<Corporation, Integer>> generateCombinations(Map<Corporation, Integer> inputMap, int threshold) {
         List<Map<Corporation, Integer>> combinations = new LinkedList<>();
-        generateCombinationsHelper(inputMap, threshold, new HashMap<>(), combinations);
+        generateCombinationsHelper(inputMap, threshold, new HashMap<>(), combinations, 0);
         return combinations;
     }
 
-    /**
-     * Just a "helper" method for {@link #generateCombinations(Map, int)}
-     */
     private void generateCombinationsHelper(Map<Corporation, Integer> inputMap, int threshold,
-            Map<Corporation, Integer> current, List<Map<Corporation, Integer>> combinations) {
-        int sum = current.values().stream().mapToInt(Integer::intValue).sum();
-        if (sum > threshold) {
-            return;
+            Map<Corporation, Integer> currentCombination, List<Map<Corporation, Integer>> combinations,
+            int startIndex) {
+        if (getTotalValue(currentCombination) > threshold) {
+            return; // prune the branch if the total value exceeds the threshold
         }
+        combinations.add(new HashMap<>(currentCombination)); // add the current combination to the result
 
-        if (!current.isEmpty()) {
-            combinations.add(new HashMap<>(current));
-        }
-
-        for (Map.Entry<Corporation, Integer> entry : inputMap.entrySet()) {
-            Corporation key = entry.getKey();
-            int value = entry.getValue();
-
-            if (!current.containsKey(key)) {
-                current.put(key, value);
-                generateCombinationsHelper(inputMap, threshold, current, combinations);
-                current.remove(key);
+        for (int i = startIndex; i < inputMap.size(); i++) {
+            Corporation corporation = (Corporation) inputMap.keySet().toArray()[i];
+            int maxValue = inputMap.get(corporation);
+            for (int j = 0; j <= maxValue; j++) {
+                currentCombination.put(corporation, j);
+                generateCombinationsHelper(inputMap, threshold, currentCombination, combinations, i + 1);
+                currentCombination.put(corporation, 0); // reset the value for backtracking
             }
         }
+    }
+
+    private int getTotalValue(Map<Corporation, Integer> map) {
+        int total = 0;
+        for (int value : map.values()) {
+            total += value;
+        }
+        return total;
     }
 }

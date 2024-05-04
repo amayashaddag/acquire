@@ -95,18 +95,26 @@ public class GameFrame extends JFrame {
     }
 
     public static void showSuccessNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.TOP_RIGHT, msg);
+        new Thread(() -> {
+            Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.TOP_RIGHT, msg);
+        }).start();
     }
 
     public static void showErrorNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.ERROR, Notifications.Location.TOP_RIGHT, msg);
+        new Thread(() -> {
+            Notifications.getInstance().show(Notifications.Type.ERROR, Notifications.Location.TOP_RIGHT, msg);
+        }).start();
     }
     
     public static void showInfoNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_RIGHT, msg);
+        new Thread(() -> {
+            Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_RIGHT, msg);
+        }).start();
     }
 
     public static void showWarningNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.WARNING, Notifications.Location.TOP_RIGHT, msg);
+        new Thread(() -> {
+            Notifications.getInstance().show(Notifications.Type.WARNING, Notifications.Location.TOP_RIGHT, msg);
+        }).start();
     }
 }
