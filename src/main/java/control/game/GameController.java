@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import control.database.GameDatabaseConnection;
+import control.menu.MenuController;
 import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
@@ -24,6 +25,7 @@ import model.tools.Couple;
 import model.tools.Point;
 import view.game.GameNotifications;
 import view.game.GameView;
+import view.menu.MenuView;
 import view.window.GameFrame;
 
 /**
@@ -76,57 +78,61 @@ public class GameController {
             executor.execute(() -> {
                 try {
                     boolean result = updateGameState();
-    
+
                     if (result) {
                         return;
                     }
-    
+
                     updateNewPlacedCells();
                     updateStocks();
                     updateCashNet();
                     updateCurrentPlayer();
                     updateLastNotification();
                     updateKeepSellOrTradeStocks();
-    
+
                     board.updatePlayerDeck(currentPlayer);
                     gameView.updatePlayerDeck();
-    
+
                 } catch (Exception e) {
                     errorInterrupt(e);
-                } 
+                }
             });
         });
 
         this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
-            executor.execute(() -> {
-                Player p = getCurrentPlayer();
-        
-                if (!p.isBot()) {
-                    return;
-                }
-        
-                try {
-                    BotController botController = new BotController(this);
-                    MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
-                    Action nextAction = monteCarlo.runMonteCarlo();
-        
-                    handleCellPlacing(nextAction, p);
+            Player p = getCurrentPlayer();
 
-                    GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
-                    parent.setFocusable(true);
-                } catch (Exception e) {
-                    errorInterrupt(e);
-                }
-            });
+            if (!p.isBot()) {
+                return;
+            }
+
+            if (p.isEmptyDeck()) {
+                endGame();
+                return;
+            }
+
+            try {
+                BotController botController = new BotController(this);
+                MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
+                Action nextAction = monteCarlo.runMonteCarlo();
+
+                handleCellPlacing(nextAction, p);
+
+                GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+
+                parent.setFocusable(true);
+                gameView.repaint();
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
         });
 
         this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
-            // updateChat();
+            updateChat();
         });
 
         this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
             gameView.setFocusable(true);
-            gameView.repaint();
         });
 
         if (online) {
@@ -134,7 +140,7 @@ public class GameController {
             chatObserver.start();
         } else {
             botTurnTimer.start();
-            this.refresher.start();
+            refresher.start();
         }
     }
 
@@ -171,15 +177,15 @@ public class GameController {
             System.out.println("Searching for chats");
 
             Player p = gameView.getPlayer();
-            List<Couple<Couple<String, String>, Long>> newChats = 
-                    GameDatabaseConnection.getNewChats(gameId, p.getUID(), lastChatMessageTime);
+            List<Couple<Couple<String, String>, Long>> newChats = GameDatabaseConnection.getNewChats(gameId, p.getUID(),
+                    lastChatMessageTime);
 
             for (Couple<Couple<String, String>, Long> chat : newChats) {
                 System.out.println(chat.getKey().getKey() + " : " + chat.getKey().getValue());
             }
 
             lastChatMessageTime = newChats.get(newChats.size() - 1).getValue();
-            
+
             // TODO : Implement
 
         } catch (Exception e) {
@@ -266,7 +272,8 @@ public class GameController {
 
     private void updateKeepSellOrTradeStocks() {
         try {
-            Map<Corporation, Long> stocks = GameDatabaseConnection.getKeepSellOrTradeStocks(gameId, lastKeepSellTradeStockTime);
+            Map<Corporation, Long> stocks = GameDatabaseConnection.getKeepSellOrTradeStocks(gameId,
+                    lastKeepSellTradeStockTime);
 
             if (stocks.isEmpty()) {
                 return;
@@ -275,7 +282,8 @@ public class GameController {
             long time = stocks.entrySet().iterator().next().getValue();
             Corporation major = GameDatabaseConnection.getMajorCorporation(gameId, time);
             Set<Corporation> adjacentCorporations = stocks.keySet();
-            Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(gameView.getPlayer(), adjacentCorporations);
+            Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(gameView.getPlayer(),
+                    adjacentCorporations);
 
             if (stocksToKeepSellOrTrade.isEmpty()) {
                 return;
@@ -494,7 +502,8 @@ public class GameController {
         if (onlineMode) {
             try {
                 lastKeepSellTradeStockTime = Instant.now().toEpochMilli();
-                GameDatabaseConnection.setKeepSellOrTradeStocks(adjacentCorporations, gameId, lastKeepSellTradeStockTime);
+                GameDatabaseConnection.setKeepSellOrTradeStocks(adjacentCorporations, gameId,
+                        lastKeepSellTradeStockTime);
                 GameDatabaseConnection.setMajorCorporation(gameId, chosenCellCorporation, lastKeepSellTradeStockTime);
             } catch (Exception e) {
                 errorInterrupt(e);
@@ -513,7 +522,7 @@ public class GameController {
                         tradeStocks(stocksToKeepSellOrTrade, player, chosenCellCorporation);
                         break;
                     default:
-                        break;  
+                        break;
                 }
             }
         }
@@ -544,6 +553,9 @@ public class GameController {
      * @param currentPlayer represents the player that is about to place the cell.
      */
     public void placeCell(Action action, Player currentPlayer) {
+
+        System.out.println(action);
+
         Cell currentCell = board.getCell(action.getPoint().getX(), action.getPoint().getY());
         Corporation placedCorporation;
 
@@ -570,7 +582,7 @@ public class GameController {
             // Therefore, unplacedCorporations is supposed to never be empty
 
             List<Corporation> unplacedCorporations = board.unplacedCorporations();
-            
+
             if (currentPlayer.isHuman()) {
                 placedCorporation = gameView.getCorporationChoice(unplacedCorporations);
             } else {
@@ -754,9 +766,14 @@ public class GameController {
         adjustNets();
 
         board.updateDeadCells();
-        board.updatePlayerDeck(player);
 
-
+        if (onlineMode) {
+            board.updatePlayerDeck(player);
+        } else {
+            for (Player p : currentPlayers) {
+                board.updatePlayerDeck(p);
+            }
+        }
 
         if (board.isGameOver()) {
             endGame();
@@ -808,8 +825,7 @@ public class GameController {
             player.addToCash(totalPriceForCorporation);
 
             GameFrame.showSuccessNotification(
-                GameNotifications.soldStocksNotification(amount, c, totalPriceForCorporation)
-            );
+                    GameNotifications.soldStocksNotification(amount, c, totalPriceForCorporation));
         }
     }
 
@@ -831,23 +847,19 @@ public class GameController {
             player.addToEarnedStocks(major, amountToEarn);
 
             GameFrame.showSuccessNotification(
-                GameNotifications.tradedStocksNotification(amountToGive, c, amountToEarn, major)
-            );
+                    GameNotifications.tradedStocksNotification(amountToGive, c, amountToEarn, major));
         }
     }
 
     private void endGame() {
         if (onlineMode) {
             try {
-
-                onlineObserver.stop();
-                chatObserver.stop();
-
+                stopObservers();
                 if (gameId != null) {
                     GameDatabaseConnection.removeGame(gameId);
                 } else {
                     throw new NullPointerException();
-                }      
+                }
             } catch (Exception e) {
                 errorInterrupt(e);
             }
@@ -857,6 +869,7 @@ public class GameController {
         }
 
         GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+        // TODO : Should display end-game view
         parent.dispose();
     }
 
@@ -869,16 +882,15 @@ public class GameController {
         }
     }
 
-
     /**
-     * @return a list of (String, Integer) which represent the pseudo and total cash 
-     * of each player.
+     * @return a list of (String, Integer) which represent the pseudo and total cash
+     *         of each player.
      */
     public List<Couple<String, Integer>> getCurrentCashes() {
         List<Couple<String, Integer>> currentCashes = new LinkedList<>();
 
         for (Player p : currentPlayers) {
-            currentCashes.add(new Couple<String,Integer>(p.getPseudo(), p.getCash()));
+            currentCashes.add(new Couple<String, Integer>(p.getPseudo(), p.getCash()));
         }
 
         return currentCashes;
@@ -886,13 +898,13 @@ public class GameController {
 
     /**
      * @return a list of (String, Integer) which represent the pseudo and total net
-     * of each player.
+     *         of each player.
      */
     public List<Couple<String, Integer>> getCurrentNets() {
         List<Couple<String, Integer>> currentNets = new LinkedList<>();
 
         for (Player p : currentPlayers) {
-            currentNets.add(new Couple<String,Integer>(p.getPseudo(), p.getNet()));
+            currentNets.add(new Couple<String, Integer>(p.getPseudo(), p.getNet()));
         }
 
         return currentNets;
@@ -922,5 +934,38 @@ public class GameController {
         }
 
         return totalNet;
+    }
+
+    private void stopObservers() {
+        if (onlineMode) {
+            chatObserver.stop();
+            onlineObserver.stop();
+        } else {
+            botTurnTimer.stop();
+            refresher.stop();
+        }
+    }
+
+    public void exitGame() {
+
+        gameView.pause();
+        
+        if (onlineMode) {
+            try {
+                Player p = gameView.getPlayer();
+                GameDatabaseConnection.removePlayer(p.getUID());
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+        }
+
+        stopObservers();
+        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+        MenuController menuController = new MenuController();
+        menuController.start();
+
+        MenuView menuView = menuController.getView();
+        parent.setContentPane(menuView);
+        parent.repaint();
     }
 }

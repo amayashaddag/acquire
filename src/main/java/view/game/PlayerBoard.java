@@ -75,6 +75,7 @@ public class PlayerBoard extends javax.swing.JPanel {
         }
 
         @Deprecated
+        @SuppressWarnings("unused")
         private String getPlayersActionsHTMLString(Player p) {
             String res = "";
             HashMap<Corporation, Integer> earnedStocks = p.getEarnedStocks();

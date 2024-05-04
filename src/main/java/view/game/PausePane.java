@@ -1,21 +1,24 @@
 package view.game;
 
-import javax.swing.JPanel;
-import model.game.Player;
-import model.tools.AutoSetter;
-import view.window.GameFrame;
-import net.miginfocom.swing.MigLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.DecimalFormat;
-import raven.chart.bar.HorizontalBarChart;
-import java.awt.Color;
-import raven.chart.data.pie.DefaultPieDataset;
-import java.awt.BorderLayout;
-import com.formdev.flatlaf.FlatClientProperties;
 import java.util.Map;
-import model.game.Corporation;
+
 import javax.swing.JButton;
+import javax.swing.JPanel;
+
+import com.formdev.flatlaf.FlatClientProperties;
+
+import model.game.Corporation;
+import model.game.Player;
+import model.tools.AutoSetter;
+import net.miginfocom.swing.MigLayout;
+import raven.chart.bar.HorizontalBarChart;
+import raven.chart.data.pie.DefaultPieDataset;
+import view.window.GameFrame;
 
 /**
  * @author Arthur Deck
@@ -77,11 +80,14 @@ public class PausePane extends BlurPane {
         panel1.setBorder(new ColorableArcableFlatBorder((java.awt.Color)color,10));
         add(panel1, "split 2,gap 0 20");
 
-        JButton quitBtn = new JButton("Exit");
-        add(quitBtn, "x 90%, y 2%, gap 10");
+        JButton exitButton = new JButton("Exit");
+        exitButton.addActionListener((ActionListener) -> {
+            g.getController().exitGame();
+        });
+        add(exitButton, "x 90%, y 2%, gap 10");
     }
 
-    private DefaultPieDataset createData() {
+    private DefaultPieDataset<String> createData() {
         DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
         Map<Corporation, Integer> stocks = player.getEarnedStocks();
         for (Corporation c : stocks.keySet()) 

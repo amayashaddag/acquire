@@ -123,6 +123,8 @@ public class GameDatabaseConnection {
         }
     }
 
+    // TODO : Should correct removePlayer to redistribute cash and stocks after player quitting game
+
     public static void removePlayer(String uid) throws Exception {
         CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
         ApiFuture<QuerySnapshot> future = collection.whereEqualTo(UID_PLAYER_FIELD, uid).get();
@@ -847,5 +849,12 @@ public class GameDatabaseConnection {
         }).toList();
 
         return newMessages;
+    }
+
+    public static String getWinner(String gameId) throws Exception {
+
+        // TODO : Should implement
+
+        return null;
     }
 }

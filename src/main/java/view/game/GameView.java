@@ -1,13 +1,10 @@
 package view.game;
 
-import control.game.GameController;
-import model.game.Corporation;
-import model.game.Player;
-import model.game.Board;
-import model.game.Cell;
-import net.miginfocom.swing.MigLayout;
-import model.tools.Point;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
@@ -16,12 +13,23 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.*;
-import raven.toast.Notifications;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import control.game.GameController;
+import model.game.Board;
+import model.game.Cell;
+import model.game.Corporation;
+import model.game.Player;
+import model.tools.Point;
+import net.miginfocom.swing.MigLayout;
 import view.assets.GameResources;
 import view.window.Form;
 import view.window.GameFrame;
-import view.game.PausePane;
 
 /**
  * The panel which has the map

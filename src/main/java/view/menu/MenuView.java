@@ -5,17 +5,20 @@ import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.SpinnerNumberModel;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
+
 import com.formdev.flatlaf.FlatClientProperties;
+
 import control.menu.MenuController;
 import model.tools.PlayerAnalytics;
 import model.tools.PreGameAnalytics;
@@ -70,6 +73,7 @@ public class MenuView extends Form {
 
         menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
+        menu3d.addMenuItem("SPECTATOR", this::spectator);
         menu3d.addMenuItem("MULTI PLAYER", this::multiPlayer);
         menu3d.addMenuItem("PROFIL", this::profile);
         menu3d.addMenuItem("RANKING", this::ranking);
@@ -133,6 +137,19 @@ public class MenuView extends Form {
             } finally {
                 undoUI();
                 controller.startSingleGame();
+            }
+        }).start();
+    }
+
+    public void spectator() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                undoUI();
+                controller.startSpectatorGame();
             }
         }).start();
     }

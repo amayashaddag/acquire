@@ -1,15 +1,17 @@
 package view.game;
 
-import com.formdev.flatlaf.FlatClientProperties;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Random;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import com.formdev.flatlaf.FlatClientProperties;
+
 import net.miginfocom.swing.MigLayout;
 import raven.chart.ChartLegendRenderer;
 import raven.chart.bar.HorizontalBarChart;
@@ -117,7 +119,7 @@ public class EndGame extends JPanel {
         add(panel2);
     }
 
-    private DefaultPieDataset createData() {
+    private DefaultPieDataset<String> createData() {
         DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
         Random random = new Random();
         dataset.addValue("July (ongoing)", 0);
@@ -129,9 +131,8 @@ public class EndGame extends JPanel {
         return dataset;
     }
 
-    private DefaultPieDataset createPieData() {
+    private DefaultPieDataset<String> createPieData() {
         DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-        Random random = new Random();
         dataset.addValue("Bags", 40);
         dataset.addValue("Jewelry", 60);
         return dataset;

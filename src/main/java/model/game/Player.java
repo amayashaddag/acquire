@@ -210,6 +210,16 @@ public class Player {
         return earnedStocks.get(c);
     }
 
+    public boolean isEmptyDeck() {
+        for (Point p : deck) {
+            if (p != null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         Player clonedPlayer = new Player(this.playerType, this.pseudo, null);

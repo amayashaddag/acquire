@@ -55,14 +55,17 @@ public class MonteCarloAlgorithm {
     }
 
     private Action chooseBestAction(Map<Action, Integer> actionScores) {
-        Action bestAction = null;
-        int bestScore = Integer.MIN_VALUE;
-        for (Map.Entry<Action, Integer> entry : actionScores.entrySet()) {
-            if (entry.getValue() > bestScore) {
-                bestAction = entry.getKey();
-                bestScore = entry.getValue();
+        Map.Entry<Action, Integer> entry = actionScores.entrySet().iterator().next();
+        Action bestAction = entry.getKey();
+        int bestScore = entry.getValue();
+
+        for (Map.Entry<Action, Integer> e : actionScores.entrySet()) {
+            if (e.getValue() > bestScore) {
+                bestAction = e.getKey();
+                bestScore = e.getValue();
             }
         }
+
         return bestAction;
     }
 }

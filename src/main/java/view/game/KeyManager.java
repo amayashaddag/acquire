@@ -26,6 +26,10 @@ public class KeyManager implements KeyListener {
         if (!enabled) return;
     }
 
+    public GameView getGameView() {
+        return g;
+    }
+
     @Override
     public void keyReleased(KeyEvent e) {if (!enabled) return;}
     @Override

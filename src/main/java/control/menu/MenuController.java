@@ -125,6 +125,32 @@ public class MenuController {
         });
     }
 
+    public void startSpectatorGame() {
+        view.undoUI();
+
+        List<Player> players = new LinkedList<>();
+
+        Player spectator = Player.createHumanPlayer("SPECTATOR", null);
+        Player bot1 = Player.createBotPlayer();
+        Player bot2 = Player.createBotPlayer();
+
+        players.add(bot1);
+        players.add(bot2);
+
+        GameController controller = new GameController(players, spectator, null, false);
+        GameView gameView = controller.getGameView();
+
+        SwingUtilities.invokeLater(() -> {
+            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+            parent.setContentPane(gameView);
+            gameView.setVisible(true);
+            gameView.revalidate();
+            gameView.repaint();
+
+            onlineObserver.stop();
+        });
+    }
+
     public PlayerAnalytics getPlayerAnalytics(String uid) {
         try {
             return GameDatabaseConnection.getPlayerAnalytics(uid);
