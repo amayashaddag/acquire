@@ -227,6 +227,9 @@ public class MenuView extends Form {
 
         JScrollPane scroll = new JScrollPane(scrollPane);
         scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.getVerticalScrollBar().setBackground(mainLeftColor);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panel.add(scroll, "h 75%, w 100%, wrap");
 
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
@@ -236,13 +239,12 @@ public class MenuView extends Form {
         spinnerPane.add(spinner);
         spinnerPane.setBackground(mainLeftColor.darker());
         spinner.setBackground(mainLeftColor);
-        panel.add(spinnerPane, "x 15%, gapy 5%," + btnContraints);
+        panel.add(spinnerPane, "x 15%, y 85%, gapy 5%," + btnContraints);
 
         scroll.setOpaque(false);
         scrollPane.setOpaque(false);
         panel.setOpaque(true);
         scroll.getViewport().setOpaque(false);
-
         panel.repaint();
         panel.setVisible(true);
         repaint();
