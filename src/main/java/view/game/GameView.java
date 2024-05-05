@@ -412,6 +412,10 @@ public class GameView extends Form {
         repaint();
     }
 
+    public void sendChat(Player p, String message, boolean notify) {
+        
+    }
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
