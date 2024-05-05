@@ -28,7 +28,7 @@ public class PausePane extends BlurPane {
     public PausePane(GameView gv) {
         this.g = gv;
         this.player = g.getPlayer();
-        setLayout(new MigLayout("al center, filly, wrap"));
+        setLayout(new MigLayout("al center, ,[50%], filly, wrap"));
         new Thread(()-> {
             try {
                 Thread.sleep(100);
@@ -60,6 +60,7 @@ public class PausePane extends BlurPane {
     final Player player;
     boolean keyPressed;
     HorizontalBarChart barChart1; // For player's actions
+    JPanel chatPane;
 
     private void init2() {
         class HBC extends HorizontalBarChart {
@@ -80,7 +81,12 @@ public class PausePane extends BlurPane {
         panel1.setBorder(new ColorableArcableFlatBorder((java.awt.Color)color,10));
         add(panel1, "split 2,gap 0 20");
 
+        chatPane = new JPanel();
+        chatPane.setBackground(Color.RED);
+        add(chatPane);
+
         JButton exitButton = new JButton("Exit");
+        exitButton.setBackground(color);
         exitButton.addActionListener((ActionListener) -> {
             g.pause();
             g.getController().exitGame();

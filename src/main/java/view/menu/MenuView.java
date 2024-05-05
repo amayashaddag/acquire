@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -16,11 +15,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.ui.FlatScrollBarUI;
-import com.raven.swing.ScrollBar;
-
 import control.menu.MenuController;
 import model.tools.PlayerAnalytics;
 import model.tools.PreGameAnalytics;
@@ -56,7 +51,7 @@ public class MenuView extends Form {
         this.controller = controller;
         setLayout(mig);
 
-        mainLeftColor = MenuResources.Assets.getColor("blue");
+        mainLeftColor = MenuResources.Assets.getColor("purple");
         saveUI();
         changeUi();
 
@@ -210,7 +205,7 @@ public class MenuView extends Form {
                 multiPlayer();
             });
         }
-        panel.add(createGameBtn, "x 15%, gapy 5%," + btnContraints);
+        panel.add(createGameBtn, "x 13%, gapy 5%," + btnContraints);
 
         List<PreGameAnalytics> list = controller.getAvailableGames();
         if (list != null && !list.isEmpty()) {
@@ -231,21 +226,10 @@ public class MenuView extends Form {
         scroll.setBorder(BorderFactory.createEmptyBorder());
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        
-        class FSBUI extends FlatScrollBarUI {
-            FSBUI() {
-                super();
-                pressedThumbColor = Color.RED;
-                hoverThumbColor = Color.GREEN;
-                hoverTrackColor = Color.BLUE;
-                pressedTrackColor = Color.GREEN;
-            }   // FIXME : a regler !!!
-        }
-
-        scroll.getVerticalScrollBar().setUI(new FSBUI());
         scroll.getVerticalScrollBar().setBackground(mainLeftColor);
         panel.add(scroll, "h 75%, w 100%, wrap");
 
+        // FIXME : changer couleur fleches JSPinner
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
         spinner.addChangeListener((e) -> numberOfPlayerByGame = (int) spinner.getValue());
         JPanel spinnerPane = new JPanel();
@@ -253,7 +237,7 @@ public class MenuView extends Form {
         spinnerPane.add(spinner);
         spinnerPane.setBackground(mainLeftColor.darker());
         spinner.setBackground(mainLeftColor);
-        panel.add(spinnerPane, "x 15%, y 85%, gapy 5%," + btnContraints);
+        panel.add(spinnerPane, "x 13%, y 85%, gapy 5%," + btnContraints);
 
         scroll.setOpaque(false);
         scrollPane.setOpaque(false);
