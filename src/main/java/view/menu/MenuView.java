@@ -71,10 +71,10 @@ public class MenuView extends Form {
 
         menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
-        menu3d.addMenuItem("SPECTATOR", this::spectator);
         menu3d.addMenuItem("MULTI PLAYER", this::multiPlayer);
         menu3d.addMenuItem("PROFIL", this::profile);
         menu3d.addMenuItem("RANKING", this::ranking);
+        menu3d.addMenuItem("SPECTATOR", this::spectator);
         menu3d.addMenuItem("EXIT", this::exit);
         menu3d.addGlobalEvent(controller::abortMutiGame);
         menu3d.addGlobalEvent(() -> panel.setVisible(false));

@@ -2,16 +2,18 @@ package view.game;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.DecimalFormat;
 import java.util.Map;
-
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
-
 import com.formdev.flatlaf.FlatClientProperties;
-
+import com.formdev.flatlaf.ui.FlatScrollBarUI;
+import javax.swing.JScrollPane;
 import model.game.Corporation;
 import model.game.Player;
 import model.tools.AutoSetter;
@@ -19,6 +21,11 @@ import net.miginfocom.swing.MigLayout;
 import raven.chart.bar.HorizontalBarChart;
 import raven.chart.data.pie.DefaultPieDataset;
 import view.window.GameFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollBar;
+import javax.swing.BorderFactory;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+
 
 /**
  * @author Arthur Deck
@@ -28,11 +35,11 @@ public class PausePane extends BlurPane {
     public PausePane(GameView gv) {
         this.g = gv;
         this.player = g.getPlayer();
-        setLayout(new MigLayout("al center, ,[50%], filly, wrap"));
+        setLayout(new MigLayout("align center, aligny center, flowy"));
         new Thread(()-> {
             try {
                 Thread.sleep(100);
-                init(gv); 
+                init(gv);
                 getJFrame().addKeyListener(new KeyListener() {
                     @Override
                     public void keyPressed(KeyEvent e) {
@@ -50,6 +57,7 @@ public class PausePane extends BlurPane {
                     public void keyTyped(KeyEvent e) {}
                 });
                 init2();
+                repaint();
             } catch (InterruptedException e2) {
                 GameFrame.showError(e2, this::repaint);
             }
@@ -61,6 +69,7 @@ public class PausePane extends BlurPane {
     boolean keyPressed;
     HorizontalBarChart barChart1; // For player's actions
     JPanel chatPane;
+    JScrollBar scrollBar;
 
     private void init2() {
         class HBC extends HorizontalBarChart {
@@ -71,6 +80,7 @@ public class PausePane extends BlurPane {
         }
 
         Color color = Color.decode("#f97316");
+
         barChart1 = new HBC();
         barChart1.setBarColor(color);
         barChart1.setDataset(createData());
@@ -78,12 +88,35 @@ public class PausePane extends BlurPane {
         panel1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
         panel1.add(barChart1);
-        panel1.setBorder(new ColorableArcableFlatBorder((java.awt.Color)color,10));
-        add(panel1, "split 2,gap 0 20");
+        panel1.setBorder(new ColorableArcableFlatBorder((java.awt.Color)color,5));
+        add(panel1, "gapy 10%");
 
         chatPane = new JPanel();
-        chatPane.setBackground(Color.RED);
-        add(chatPane);
+        chatPane.setLayout(new MigLayout("wrap"));
+        chatPane.setOpaque(false);
+        JScrollPane js = new JScrollPane(chatPane);
+        scrollBar = js.getVerticalScrollBar();
+        class FSBUI extends FlatScrollBarUI {  // FIXME :Changer la couleur de la barre et enlever le background
+            FSBUI() {
+                this.thumbColor = color;
+                this.trackColor = Color.RED;
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {}
+        }
+        scrollBar.setUI(new FSBUI());
+        scrollBar.setBorder(BorderFactory.createEmptyBorder());
+        js.setBorder(BorderFactory.createEmptyBorder());
+        js.setOpaque(false);
+        js.getViewport().setOpaque(false);
+        js.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        js.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        add(js, "growx, h 40%");
+
+        for (int i = 0; i < 30; i++) {
+            chatPane.add(new JLabel("dzadza " + i));
+        }
 
         JButton exitButton = new JButton("Exit");
         exitButton.setBackground(color);
@@ -91,7 +124,7 @@ public class PausePane extends BlurPane {
             g.pause();
             g.getController().exitGame();
         });
-        add(exitButton, "x 90%, y 2%, gap 10");
+        add(exitButton, "x 93%, y 1%, gap 10");
     }
 
     private DefaultPieDataset<String> createData() {
@@ -111,5 +144,13 @@ public class PausePane extends BlurPane {
             blur(false);
             g.setEnabled(true);
         }
+    }
+
+    @Override
+    public void repaint() {
+        if (scrollBar != null)
+            scrollBar.setValue(scrollBar.getMaximum());
+
+        super.repaint();
     }
 }

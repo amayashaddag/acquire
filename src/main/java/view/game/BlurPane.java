@@ -5,7 +5,6 @@ import view.window.*;
 import java.awt.Color;
 import java.awt.Graphics;
 import javax.swing.JPanel;
-import net.miginfocom.swing.MigLayout;
 import javax.swing.SwingUtilities;
 import java.awt.Component;
 import javax.swing.JFrame;
@@ -29,7 +28,6 @@ public class BlurPane extends JPanel {
         this.form = form;
         this.frame = ((JFrame) SwingUtilities.getWindowAncestor(form));
         frame.setGlassPane(this);
-        setLayout(new MigLayout("al center, filly"));
         glassPane = frame.getGlassPane();
     }
 
