@@ -637,34 +637,43 @@ public class BotController implements Cloneable {
      */
     public List<Action> getPossibleActions() {
         List<Action> possibleActions = new LinkedList<>();
+        Action possibleAction = null;
         int numberOfGeneratedCombinations = 0;
 
         for (Point p : currentPlayer.getDeck()) {
-            Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
 
+            if (p == null) {
+                continue;
+            }
+
+            Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
             List<Map<Corporation, Integer>> combinationsOfBuyingStocks = generateCombinations(possibleBuyingStocks,
                     Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
 
             for (Map<Corporation, Integer> comb : combinationsOfBuyingStocks) {
+                int stocksPrice = calculateStocksPrice(comb);
+
                 for (Corporation c : board.unplacedCorporations()) {
-
-                    int stocksPrice = calculateStocksPrice(comb);
-                    Action possibleAction = null;
-
                     if (currentPlayer.hasEnoughCash(stocksPrice)) {
                         if (board.adjacentOwnedCells(p).size() > 1) {
                             for (MergingChoice mergingChoice : MergingChoice.values()) {
-                                if (currentPlayer.hasEnoughCash(stocksPrice)) {
-                                    possibleAction = new Action(p, c, comb, mergingChoice);
+                                possibleAction = new Action(p, c, comb, mergingChoice);
+                                possibleActions.add(possibleAction);
+                                numberOfGeneratedCombinations++;
+
+                                if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
+                                    return possibleActions;
                                 }
                             }
                         } else {
                             possibleAction = new Action(p, c, comb, null);
-                        }
-
-                        if (possibleAction != null) {
                             possibleActions.add(possibleAction);
+
                             numberOfGeneratedCombinations++;
+
+                            if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
+                                return possibleActions;
+                            }
                         }
 
                         if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
@@ -672,9 +681,48 @@ public class BotController implements Cloneable {
                         }
                     }
                 }
+
+                if (board.unplacedCorporations().isEmpty()) {
+                    if (currentPlayer.hasEnoughCash(stocksPrice)) {
+                        if (board.adjacentOwnedCells(p).size() > 1) {
+                            for (MergingChoice mergingChoice : MergingChoice.values()) {
+                                possibleAction = new Action(p, null, comb, mergingChoice);
+                                possibleActions.add(possibleAction);
+
+                                numberOfGeneratedCombinations++;
+
+                                if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
+                                    return possibleActions;
+                                }
+                            }
+                        } else {
+                            possibleAction = new Action(p, null, comb, null);
+                            possibleActions.add(possibleAction);
+
+                            numberOfGeneratedCombinations++;
+
+                            if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
+                                return possibleActions;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (combinationsOfBuyingStocks.isEmpty()) {
+                if (board.adjacentOwnedCells(p).size() > 1) {
+                    for (MergingChoice mergingChoice : MergingChoice.values()) {
+                        possibleAction = new Action(p, null, new HashMap<>(), mergingChoice);
+                        possibleActions.add(possibleAction);
+                    }
+                } else {
+                    possibleAction = new Action(p, null, new HashMap<>(), null);
+                    possibleActions.add(possibleAction);
+                }
             }
         }
 
+        System.out.println(possibleActions);
         return possibleActions;
     }
 
@@ -700,9 +748,9 @@ public class BotController implements Cloneable {
             Map<Corporation, Integer> currentCombination, List<Map<Corporation, Integer>> combinations,
             int startIndex) {
         if (getTotalValue(currentCombination) > threshold) {
-            return; // prune the branch if the total value exceeds the threshold
+            return;
         }
-        combinations.add(new HashMap<>(currentCombination)); // add the current combination to the result
+        combinations.add(new HashMap<>(currentCombination));
 
         for (int i = startIndex; i < inputMap.size(); i++) {
             Corporation corporation = (Corporation) inputMap.keySet().toArray()[i];
@@ -710,7 +758,7 @@ public class BotController implements Cloneable {
             for (int j = 0; j <= maxValue; j++) {
                 currentCombination.put(corporation, j);
                 generateCombinationsHelper(inputMap, threshold, currentCombination, combinations, i + 1);
-                currentCombination.put(corporation, 0); // reset the value for backtracking
+                currentCombination.put(corporation, 0);
             }
         }
     }

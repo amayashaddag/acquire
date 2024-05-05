@@ -44,6 +44,7 @@ public class GameController {
     private final Timer botTurnTimer;
     private final Timer refresher;
     private final Map<Point, Corporation> newPlacedCells;
+    private final Executor executor;
 
     private long lastNotificationTime;
     private long lastKeepSellTradeStockTime;
@@ -72,8 +73,7 @@ public class GameController {
 
         this.gameView = new GameView(this, currentPlayer);
         this.onlineMode = online;
-
-        Executor executor = Executors.newSingleThreadExecutor();
+        this.executor = Executors.newSingleThreadExecutor();
 
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             executor.execute(() -> {
@@ -104,12 +104,6 @@ public class GameController {
             executor.execute(() -> {
                 Player p = getCurrentPlayer();
 
-                for (Point point : p.getDeck()) {
-                    System.out.print(point + " ");
-                }
-                System.out.println();
-                System.out.println(board.getRemainingCells());
-
                 if (!p.isBot()) {
                     return;
                 }
@@ -127,11 +121,17 @@ public class GameController {
                     MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
                     Action nextAction = monteCarlo.runMonteCarlo();
 
+                    System.out.println(nextAction);
+
                     handleCellPlacing(nextAction, p);
 
-                    GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+                    if (board.isGameOver()) {
+                        return;
+                    }
 
+                    GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
                     parent.setFocusable(true);
+                    
                     gameView.repaint();
                 } catch (Exception e) {
                     errorInterrupt(e);
@@ -309,8 +309,6 @@ public class GameController {
     private void errorInterrupt(Exception e) {
         GameFrame.showError(e, () -> {
             endGame();
-            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
-            parent.dispose();
         });
     }
 
@@ -570,8 +568,10 @@ public class GameController {
             newPlacedCells.put(action.getPoint(), null);
         }
 
-        GameFrame.showSuccessNotification(
+        if (currentPlayer.equals(gameView.getPlayer())) {
+            GameFrame.showSuccessNotification(
                 GameNotifications.cellPlacingNotification(currentPlayer.getPseudo()));
+        }
 
         Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(action.getPoint());
         Set<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(action.getPoint());
@@ -830,8 +830,10 @@ public class GameController {
             player.removeFromEarnedStocks(c, amount);
             player.addToCash(totalPriceForCorporation);
 
-            GameFrame.showSuccessNotification(
+            if (player.equals(gameView.getPlayer())) {
+                GameFrame.showSuccessNotification(
                     GameNotifications.soldStocksNotification(amount, c, totalPriceForCorporation));
+            }
         }
     }
 
@@ -852,8 +854,10 @@ public class GameController {
             player.removeFromEarnedStocks(c, amountToGive);
             player.addToEarnedStocks(major, amountToEarn);
 
-            GameFrame.showSuccessNotification(
+            if (player.equals(gameView.getPlayer())) {
+                GameFrame.showSuccessNotification(
                     GameNotifications.tradedStocksNotification(amountToGive, c, amountToEarn, major));
+            }
         }
     }
 
@@ -959,6 +963,7 @@ public class GameController {
         }
 
         stopObservers();
+
         GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
         MenuController menuController = new MenuController();
         menuController.start();
