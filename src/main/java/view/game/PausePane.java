@@ -21,9 +21,9 @@ import net.miginfocom.swing.MigLayout;
 import raven.chart.bar.HorizontalBarChart;
 import raven.chart.data.pie.DefaultPieDataset;
 import view.window.GameFrame;
-import javax.swing.JLabel;
 import javax.swing.JScrollBar;
 import javax.swing.BorderFactory;
+import javax.swing.JTextArea;
 
 
 /**
@@ -113,8 +113,12 @@ public class PausePane extends BlurPane {
         js.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(js, "growx, h 40%");
 
-        for (int i = 0; i < 30; i++) {
-            chatPane.add(new JLabel("dzadza " + i));
+        for (int i = 0; i < 2; i++) {
+            JTextArea jt = new JTextArea("dzadza dzadzadzanjdeafjezfokdqkfdqsdzabcnsq,ceq" + i);
+            jt.setLineWrap(true);
+            jt.setWrapStyleWord(true);
+            jt.setOpaque(false);
+            chatPane.add(jt);
         }
 
         JButton exitButton = new JButton("Exit");

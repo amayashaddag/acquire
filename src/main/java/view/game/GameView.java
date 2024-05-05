@@ -27,6 +27,7 @@ import model.game.Corporation;
 import model.game.Player;
 import model.tools.Point;
 import net.miginfocom.swing.MigLayout;
+import raven.toast.Notifications;
 import view.assets.GameResources;
 import view.window.Form;
 import view.window.GameFrame;
@@ -413,7 +414,10 @@ public class GameView extends Form {
     }
 
     public void sendChat(Player p, String message, boolean notify) {
-        
+        if (notify)
+            Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_LEFT, 
+            p.getPseudo() + " : " + message);
+
     }
 
     @Override
