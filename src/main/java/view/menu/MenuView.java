@@ -69,7 +69,8 @@ public class MenuView extends Form {
                 super.setOpaque(isOpaque);
             }
         };
-        panel.setBackground(MenuResources.Assets.getColor("blue"));
+        panel.setBackground(mainLeftColor);
+        panel.setBorder(new ColorableArcableFlatBorder(mainLeftColor.darker(),15));
 
         menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
@@ -77,7 +78,6 @@ public class MenuView extends Form {
         menu3d.addMenuItem("MULTI PLAYER", this::multiPlayer);
         menu3d.addMenuItem("PROFIL", this::profile);
         menu3d.addMenuItem("RANKING", this::ranking);
-        menu3d.addMenuItem("SETTING", this::settings);
         menu3d.addMenuItem("EXIT", this::exit);
         menu3d.addGlobalEvent(controller::abortMutiGame);
         menu3d.addGlobalEvent(() -> panel.setVisible(false));
@@ -91,7 +91,7 @@ public class MenuView extends Form {
     }
 
     private void changeUi() {
-        UIManager.put("Button.background", mainLeftColor);
+        UIManager.put("Button.background", mainLeftColor.darker());
         UIManager.put("Label.background", mainLeftColor);
         UIManager.put("Label.font", view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
     }
@@ -190,7 +190,7 @@ public class MenuView extends Form {
             startBtn.addActionListener((e) -> {
                 controller.launchMultiGame();
             });
-            scrollPane.add(startBtn, btnContraints);
+            panel.add(startBtn, btnContraints);
         } else if (haveJoinAGame) {
             JButton startBtn = new JButton("Quit queue");
             startBtn.setBackground(MenuResources.Assets.getColor("red"));
@@ -198,7 +198,7 @@ public class MenuView extends Form {
                 controller.quitGame();
                 haveJoinAGame = false;
             });
-            scrollPane.add(startBtn, btnContraints);
+            panel.add(startBtn, btnContraints);
         } else {
             createGameBtn.setText("Create new game");
             createGameBtn.setBackground(MenuResources.Assets.getColor("green"));
@@ -208,7 +208,7 @@ public class MenuView extends Form {
                 multiPlayer();
             });
         }
-        scrollPane.add(createGameBtn, btnContraints);
+        panel.add(createGameBtn, "x 15%, gapy 5%," + btnContraints);
 
         List<PreGameAnalytics> list = controller.getAvailableGames();
         if (list != null && !list.isEmpty()) {
@@ -225,19 +225,22 @@ public class MenuView extends Form {
             }
         }
 
+        JScrollPane scroll = new JScrollPane(scrollPane);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        panel.add(scroll, "h 75%, w 100%, wrap");
+
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
         spinner.addChangeListener((e) -> numberOfPlayerByGame = (int) spinner.getValue());
         JPanel spinnerPane = new JPanel();
         spinnerPane.add(new JLabel("Player by game : "));
         spinnerPane.add(spinner);
-        scrollPane.add(spinnerPane, btnContraints);
+        spinnerPane.setBackground(mainLeftColor.darker());
+        spinner.setBackground(mainLeftColor);
+        panel.add(spinnerPane, "x 15%, gapy 5%," + btnContraints);
 
-        JScrollPane scroll = new JScrollPane(scrollPane);
-        scroll.setBorder(BorderFactory.createEmptyBorder());
-        panel.add(scroll, "grow");
         scroll.setOpaque(false);
         scrollPane.setOpaque(false);
-        panel.setOpaque(false);
+        panel.setOpaque(true);
         scroll.getViewport().setOpaque(false);
 
         panel.repaint();
@@ -348,25 +351,6 @@ public class MenuView extends Form {
         panel.revalidate();
         revalidate();
         repaint();
-    }
-
-    public void settings() {
-        // TODO : pour les test 
-        // mig.setComponentConstraints(panel, "x 0, y 0, w 100%, h 0%");
-        // panel.removeAll();
-        // panel.add(new view.game.EndGame());
-        // panel.repaint();
-        // panel.setVisible(true);
-        // remove(menu3d);
-        // repaint();
-        view.game.BlurPane bb = new view.game.BlurPane(this);
-        JButton jv = new JButton("Stop");
-        jv.addActionListener((e) -> bb.blur(false));
-        bb.blurWith(jv);
-        // bb.add(new JLabel("test 1,2,1,2"));
-        // bb.repaint();
-        // ((GameFrame) SwingUtilities.getWindowAncestor(this)).setGlassPane(new view.game.BlurPane());
-        // ((GameFrame) SwingUtilities.getWindowAncestor(this)).getGlassPane().setVisible(true);
     }
 
     public void exit() {
