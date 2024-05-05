@@ -24,7 +24,6 @@ import view.window.GameFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollBar;
 import javax.swing.BorderFactory;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 
 
 /**
@@ -96,17 +95,17 @@ public class PausePane extends BlurPane {
         chatPane.setOpaque(false);
         JScrollPane js = new JScrollPane(chatPane);
         scrollBar = js.getVerticalScrollBar();
+        scrollBar.setBackground(new Color(0,0,0,0));
         class FSBUI extends FlatScrollBarUI {  // FIXME :Changer la couleur de la barre et enlever le background
-            FSBUI() {
-                this.thumbColor = color;
-                this.trackColor = Color.RED;
+            @Override
+            protected Color getThumbColor(JComponent c, boolean hover, boolean pressed) {
+                return color;
             }
 
             @Override
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {}
         }
         scrollBar.setUI(new FSBUI());
-        scrollBar.setBorder(BorderFactory.createEmptyBorder());
         js.setBorder(BorderFactory.createEmptyBorder());
         js.setOpaque(false);
         js.getViewport().setOpaque(false);
