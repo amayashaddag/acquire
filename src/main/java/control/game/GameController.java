@@ -99,46 +99,43 @@ public class GameController {
                 }
             });
         });
-
-        this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
-            executor.execute(() -> {
-                Player p = getCurrentPlayer();
-
-                if (!p.isBot()) {
-                    return;
-                }
-
-                if (p.isEmptyDeck()) {
-                    endGame();
-                    return;
-                }
-
-                try {
-
-                    Thread.sleep(BOT_TURN_DELAY);
-
-                    BotController botController = new BotController(this);
-                    MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
-                    Action nextAction = monteCarlo.runMonteCarlo();
-
-                    System.out.println(nextAction);
-
-                    handleCellPlacing(nextAction, p);
-
-                    if (board.isGameOver()) {
+        
+        if (!online) {
+            this.botTurnTimer = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
+                executor.execute(() -> {
+                    Player p = getCurrentPlayer();
+    
+                    if (!p.isBot()) {
                         return;
                     }
-
-                    GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
-                    parent.setFocusable(true);
-                    
-                    gameView.repaint();
-                } catch (Exception e) {
-                    errorInterrupt(e);
-                    e.printStackTrace();
-                }
+    
+                    if (p.isEmptyDeck() || board.isGameOver()) {
+                        endGame();
+                        return;
+                    }
+    
+                    try {
+                        Thread.sleep(BOT_TURN_DELAY);
+    
+                        BotController botController = new BotController(this);
+                        MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
+                        Action nextAction = monteCarlo.runMonteCarlo();
+    
+                        handleCellPlacing(nextAction, p);
+    
+                        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+                        parent.setFocusable(true);
+                        
+                        gameView.repaint();
+                    } catch (Exception e) {
+                        errorInterrupt(e);
+                        e.printStackTrace();
+                    }
+                });
             });
-        });
+        } else {
+            botTurnTimer = null;
+        }
 
         this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
             updateChat();
@@ -781,7 +778,10 @@ public class GameController {
         }
 
         if (board.isGameOver()) {
-            endGame();
+            if (onlineMode) {
+                endGame();
+            }
+
             return;
         }
 
@@ -874,8 +874,17 @@ public class GameController {
             }
         }
 
-        exitGame();
-        // TODO : Should display end-game menu later
+        stopObservers();
+
+        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+        MenuController menuController = new MenuController();
+        menuController.start();
+
+        System.out.println(parent);
+
+        MenuView menuView = menuController.getView();
+        parent.setContentPane(menuView);
+        parent.repaint();
     }
 
     public void sendChat(String chat, Player p) {
