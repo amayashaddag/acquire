@@ -16,8 +16,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
-
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.ui.FlatScrollBarUI;
+import com.raven.swing.ScrollBar;
 
 import control.menu.MenuController;
 import model.tools.PlayerAnalytics;
@@ -227,9 +229,21 @@ public class MenuView extends Form {
 
         JScrollPane scroll = new JScrollPane(scrollPane);
         scroll.setBorder(BorderFactory.createEmptyBorder());
-        scroll.getVerticalScrollBar().setBackground(mainLeftColor);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        
+        class FSBUI extends FlatScrollBarUI {
+            FSBUI() {
+                super();
+                pressedThumbColor = Color.RED;
+                hoverThumbColor = Color.GREEN;
+                hoverTrackColor = Color.BLUE;
+                pressedTrackColor = Color.GREEN;
+            }   // FIXME : a regler !!!
+        }
+
+        scroll.getVerticalScrollBar().setUI(new FSBUI());
+        scroll.getVerticalScrollBar().setBackground(mainLeftColor);
         panel.add(scroll, "h 75%, w 100%, wrap");
 
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
