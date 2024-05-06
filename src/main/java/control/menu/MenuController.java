@@ -124,6 +124,7 @@ public class MenuController {
             gameView.setVisible(true);
             gameView.revalidate();
             gameView.repaint();
+            parent.requestFocus();
 
             onlineObserver.stop();
         });
@@ -150,6 +151,7 @@ public class MenuController {
             gameView.setVisible(true);
             gameView.revalidate();
             gameView.repaint();
+            parent.requestFocus();
 
             onlineObserver.stop();
         });
@@ -226,6 +228,7 @@ public class MenuController {
             parent.setVisible(true);
             parent.revalidate();
             parent.repaint();
+            parent.requestFocus();
 
             return currentPlayer;
         } catch (Exception e) {

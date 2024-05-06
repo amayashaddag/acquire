@@ -130,7 +130,7 @@ public class GameController {
                         handleCellPlacing(nextAction, p);
 
                         GameFrame parent = GameFrame.currentFrame;
-                        parent.setFocusable(true);
+                        parent.requestFocus();
 
                         gameView.repaint();
                     } catch (InterruptedException e) {
@@ -150,7 +150,6 @@ public class GameController {
         });
 
         this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
-            gameView.setFocusable(true);
             gameView.repaint();
         });
 
@@ -361,6 +360,10 @@ public class GameController {
 
     public List<Player> getCurrentPlayers() {
         return currentPlayers;
+    }
+
+    public boolean isOnlineMode() {
+        return onlineMode;
     }
 
     /**

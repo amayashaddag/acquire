@@ -236,7 +236,10 @@ public class PausePane extends BlurPane {
 
     private void sendChat(String msg) {
         recieveChat(player, msg);
-        g.getController().sendChat(msg, player);
+        
+        if (g.getController().isOnlineMode()) {
+            g.getController().sendChat(msg, player);
+        }
     }
 
     private DefaultPieDataset<String> createData() {
