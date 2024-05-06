@@ -231,6 +231,8 @@ public class MenuController {
             errorInterrupt(e);
 
             return null;
+        } finally {
+            view.undoUI();
         }
     }
 
@@ -244,8 +246,6 @@ public class MenuController {
     }
 
     public void launchMultiGame() {
-        view.undoUI();
-
         try {
             GameDatabaseConnection.startGame(joinedGameAnalytics.gameID());
             Player currentPlayer = joinGame();

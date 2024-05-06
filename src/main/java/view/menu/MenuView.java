@@ -89,20 +89,24 @@ public class MenuView extends Form {
 
     private void changeUi() {
         UIManager.put("Button.background", mainLeftColor.darker());
+        UIManager.put("Button.disabledBackground", mainLeftColor.darker());
         UIManager.put("Label.background", mainLeftColor);
         UIManager.put("Label.font", view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
     }
 
     private Color Button_background;
     private Color Label_background;
+    private Color Button_disabledBackground;
     private void saveUI() {
         Button_background = (Color) UIManager.get("Button.background", null);
         Label_background = (Color) UIManager.get("Label.background", null);
+        Button_disabledBackground = (Color) UIManager.get("Button.disabledBackground", null);
     }
 
     public void undoUI() {
         UIManager.put("Button.background", Button_background);
         UIManager.put("Label.background", Label_background);
+        UIManager.put("Button.disabledBackground", Button_disabledBackground);
     }
 
     public boolean haveJoinAGame() {
@@ -187,7 +191,7 @@ public class MenuView extends Form {
             startBtn.addActionListener((e) -> {
                 controller.launchMultiGame();
             });
-            panel.add(startBtn, btnContraints);
+            panel.add(startBtn, "x 13%, y 5%, gapy 1%,"+btnContraints);
         } else if (haveJoinAGame) {
             JButton startBtn = new JButton("Quit queue");
             startBtn.setBackground(MenuResources.Assets.getColor("red"));
