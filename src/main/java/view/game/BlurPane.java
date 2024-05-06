@@ -28,11 +28,9 @@ public class BlurPane extends JPanel {
         this.form = form;
         this.frame = ((JFrame) SwingUtilities.getWindowAncestor(form));
         frame.setGlassPane(this);
-        glassPane = frame.getGlassPane();
     }
 
     Form form;
-    Component glassPane;
     JFrame frame;
 
     public JFrame getJFrame() {
@@ -49,7 +47,7 @@ public class BlurPane extends JPanel {
     }
 
     public void blur(boolean b) {
-        glassPane.setVisible(b);
+        this.setVisible(b);
     }
 
     public void blurWith(Component panel) {
@@ -59,5 +57,5 @@ public class BlurPane extends JPanel {
         repaint();
     }
 
-    public boolean isBlur() {return glassPane.isVisible();}
+    public boolean isBlur() {return this.isVisible();}
 }

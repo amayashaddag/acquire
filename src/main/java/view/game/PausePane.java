@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.util.Map;
 import javax.swing.JButton;
@@ -25,6 +27,7 @@ import view.window.GameFrame;
 import javax.swing.JScrollBar;
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 
 /**
@@ -70,6 +73,7 @@ public class PausePane extends BlurPane {
     HorizontalBarChart barChart1; // For player's actions
     JPanel chatPane;
     JScrollBar scrollBar;
+    JTextField jtf;
 
     private void init2() {
         class HBC extends HorizontalBarChart {
@@ -97,7 +101,7 @@ public class PausePane extends BlurPane {
         JScrollPane js = new JScrollPane(chatPane);
         scrollBar = js.getVerticalScrollBar();
         scrollBar.setBackground(new Color(0,0,0,0));
-        class FSBUI extends FlatScrollBarUI {  // FIXME :Changer la couleur de la barre et enlever le background
+        class FSBUI extends FlatScrollBarUI {
             @Override
             protected Color getThumbColor(JComponent c, boolean hover, boolean pressed) {
                 return color;
@@ -114,28 +118,75 @@ public class PausePane extends BlurPane {
         js.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(js, "growx, h 40%");
         recieveChat(null, "Welcome on the on online chat. Please be respectfull and courtoie. Good Game !");
-        
+
+        jtf = new JTextField("Enter un message");
+        jtf.addActionListener((e) -> {
+            String msg = jtf.getText();
+            recieveChat(player, msg);
+            jtf.setText("");
+            g.getController().sendChat(msg, player);
+            requestFocus();
+        });
+        jtf.addKeyListener(new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent arg0) {
+                if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE)
+                    requestFocus();
+            }
+            @Override
+            public void keyReleased(KeyEvent arg0) {}
+            @Override
+            public void keyTyped(KeyEvent arg0) {}
+        });
+        add(jtf, "growx");
+
         JButton exitButton = new JButton("Exit");
         exitButton.setBackground(color);
-        exitButton.addActionListener((ActionListener) -> {
+        exitButton.addActionListener((e) -> {
             g.pause();
             g.getController().exitGame();
         });
         add(exitButton, "x 93%, y 1%, gap 10");
+
+        MouseListener ml = new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent arg0) {
+                requestFocus();
+            }
+            @Override
+            public void mouseEntered(MouseEvent arg0) {}
+            @Override
+            public void mouseExited(MouseEvent arg0) {}
+            @Override
+            public void mousePressed(MouseEvent arg0) {}
+            @Override
+            public void mouseReleased(MouseEvent arg0) {}
+        };
+        addMouseListener(ml);
+        chatPane.addMouseListener(ml);
+        barChart1.addMouseListener(ml);
     }
 
     public void recieveChat(Player p, String msg) {
+        if (msg == null || msg == "")
+            return;
+
         JTextArea jt = new JTextArea();
         if (p == null)
             jt.setText(msg);
+        else if (p.equals(player))
+            jt.setText(player.getPseudo()+" : "+msg);
         else
-            jt.setText(p.getPseudo()+msg);
+            jt.setText(p.getPseudo()+" : "+msg);
         
         jt.setLineWrap(true);
         jt.setWrapStyleWord(true);
         jt.setOpaque(false);
         jt.setEditable(false);
+        jt.setVisible(true);
         chatPane.add(jt,"w 95%");
+        
+        revalidate();
     }
 
     private DefaultPieDataset<String> createData() {
@@ -168,5 +219,12 @@ public class PausePane extends BlurPane {
     @Override
     public JFrame getJFrame() {
         return GameFrame.currentFrame;
+    }
+
+    @Override
+    public void requestFocus() {
+        super.requestFocus();
+        setFocusable(true);
+        getJFrame().requestFocus();
     }
 }
