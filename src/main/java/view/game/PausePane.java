@@ -27,7 +27,6 @@ import view.window.GameFrame;
 import javax.swing.JScrollBar;
 import javax.swing.BorderFactory;
 import javax.swing.JTextPane;
-import javax.swing.JTextField;
 
 
 /**
@@ -118,20 +117,24 @@ public class PausePane extends BlurPane {
         js.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(js, "growx, h 40%");
         recieveChat(null, "Welcome on the on online chat. Please be respectfull and courtoie. Good Game !");
+        sendChat("connected");
 
-        JTextField jtf = new JTextField("Enter un message");
+        TextField jtf = new TextField("Enter your message");
+        jtf.setLabelColor(mainColor);
+        jtf.setLineColor(mainColor);
+        jtf.setOpaque(false);
         jtf.addActionListener((e) -> {
             String msg = jtf.getText();
-            recieveChat(player, msg);
             jtf.setText("");
-            g.getController().sendChat(msg, player);
-            requestFocus();
+            getJFrame().requestFocus();
+            if (!msg.isBlank()) 
+                sendChat(msg);
         });
         jtf.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent arg0) {
                 if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE)
-                    requestFocus();
+                    getJFrame().requestFocus();
             }
             @Override
             public void keyReleased(KeyEvent arg0) {}
@@ -151,7 +154,7 @@ public class PausePane extends BlurPane {
         MouseListener ml = new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent arg0) {
-                requestFocus();
+                getJFrame().requestFocus();
             }
             @Override
             public void mouseEntered(MouseEvent arg0) {}
@@ -168,9 +171,6 @@ public class PausePane extends BlurPane {
     }
 
     public void recieveChat(Player p, String msg) {
-        if (msg == null || msg == "")
-            return;
-
         JTextPane jt = new JTextPane();
         jt.setOpaque(false);
         jt.setEditable(false);
@@ -180,17 +180,24 @@ public class PausePane extends BlurPane {
         if (p == null)
             jt.setText(msg);
         else  {
-            String c;
-            if (p.equals(player))
+            String c, psd;
+            if (p.equals(player)) {
                 c = String.format("#%06x", mainColor.getRGB() & 0xFFFFFF);
-            else 
+                psd = "You";
+            } else {
                 c = String.format("#%06x", mainColor.darker().getRGB() & 0xFFFFFF);
-
-            jt.setText("<html><body><font color='"+c+"'>"+p.getPseudo()+" : </font>"+msg+"</body></html>");
+                psd = p.getPseudo();
+            }
+            jt.setText("<html><body><font color='"+c+"'>"+psd+" : </font>"+msg+"</body></html>");
         }
         
         chatPane.add(jt,"w 95%");
         revalidate();
+    }
+
+    private void sendChat(String msg) {
+        recieveChat(player, msg);
+        g.getController().sendChat(msg, player);
     }
 
     private DefaultPieDataset<String> createData() {
@@ -223,12 +230,5 @@ public class PausePane extends BlurPane {
     @Override
     public JFrame getJFrame() {
         return GameFrame.currentFrame;
-    }
-
-    @Override
-    public void requestFocus() {
-        super.requestFocus();
-        setFocusable(true);
-        getJFrame().requestFocus();
     }
 }
