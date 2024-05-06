@@ -55,7 +55,7 @@ public class GameController {
     private Corporation registredMajorCorporation;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
-    public final static int ONLINE_OBSERVER_DELAY = 2000;
+    public final static int ONLINE_OBSERVER_DELAY = 500;
     public final static int BOT_TURN_OBSERVER_DELAY = 20;
     public final static int BOT_TURN_DELAY = 500;
     public final static int GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
@@ -79,18 +79,18 @@ public class GameController {
             executor.execute(() -> {
                 try {
                     boolean result = updateGameState();
-
+    
                     if (result) {
                         return;
                     }
 
+                    updateCurrentPlayer();
                     updateNewPlacedCells();
                     updateStocks();
                     updateCashNet();
-                    updateCurrentPlayer();
                     updateLastNotification();
                     updateKeepSellOrTradeStocks();
-
+    
                     board.updatePlayerDeck(currentPlayer);
                     gameView.updatePlayerDeck();
                 } catch (Exception e) {
@@ -107,27 +107,27 @@ public class GameController {
                     executor.execute(() -> {
                         try {
                             Thread.sleep(BOT_TURN_DELAY);
-    
+
                             Player p = getCurrentPlayer();
-    
+
                             if (!p.isBot()) {
                                 return;
                             }
-    
+
                             if (p.isEmptyDeck() || board.isGameOver()) {
                                 gameEnded = true;
                                 return;
                             }
-    
+
                             BotController botController = new BotController(this);
                             MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
                             Action nextAction = monteCarlo.runMonteCarlo();
-    
+
                             handleCellPlacing(nextAction, p);
-    
+
                             GameFrame parent = GameFrame.currentFrame;
                             parent.setFocusable(true);
-    
+
                             gameView.repaint();
                         } catch (InterruptedException e) {
 
@@ -143,8 +143,7 @@ public class GameController {
         }
 
         this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
-            System.out.println("SEARCHING CHAT");
-            updateChat();
+            // updateChat();
         });
 
         this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
@@ -199,7 +198,7 @@ public class GameController {
             }
 
             lastChatMessageTime = newChats.get(newChats.size() - 1).getValue();
-            
+
             for (Couple<Couple<String, String>, Long> c : newChats) {
                 Player sender = null;
                 String senderId = c.getKey().getKey();
@@ -816,6 +815,8 @@ public class GameController {
 
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
+
+        gameView.repaint();
 
         if (onlineMode) {
             try {
