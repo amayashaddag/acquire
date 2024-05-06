@@ -223,6 +223,7 @@ public class MenuController {
             GameFrame parent = GameFrame.currentFrame;
 
             parent.setContentPane(gameView);
+            parent.setVisible(true);
             parent.revalidate();
             parent.repaint();
 

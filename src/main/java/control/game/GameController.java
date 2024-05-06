@@ -55,7 +55,7 @@ public class GameController {
     private Corporation registredMajorCorporation;
 
     public final static int FOUNDING_STOCK_BONUS = 1;
-    public final static int ONLINE_OBSERVER_DELAY = 500;
+    public final static int ONLINE_OBSERVER_DELAY = 2000;
     public final static int BOT_TURN_OBSERVER_DELAY = 20;
     public final static int BOT_TURN_DELAY = 500;
     public final static int GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
@@ -76,21 +76,26 @@ public class GameController {
         this.executor = Executors.newSingleThreadExecutor();
 
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
+            try {
+                boolean result = updateGameState();
+
+                if (result) {
+                    return;
+                }
+
+                updateCurrentPlayer();
+                updateNewPlacedCells();
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+
             executor.execute(() -> {
                 try {
-                    boolean result = updateGameState();
-    
-                    if (result) {
-                        return;
-                    }
-
-                    updateCurrentPlayer();
-                    updateNewPlacedCells();
                     updateStocks();
                     updateCashNet();
                     updateLastNotification();
                     updateKeepSellOrTradeStocks();
-    
+
                     board.updatePlayerDeck(currentPlayer);
                     gameView.updatePlayerDeck();
                 } catch (Exception e) {
@@ -99,55 +104,54 @@ public class GameController {
             });
         });
 
-        if (!online) {
-            this.botTurnTimer = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
-                if (gameEnded) {
-                    endGame();
-                } else {
-                    executor.execute(() -> {
-                        try {
-                            Thread.sleep(BOT_TURN_DELAY);
+        this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
+            if (gameEnded) {
+                endGame();
+            } else {
+                executor.execute(() -> {
+                    try {
+                        Thread.sleep(BOT_TURN_DELAY);
 
-                            Player p = getCurrentPlayer();
+                        Player p = getCurrentPlayer();
 
-                            if (!p.isBot()) {
-                                return;
-                            }
-
-                            if (p.isEmptyDeck() || board.isGameOver()) {
-                                gameEnded = true;
-                                return;
-                            }
-
-                            BotController botController = new BotController(this);
-                            MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
-                            Action nextAction = monteCarlo.runMonteCarlo();
-
-                            handleCellPlacing(nextAction, p);
-
-                            GameFrame parent = GameFrame.currentFrame;
-                            parent.setFocusable(true);
-
-                            gameView.repaint();
-                        } catch (InterruptedException e) {
-
-                        } catch (Exception e) {
-                            errorInterrupt(e);
-                            e.printStackTrace();
+                        if (!p.isBot()) {
+                            return;
                         }
-                    });
-                }
-            });
-        } else {
-            botTurnTimer = null;
-        }
 
-        this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
-            // updateChat();
+                        if (p.isEmptyDeck() || board.isGameOver()) {
+                            gameEnded = true;
+                            return;
+                        }
+
+                        BotController botController = new BotController(this);
+                        MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
+                        Action nextAction = monteCarlo.runMonteCarlo();
+
+                        handleCellPlacing(nextAction, p);
+
+                        GameFrame parent = GameFrame.currentFrame;
+                        parent.setFocusable(true);
+
+                        gameView.repaint();
+                    } catch (InterruptedException e) {
+
+                    } catch (Exception e) {
+                        errorInterrupt(e);
+                        e.printStackTrace();
+                    }
+                });
+            }
+        });
+
+        this.chatObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
+            executor.execute(() -> {
+                updateChat();
+            });
         });
 
         this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
             gameView.setFocusable(true);
+            gameView.repaint();
         });
 
         if (online) {
