@@ -1000,4 +1000,15 @@ public class GameController {
         MenuController menuController = new MenuController();
         menuController.start();
     }
+
+    public boolean isBanChat(Player p) {
+        return false;
+        // A implementer
+    }
+
+    public void repportPlayer(Player agresor, Player victim) {
+        // Signaler un joueur pour msg offensant
+        // Lorsque plus d'1/3 de la game signal le joueur on le ban chat
+        // Que penses-tu de l'idée ?
+    }
 }

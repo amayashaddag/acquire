@@ -1,5 +1,6 @@
 package view.game;
 
+import java.util.ArrayList;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,7 +8,8 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.Map;
 import javax.swing.JButton;
@@ -27,6 +29,8 @@ import view.window.GameFrame;
 import javax.swing.JScrollBar;
 import javax.swing.BorderFactory;
 import javax.swing.JTextPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JMenuItem;
 
 
 /**
@@ -61,6 +65,7 @@ public class PausePane extends BlurPane {
                     public void keyTyped(KeyEvent e) {}
                 });
                 init2();
+                revalidate();
                 repaint();
             } catch (InterruptedException e2) {
                 GameFrame.showError(e2, this::repaint);
@@ -71,10 +76,12 @@ public class PausePane extends BlurPane {
     final GameView g;
     final Player player;
     final Color mainColor;
+    TextField jtf;
     boolean keyPressed;
     HorizontalBarChart barChart1; // For player's actions
     JPanel chatPane;
     JScrollBar scrollBar;
+    ArrayList<Player> maskedPlayers = new ArrayList<Player>();
 
     private void init2() {
         class HBC extends HorizontalBarChart {
@@ -116,10 +123,8 @@ public class PausePane extends BlurPane {
         js.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         js.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(js, "growx, h 40%");
-        recieveChat(null, "Welcome on the on online chat. Please be respectfull and courtoie. Good Game !");
-        sendChat("connected");
 
-        TextField jtf = new TextField("Enter your message");
+        jtf = new TextField("Enter your message");
         jtf.setLabelColor(mainColor);
         jtf.setLineColor(mainColor);
         jtf.setOpaque(false);
@@ -151,23 +156,18 @@ public class PausePane extends BlurPane {
         });
         add(exitButton, "x 93%, y 1%, gap 10");
 
-        MouseListener ml = new MouseListener() {
+        MouseAdapter ml = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 getJFrame().requestFocus();
             }
-            @Override
-            public void mouseEntered(MouseEvent arg0) {}
-            @Override
-            public void mouseExited(MouseEvent arg0) {}
-            @Override
-            public void mousePressed(MouseEvent arg0) {}
-            @Override
-            public void mouseReleased(MouseEvent arg0) {}
         };
         addMouseListener(ml);
         chatPane.addMouseListener(ml);
         barChart1.addMouseListener(ml);
+
+        recieveChat(null, "Welcome on the on online chat. Please be respectfull and courtoie. Good Game !");
+        sendChat("connected");
     }
 
     public void recieveChat(Player p, String msg) {
@@ -177,9 +177,33 @@ public class PausePane extends BlurPane {
         jt.setVisible(true);
         jt.setContentType("text/html");
 
+        // FIXME : descendre dans le if apres les test
+        jt.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    class JMI extends JMenuItem {
+                        JMI(String s, ActionListener a) {
+                            super(s);
+                            addActionListener(a);
+                        }
+                    }
+
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    popupMenu.add(new JMI("Mask message", (f)->{
+                        jt.setText("<html><body><font color='"+String.format("#%06x", mainColor.darker().getRGB() & 0xFFFFFF)+"'>"+
+                        p.getPseudo()+" : </font>*********</body></html>");
+                        chatPane.revalidate();
+                    }));
+                    popupMenu.add(new JMI("Mask player", (f)->maskedPlayers.add(p)));
+                    popupMenu.show(jt, e.getX(), e.getY());
+                }
+            }
+        });
+
         if (p == null)
             jt.setText(msg);
-        else  {
+        else {
             String c, psd;
             if (p.equals(player)) {
                 c = String.format("#%06x", mainColor.getRGB() & 0xFFFFFF);
@@ -187,12 +211,27 @@ public class PausePane extends BlurPane {
             } else {
                 c = String.format("#%06x", mainColor.darker().getRGB() & 0xFFFFFF);
                 psd = p.getPseudo();
+                if (maskedPlayers.contains(p))
+                    msg = "*********";
+
+                // FIXME : uncoment after test
+                // jt.addMouseListener(new MouseAdapter() {
+                //     @Override
+                //     public void mousePressed(MouseEvent e) {
+                //         if (e.getButton() == MouseEvent.BUTTON1) {
+                //             JPopupMenu popupMenu = new JPopupMenu();
+                //             popupMenu.add(new JMenuItem("Item 1"));
+                //             popupMenu.add(new JMenuItem("Item 2"));
+                //             popupMenu.show(jt, e.getX(), e.getY());
+                //         }
+                //     }
+                // });
             }
             jt.setText("<html><body><font color='"+c+"'>"+psd+" : </font>"+msg+"</body></html>");
         }
         
         chatPane.add(jt,"w 95%");
-        revalidate();
+        chatPane.revalidate();
     }
 
     private void sendChat(String msg) {
@@ -224,6 +263,9 @@ public class PausePane extends BlurPane {
         if (scrollBar != null)
             scrollBar.setValue(scrollBar.getMaximum());
 
+        if (g != null && g.getController().isBanChat(player))
+            jtf.setVisible(false);
+            
         super.repaint();
     }
 
