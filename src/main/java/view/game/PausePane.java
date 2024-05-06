@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.ui.FlatScrollBarUI;
@@ -112,15 +113,8 @@ public class PausePane extends BlurPane {
         js.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         js.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(js, "growx, h 40%");
-
-        for (int i = 0; i < 2; i++) {
-            JTextArea jt = new JTextArea("dzadza dzadzadzanjdeafjezfokdqkfdqsdzabcnsq,ceq" + i);
-            jt.setLineWrap(true);
-            jt.setWrapStyleWord(true);
-            jt.setOpaque(false);
-            chatPane.add(jt);
-        }
-
+        sendChat(null, "Welcome on the on online chat. Please be respectfull and courtoie. Good Game !");
+        
         JButton exitButton = new JButton("Exit");
         exitButton.setBackground(color);
         exitButton.addActionListener((ActionListener) -> {
@@ -128,6 +122,20 @@ public class PausePane extends BlurPane {
             g.getController().exitGame();
         });
         add(exitButton, "x 93%, y 1%, gap 10");
+    }
+
+    private void sendChat(Player p, String msg) {
+        JTextArea jt = new JTextArea();
+        if (p == null)
+            jt.setText(msg);
+        else
+            jt.setText(p.getPseudo()+msg);
+        
+        jt.setLineWrap(true);
+        jt.setWrapStyleWord(true);
+        jt.setOpaque(false);
+        jt.setEditable(false);
+        chatPane.add(jt,"w 95%");
     }
 
     private DefaultPieDataset<String> createData() {
@@ -155,5 +163,10 @@ public class PausePane extends BlurPane {
             scrollBar.setValue(scrollBar.getMaximum());
 
         super.repaint();
+    }
+
+    @Override
+    public JFrame getJFrame() {
+        return GameFrame.currentFrame;
     }
 }

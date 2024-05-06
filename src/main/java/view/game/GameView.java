@@ -445,7 +445,7 @@ public class GameView extends Form {
      */
     public void setOn(GameFrame g) {
         this.setSize(g.getWidth(), g.getHeight());
-        g.getContentPane().add(this);
+        g.setContentPane(this);
     }
 
     /**
@@ -466,8 +466,7 @@ public class GameView extends Form {
     public static void showError(Exception e) {showError(e, ()->{});}
 
     public void endGame() {
-        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(this);
-        parent.dispose();
+        GameFrame.currentFrame.dispose();
     }
 
     public void updatePlayerDeck() {

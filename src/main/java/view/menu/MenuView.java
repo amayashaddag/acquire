@@ -378,8 +378,7 @@ public class MenuView extends Form {
 
     @Override
     public void setOn(GameFrame g) {
-        g.getContentPane().removeAll();
-        g.add(this);
+        g.setContentPane(this);
         g.repaint();
         g.revalidate();
     }
