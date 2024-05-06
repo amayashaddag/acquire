@@ -26,7 +26,7 @@ import raven.chart.data.pie.DefaultPieDataset;
 import view.window.GameFrame;
 import javax.swing.JScrollBar;
 import javax.swing.BorderFactory;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.JTextField;
 
 
@@ -38,6 +38,8 @@ public class PausePane extends BlurPane {
     public PausePane(GameView gv) {
         this.g = gv;
         this.player = g.getPlayer();
+        mainColor = Color.decode("#f97316");
+
         setLayout(new MigLayout("align center, aligny center, flowy"));
         new Thread(()-> {
             try {
@@ -69,11 +71,11 @@ public class PausePane extends BlurPane {
 
     final GameView g;
     final Player player;
+    final Color mainColor;
     boolean keyPressed;
     HorizontalBarChart barChart1; // For player's actions
     JPanel chatPane;
     JScrollBar scrollBar;
-    JTextField jtf;
 
     private void init2() {
         class HBC extends HorizontalBarChart {
@@ -83,16 +85,14 @@ public class PausePane extends BlurPane {
             }
         }
 
-        Color color = Color.decode("#f97316");
-
         barChart1 = new HBC();
-        barChart1.setBarColor(color);
+        barChart1.setBarColor(mainColor);
         barChart1.setDataset(createData());
         JPanel panel1 = new JPanel(new BorderLayout());
         panel1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
         panel1.add(barChart1);
-        panel1.setBorder(new ColorableArcableFlatBorder((java.awt.Color)color,5));
+        panel1.setBorder(new ColorableArcableFlatBorder((java.awt.Color)mainColor,5));
         add(panel1, "gapy 10%");
 
         chatPane = new JPanel();
@@ -104,7 +104,7 @@ public class PausePane extends BlurPane {
         class FSBUI extends FlatScrollBarUI {
             @Override
             protected Color getThumbColor(JComponent c, boolean hover, boolean pressed) {
-                return color;
+                return mainColor;
             }
 
             @Override
@@ -119,7 +119,7 @@ public class PausePane extends BlurPane {
         add(js, "growx, h 40%");
         recieveChat(null, "Welcome on the on online chat. Please be respectfull and courtoie. Good Game !");
 
-        jtf = new JTextField("Enter un message");
+        JTextField jtf = new JTextField("Enter un message");
         jtf.addActionListener((e) -> {
             String msg = jtf.getText();
             recieveChat(player, msg);
@@ -141,7 +141,7 @@ public class PausePane extends BlurPane {
         add(jtf, "growx");
 
         JButton exitButton = new JButton("Exit");
-        exitButton.setBackground(color);
+        exitButton.setBackground(mainColor);
         exitButton.addActionListener((e) -> {
             g.pause();
             g.getController().exitGame();
@@ -171,21 +171,25 @@ public class PausePane extends BlurPane {
         if (msg == null || msg == "")
             return;
 
-        JTextArea jt = new JTextArea();
-        if (p == null)
-            jt.setText(msg);
-        else if (p.equals(player))
-            jt.setText(player.getPseudo()+" : "+msg);
-        else
-            jt.setText(p.getPseudo()+" : "+msg);
-        
-        jt.setLineWrap(true);
-        jt.setWrapStyleWord(true);
+        JTextPane jt = new JTextPane();
         jt.setOpaque(false);
         jt.setEditable(false);
         jt.setVisible(true);
-        chatPane.add(jt,"w 95%");
+        jt.setContentType("text/html");
+
+        if (p == null)
+            jt.setText(msg);
+        else  {
+            String c;
+            if (p.equals(player))
+                c = String.format("#%06x", mainColor.getRGB() & 0xFFFFFF);
+            else 
+                c = String.format("#%06x", mainColor.darker().getRGB() & 0xFFFFFF);
+
+            jt.setText("<html><body><font color='"+c+"'>"+p.getPseudo()+" : </font>"+msg+"</body></html>");
+        }
         
+        chatPane.add(jt,"w 95%");
         revalidate();
     }
 
