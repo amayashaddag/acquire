@@ -721,8 +721,7 @@ public class BotController implements Cloneable {
                 }
             }
         }
-
-        System.out.println(possibleActions);
+        
         return possibleActions;
     }
 

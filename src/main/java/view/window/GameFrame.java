@@ -30,7 +30,7 @@ public class GameFrame extends JFrame {
     public final static String ERROR_MESSAGE_TITLE = "An error occured during the execution :\n";
 
     public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
-    public final static GameFrame currentFrame = new GameFrame();
+    public static GameFrame currentFrame = new GameFrame();
 
     public GameFrame() {
         super();
@@ -116,5 +116,10 @@ public class GameFrame extends JFrame {
         new Thread(() -> {
             Notifications.getInstance().show(Notifications.Type.WARNING, Notifications.Location.TOP_RIGHT, msg);
         }).start();
+    }
+
+    public static void clearCurrentFrame() {
+        currentFrame.dispose();
+        currentFrame = new GameFrame();
     }
 }

@@ -26,8 +26,6 @@ public class MonteCarloAlgorithm {
         Map<Action, Integer> actionScores = new HashMap<>();
         List<Action> possibleActions = botController.getPossibleActions();
 
-        System.out.println(possibleActions.size());
-
         for (Action action : possibleActions) {
             int totalMoneyEarned = 0;
 

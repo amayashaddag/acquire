@@ -76,6 +76,10 @@ public class MenuController {
         view.show();
         view.repaint();
         view.revalidate();
+
+        SwingUtilities.invokeLater(() -> {
+            GameFrame.currentFrame.setVisible(true);
+        });
     }
 
     public PlayerCredentials getPlayerCredentials() {
@@ -115,7 +119,7 @@ public class MenuController {
         GameView gameView = controller.getGameView();
 
         SwingUtilities.invokeLater(() -> {
-            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+            GameFrame parent = GameFrame.currentFrame;
             parent.setContentPane(gameView);
             gameView.setVisible(true);
             gameView.revalidate();
@@ -141,7 +145,7 @@ public class MenuController {
         GameView gameView = controller.getGameView();
 
         SwingUtilities.invokeLater(() -> {
-            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+            GameFrame parent = GameFrame.currentFrame;
             parent.setContentPane(gameView);
             gameView.setVisible(true);
             gameView.revalidate();
@@ -216,7 +220,7 @@ public class MenuController {
                     joinedGameAnalytics.gameID(),
                     true);
             GameView gameView = controller.getGameView();
-            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+            GameFrame parent = GameFrame.currentFrame;
 
             parent.setContentPane(gameView);
             parent.revalidate();
@@ -316,7 +320,7 @@ public class MenuController {
 
     private void errorInterrupt(Exception e) {
         GameFrame.showError(e, () -> {
-            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(view);
+            GameFrame parent = GameFrame.currentFrame;
             onlineObserver.stop();
             parent.dispose();
         });

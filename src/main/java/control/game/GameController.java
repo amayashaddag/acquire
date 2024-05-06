@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import control.database.GameDatabaseConnection;
@@ -25,7 +25,6 @@ import model.tools.Couple;
 import model.tools.Point;
 import view.game.GameNotifications;
 import view.game.GameView;
-import view.menu.MenuView;
 import view.window.GameFrame;
 
 /**
@@ -50,6 +49,7 @@ public class GameController {
     private long lastKeepSellTradeStockTime;
     private long lastChatMessageTime;
     private int playerTurnIndex;
+    private boolean gameEnded;
 
     private Map<Corporation, Integer> registredStocksToKeepSellTrade;
     private Corporation registredMajorCorporation;
@@ -93,45 +93,50 @@ public class GameController {
 
                     board.updatePlayerDeck(currentPlayer);
                     gameView.updatePlayerDeck();
-
                 } catch (Exception e) {
                     errorInterrupt(e);
                 }
             });
         });
-        
+
         if (!online) {
             this.botTurnTimer = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
-                executor.execute(() -> {
-                    Player p = getCurrentPlayer();
+                if (gameEnded) {
+                    endGame();
+                } else {
+                    executor.execute(() -> {
+                        try {
+                            Thread.sleep(BOT_TURN_DELAY);
     
-                    if (!p.isBot()) {
-                        return;
-                    }
+                            Player p = getCurrentPlayer();
     
-                    if (p.isEmptyDeck() || board.isGameOver()) {
-                        endGame();
-                        return;
-                    }
+                            if (!p.isBot()) {
+                                return;
+                            }
     
-                    try {
-                        Thread.sleep(BOT_TURN_DELAY);
+                            if (p.isEmptyDeck() || board.isGameOver()) {
+                                gameEnded = true;
+                                return;
+                            }
     
-                        BotController botController = new BotController(this);
-                        MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
-                        Action nextAction = monteCarlo.runMonteCarlo();
+                            BotController botController = new BotController(this);
+                            MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
+                            Action nextAction = monteCarlo.runMonteCarlo();
     
-                        handleCellPlacing(nextAction, p);
+                            handleCellPlacing(nextAction, p);
     
-                        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
-                        parent.setFocusable(true);
-                        
-                        gameView.repaint();
-                    } catch (Exception e) {
-                        errorInterrupt(e);
-                        e.printStackTrace();
-                    }
-                });
+                            GameFrame parent = GameFrame.currentFrame;
+                            parent.setFocusable(true);
+    
+                            gameView.repaint();
+                        } catch (InterruptedException e) {
+
+                        } catch (Exception e) {
+                            errorInterrupt(e);
+                            e.printStackTrace();
+                        }
+                    });
+                }
             });
         } else {
             botTurnTimer = null;
@@ -567,7 +572,7 @@ public class GameController {
 
         if (currentPlayer.equals(gameView.getPlayer())) {
             GameFrame.showSuccessNotification(
-                GameNotifications.cellPlacingNotification(currentPlayer.getPseudo()));
+                    GameNotifications.cellPlacingNotification(currentPlayer.getPseudo()));
         }
 
         Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(action.getPoint());
@@ -778,6 +783,8 @@ public class GameController {
         }
 
         if (board.isGameOver()) {
+            gameEnded = true;
+
             if (onlineMode) {
                 endGame();
             }
@@ -832,7 +839,7 @@ public class GameController {
 
             if (player.equals(gameView.getPlayer())) {
                 GameFrame.showSuccessNotification(
-                    GameNotifications.soldStocksNotification(amount, c, totalPriceForCorporation));
+                        GameNotifications.soldStocksNotification(amount, c, totalPriceForCorporation));
             }
         }
     }
@@ -856,7 +863,7 @@ public class GameController {
 
             if (player.equals(gameView.getPlayer())) {
                 GameFrame.showSuccessNotification(
-                    GameNotifications.tradedStocksNotification(amountToGive, c, amountToEarn, major));
+                        GameNotifications.tradedStocksNotification(amountToGive, c, amountToEarn, major));
             }
         }
     }
@@ -874,17 +881,7 @@ public class GameController {
             }
         }
 
-        stopObservers();
-
-        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
-        MenuController menuController = new MenuController();
-        menuController.start();
-
-        System.out.println(parent);
-
-        MenuView menuView = menuController.getView();
-        parent.setContentPane(menuView);
-        parent.repaint();
+        exitGame();
     }
 
     public void sendChat(String chat, Player p) {
@@ -955,13 +952,16 @@ public class GameController {
             chatObserver.stop();
             onlineObserver.stop();
         } else {
+            gameEnded = true;
+
             botTurnTimer.stop();
             refresher.stop();
+
+            ((ExecutorService) executor).shutdownNow();
         }
     }
 
     public void exitGame() {
-
         if (onlineMode) {
             try {
                 Player p = gameView.getPlayer();
@@ -973,12 +973,9 @@ public class GameController {
 
         stopObservers();
 
-        GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(gameView);
+        GameFrame.clearCurrentFrame();
+
         MenuController menuController = new MenuController();
         menuController.start();
-
-        MenuView menuView = menuController.getView();
-        parent.setContentPane(menuView);
-        parent.repaint();
     }
 }
