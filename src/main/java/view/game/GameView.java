@@ -413,11 +413,11 @@ public class GameView extends Form {
         repaint();
     }
 
-    public void sendChat(Player p, String message, boolean notify) {
+    public void recieveChat(Player p, String message, boolean notify) {
         if (notify)
             Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_LEFT, 
             p.getPseudo() + " : " + message);
-
+        pausePane.recieveChat(p, message);
     }
 
     @Override

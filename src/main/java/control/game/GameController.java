@@ -143,6 +143,7 @@ public class GameController {
         }
 
         this.chatObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
+            System.out.println("SEARCHING CHAT");
             updateChat();
         });
 
@@ -155,8 +156,9 @@ public class GameController {
             chatObserver.start();
         } else {
             botTurnTimer.start();
-            refresher.start();
         }
+
+        refresher.start();
     }
 
     private boolean updateGameState() throws Exception {
@@ -197,7 +199,27 @@ public class GameController {
             }
 
             lastChatMessageTime = newChats.get(newChats.size() - 1).getValue();
-            // TODO : Implement
+            
+            for (Couple<Couple<String, String>, Long> c : newChats) {
+                Player sender = null;
+                String senderId = c.getKey().getKey();
+                String message = c.getKey().getValue();
+
+                boolean notified = message.contains("@" + gameView.getPlayer().getPseudo())
+                        || message.contains("@everyone");
+
+                for (Player player : currentPlayers) {
+                    if (player.getUID().equals(senderId)) {
+                        sender = player;
+                    }
+                }
+
+                if (sender == null) {
+                    continue;
+                }
+
+                gameView.recieveChat(p, message, notified);
+            }
         } catch (Exception e) {
             errorInterrupt(e);
         }
@@ -953,12 +975,12 @@ public class GameController {
             onlineObserver.stop();
         } else {
             gameEnded = true;
-
             botTurnTimer.stop();
-            refresher.stop();
 
             ((ExecutorService) executor).shutdownNow();
         }
+
+        refresher.stop();
     }
 
     public void exitGame() {

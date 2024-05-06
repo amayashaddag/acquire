@@ -795,7 +795,6 @@ public class GameDatabaseConnection {
         messageFields.put(UID_FIELD, uid);
         messageFields.put(GAME_ID_FIELD, gameId);
         messageFields.put(TIME_FIELD, time);
-        messageFields.put(PSEUDO_PLAYER_FIELD, pseudo);
 
         ApiFuture<WriteResult> writer = doc.set(messageFields);
         writer.get();
@@ -826,14 +825,14 @@ public class GameDatabaseConnection {
                 continue;
             }
 
-            String pseudo = (String) doc.get(PSEUDO_PLAYER_FIELD);
+            String senderUserId = (String) doc.get(UID_FIELD);
             String message = (String) doc.get(CHAT_MESSAGE_FIELD);
 
-            if (pseudo == null || message == null) {
+            if (senderUserId == null || message == null) {
                 throw new NullPointerException();
             }
 
-            Couple<String, String> m = new Couple<>(pseudo, message);
+            Couple<String, String> m = new Couple<>(senderUserId, message);
             Couple<Couple<String, String>, Long> messageContent = new Couple<>(m, time);
 
             newMessages.add(messageContent);
@@ -845,7 +844,6 @@ public class GameDatabaseConnection {
             public int compare(Couple<Couple<String, String>, Long> arg0, Couple<Couple<String, String>, Long> arg1) {
                 return arg0.getValue().intValue() - arg1.getValue().intValue();
             }
-            
         }).toList();
 
         return newMessages;

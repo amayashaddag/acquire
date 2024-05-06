@@ -113,7 +113,7 @@ public class PausePane extends BlurPane {
         js.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         js.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(js, "growx, h 40%");
-        sendChat(null, "Welcome on the on online chat. Please be respectfull and courtoie. Good Game !");
+        recieveChat(null, "Welcome on the on online chat. Please be respectfull and courtoie. Good Game !");
         
         JButton exitButton = new JButton("Exit");
         exitButton.setBackground(color);
@@ -124,7 +124,7 @@ public class PausePane extends BlurPane {
         add(exitButton, "x 93%, y 1%, gap 10");
     }
 
-    private void sendChat(Player p, String msg) {
+    public void recieveChat(Player p, String msg) {
         JTextArea jt = new JTextArea();
         if (p == null)
             jt.setText(msg);
