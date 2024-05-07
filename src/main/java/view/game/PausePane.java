@@ -174,7 +174,6 @@ public class PausePane extends BlurPane {
 
     public void recieveChat(Player p, String msg) {
         MsgPane jt = new MsgPane();
-        chatPane.add(jt,"w 95%");
         jt.setOpaque(false);
         jt.setEditable(false);
         jt.setVisible(true);
@@ -246,7 +245,7 @@ public class PausePane extends BlurPane {
                     jt.mask();
             }
 
-            int maxCharByLine = 25; // Anthiconstiutionnellement
+            int maxCharByLine = 25; // Anthyconstiutionnellement
             for (String s : msg.split(" ")) {
                 int length = s.length();
                 if (length > maxCharByLine)   
@@ -255,7 +254,7 @@ public class PausePane extends BlurPane {
 
             jt.setText("<html><body><font color='"+c+"'>"+psd+" : </font>"+msg+"</body></html>");
         }
-        jt.repaint();
+        chatPane.add(jt,"w 95%");
         chatPane.revalidate();
     }
 

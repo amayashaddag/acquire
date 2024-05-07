@@ -23,7 +23,7 @@ import javax.swing.*;
 @AutoSetter(typeParam = GameView.class)
 public class PlayerBoard extends javax.swing.JPanel {
     private final GameView g;
-    private final Dimension INITIAL_DIMENSION = new Dimension(80, 80);
+    private final Dimension INITIAL_DIMENSION = new Dimension(100, 80);
     private final Dimension ZOOM_DIMENSION = new Dimension(140, 100);
     private final MigLayout mig;
 
@@ -57,6 +57,7 @@ public class PlayerBoard extends javax.swing.JPanel {
     private class PlayerItem extends GrowingJLabel {
         final Player player;
         int arc;
+        int maxCharPsd;
         final ColorableArcableFlatBorder playingBorder;    // The player who is actually his turn
         final ColorableArcableFlatBorder currentPlayerBorder;   // The player who is behind his computer
 
@@ -64,6 +65,7 @@ public class PlayerBoard extends javax.swing.JPanel {
             super(PlayerBoard.this.mig, initial, zoom);
             this.player = p;
             this.arc = 10;
+            this.maxCharPsd = (5*(int)initial.getWidth())/100;
             this.playingBorder = new ColorableArcableFlatBorder(Color.RED, this.arc);
             this.currentPlayerBorder = new ColorableArcableFlatBorder(Color.GREEN, this.arc);
             this.setHorizontalAlignment(SwingConstants.CENTER);
@@ -100,7 +102,12 @@ public class PlayerBoard extends javax.swing.JPanel {
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), this.arc, this.arc);
 
             if (this.getSize().equals(this.initialDimension)) {
-                this.setText(player.getPseudo());
+                String psd = player.getPseudo();
+
+                if(psd.length() > maxCharPsd)
+                    psd = psd.substring(0, maxCharPsd) +"...";
+
+                this.setText(psd);
             } else if (this.getSize().equals(this.zoomingDimension)) {
                 this.setText("""
                                     <html>
