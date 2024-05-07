@@ -3,6 +3,7 @@ package view.game;
 import java.util.ArrayList;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -48,6 +49,7 @@ public class PausePane extends BlurPane {
             try {
                 Thread.sleep(100);
                 init(gv);
+                init2();
                 getJFrame().addKeyListener(new KeyListener() {
                     @Override
                     public void keyPressed(KeyEvent e) {
@@ -64,7 +66,6 @@ public class PausePane extends BlurPane {
                     @Override
                     public void keyTyped(KeyEvent e) {}
                 });
-                init2();
                 revalidate();
                 repaint();
             } catch (InterruptedException e2) {
@@ -82,6 +83,7 @@ public class PausePane extends BlurPane {
     JPanel chatPane;
     JScrollBar scrollBar;
     ArrayList<Player> maskedPlayers = new ArrayList<Player>();
+    ArrayList<Player> reportedPlayers = new ArrayList<>();
 
     private void init2() {
         class HBC extends HorizontalBarChart {
@@ -171,35 +173,15 @@ public class PausePane extends BlurPane {
     }
 
     public void recieveChat(Player p, String msg) {
-        JTextPane jt = new JTextPane();
+        MsgPane jt = new MsgPane();
         jt.setOpaque(false);
         jt.setEditable(false);
         jt.setVisible(true);
         jt.setContentType("text/html");
+        jt.setAuthor(p);
 
         // FIXME : descendre dans le if apres les test
-        jt.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON3) {
-                    class JMI extends JMenuItem {
-                        JMI(String s, ActionListener a) {
-                            super(s);
-                            addActionListener(a);
-                        }
-                    }
-
-                    JPopupMenu popupMenu = new JPopupMenu();
-                    popupMenu.add(new JMI("Mask message", (f)->{
-                        jt.setText("<html><body><font color='"+String.format("#%06x", mainColor.darker().getRGB() & 0xFFFFFF)+"'>"+
-                        p.getPseudo()+" : </font>*********</body></html>");
-                        chatPane.revalidate();
-                    }));
-                    popupMenu.add(new JMI("Mask player", (f)->maskedPlayers.add(p)));
-                    popupMenu.show(jt, e.getX(), e.getY());
-                }
-            }
-        });
+        
 
         if (p == null)
             jt.setText(msg);
@@ -209,27 +191,58 @@ public class PausePane extends BlurPane {
                 c = String.format("#%06x", mainColor.getRGB() & 0xFFFFFF);
                 psd = "You";
             } else {
+                jt.setMaskedText("<html><body><font color='"+String.format("#%06x", 
+                mainColor.darker().getRGB() & 0xFFFFFF)+"'>"+
+                p.getPseudo()+" : </font>*********</body></html>");
                 c = String.format("#%06x", mainColor.darker().getRGB() & 0xFFFFFF);
                 psd = p.getPseudo();
-                if (maskedPlayers.contains(p))
-                    msg = "*********";
 
-                // FIXME : uncoment after test
-                // jt.addMouseListener(new MouseAdapter() {
-                //     @Override
-                //     public void mousePressed(MouseEvent e) {
-                //         if (e.getButton() == MouseEvent.BUTTON1) {
-                //             JPopupMenu popupMenu = new JPopupMenu();
-                //             popupMenu.add(new JMenuItem("Item 1"));
-                //             popupMenu.add(new JMenuItem("Item 2"));
-                //             popupMenu.show(jt, e.getX(), e.getY());
-                //         }
-                //     }
-                // });
+                boolean isMaskedPlayer = maskedPlayers.contains(p);
+                jt.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+                            class JMI extends JMenuItem {
+                                JMI(String s, ActionListener a) {
+                                    super(s);
+                                    addActionListener(a);
+                                }
+                            }
+        
+                            JPopupMenu popupMenu = new JPopupMenu();
+                            popupMenu.add(new JMI((jt.isMasked() ? "Unmask" : "Mask") + " message", 
+                            (f)->{
+                                jt.maskUnMask();
+                                chatPane.revalidate();
+                            }));
+        
+                            popupMenu.add(new JMI((isMaskedPlayer ? "Unmask" : "Mask") + " player", 
+                            (f)->{
+                                if (isMaskedPlayer)
+                                    maskedPlayers.remove(p);   
+                                else 
+                                    maskedPlayers.add(p);   
+                                
+                                for (Component c : chatPane.getComponents())
+                                        if (c instanceof MsgPane ) {
+                                            MsgPane cp = (MsgPane) c;
+                                            if (cp.getAuthor() != null && cp.getAuthor().equals(p))
+                                                cp.mask(!isMaskedPlayer);
+                                        }  
+                                chatPane.revalidate();
+                            }));
+                            popupMenu.show(jt, e.getX(), e.getY());
+                        }
+                    }
+                });
+
+                if (isMaskedPlayer)
+                    jt.mask();
+                
             }
             jt.setText("<html><body><font color='"+c+"'>"+psd+" : </font>"+msg+"</body></html>");
         }
-        
+        jt.repaint();
         chatPane.add(jt,"w 95%");
         chatPane.revalidate();
     }
@@ -237,7 +250,7 @@ public class PausePane extends BlurPane {
     private void sendChat(String msg) {
         recieveChat(player, msg);
         
-        if (g.getController().isOnlineMode()) {
+        if (g.getController().isOnlineMode()) { // FIXME : pas propre, trouver une meilleur solution
             g.getController().sendChat(msg, player);
         }
     }
@@ -275,5 +288,59 @@ public class PausePane extends BlurPane {
     @Override
     public JFrame getJFrame() {
         return GameFrame.currentFrame;
+    }
+
+    private class MsgPane extends JTextPane {
+        boolean masked = false;
+        String txt = "";
+        String maskedText = "*********";
+        Player author;
+
+        Player getAuthor() {
+            return author;
+        }
+
+        void setAuthor(Player author) {
+            this.author = author;
+        }
+
+        void mask(boolean b) {
+            if (b) mask();
+            else unMask();
+        }
+
+        void mask() {
+            masked = true;
+            super.setText(maskedText);
+        }
+
+        void unMask() {
+            masked = false;
+            super.setText(txt);
+        }
+
+        void maskUnMask() {
+            if (masked)
+                unMask();
+            else
+                mask();
+        }
+
+        boolean isMasked() {
+            return masked;
+        }
+
+        void setMaskedText(String maskedText) {
+            this.maskedText = maskedText;
+        }
+
+        @Override
+        public void setText(String arg0) {
+            txt = arg0;
+            if (masked)
+                super.setText(maskedText);
+            else 
+                super.setText(arg0);
+        }
     }
 }
