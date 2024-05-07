@@ -180,9 +180,6 @@ public class PausePane extends BlurPane {
         jt.setContentType("text/html");
         jt.setAuthor(p);
 
-        // FIXME : descendre dans le if apres les test
-        
-
         if (p == null)
             jt.setText(msg);
         else {
@@ -231,6 +228,14 @@ public class PausePane extends BlurPane {
                                         }  
                                 chatPane.revalidate();
                             }));
+
+                            if (!reportedPlayers.contains(p))
+                                popupMenu.add(new JMI("Report and mask player", 
+                                (f)->{
+                                    g.getController().repportPlayer(p, player);
+                                    reportedPlayers.add(p);
+                                }));
+                            
                             popupMenu.show(jt, e.getX(), e.getY());
                         }
                     }
@@ -238,7 +243,6 @@ public class PausePane extends BlurPane {
 
                 if (isMaskedPlayer)
                     jt.mask();
-                
             }
             jt.setText("<html><body><font color='"+c+"'>"+psd+" : </font>"+msg+"</body></html>");
         }
