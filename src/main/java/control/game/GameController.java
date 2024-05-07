@@ -220,7 +220,7 @@ public class GameController {
                     continue;
                 }
 
-                gameView.recieveChat(p, message, notified);
+                gameView.recieveChat(sender, message, notified);
             }
         } catch (Exception e) {
             errorInterrupt(e);
