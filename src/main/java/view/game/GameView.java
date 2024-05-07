@@ -472,4 +472,35 @@ public class GameView extends Form {
     public void updatePlayerDeck() {
         jetonsPanel.updatePlayerDeck();
     }
+
+    public void showSuccessNotification(String msg) {
+        SwingUtilities.invokeLater(() -> {
+            Notifications.getInstance().show(Notifications.Type.SUCCESS, 
+            Notifications.Location.TOP_RIGHT, msg);
+        });
+    }
+
+    public void showErrorNotification(String msg) {
+        SwingUtilities.invokeLater(() -> {
+            Notifications.getInstance().show(Notifications.Type.ERROR, 
+            pausePane.isBlur() ? Notifications.Location.TOP_LEFT : Notifications.Location.TOP_RIGHT, 
+            msg);
+        });
+    }
+    
+    public void showInfoNotification(String msg) {
+        SwingUtilities.invokeLater(() -> {
+            Notifications.getInstance().show(Notifications.Type.INFO, 
+            pausePane.isBlur() ? Notifications.Location.TOP_LEFT : Notifications.Location.TOP_RIGHT, 
+            msg);
+        });
+    }
+
+    public void showWarningNotification(String msg) {
+        SwingUtilities.invokeLater(() -> {
+            Notifications.getInstance().show(Notifications.Type.WARNING, 
+            pausePane.isBlur() ? Notifications.Location.TOP_LEFT : Notifications.Location.TOP_RIGHT, 
+            msg);
+        });
+    }
 }
