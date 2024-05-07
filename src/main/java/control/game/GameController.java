@@ -299,7 +299,7 @@ public class GameController {
         }
 
         if (lastNotificationTime != notification.getValue()) {
-            GameFrame.showInfoNotification(notification.getKey());
+            gameView.showInfoNotification(notification.getKey());
             lastNotificationTime = notification.getValue();
         }
     }
@@ -525,7 +525,7 @@ public class GameController {
         }
 
         if (adjacentCorporations.size() > 1) {
-            GameFrame.showInfoNotification(
+            gameView.showInfoNotification(
                     GameNotifications.corporationMergingNotification(
                             player.getPseudo(),
                             chosenCellCorporation));
@@ -599,7 +599,7 @@ public class GameController {
         }
 
         if (currentPlayer.equals(gameView.getPlayer())) {
-            GameFrame.showSuccessNotification(
+            gameView.showSuccessNotification(
                     GameNotifications.cellPlacingNotification(currentPlayer.getPseudo()));
         }
 
@@ -632,7 +632,7 @@ public class GameController {
                 newPlacedCells.put(action.getPoint(), placedCorporation);
             }
 
-            GameFrame.showInfoNotification(
+            gameView.showInfoNotification(
                     GameNotifications.corporationFoundingNotification(
                             currentPlayer.getPseudo(),
                             placedCorporation));
@@ -868,7 +868,7 @@ public class GameController {
             player.addToCash(totalPriceForCorporation);
 
             if (player.equals(gameView.getPlayer())) {
-                GameFrame.showSuccessNotification(
+                gameView.showSuccessNotification(
                         GameNotifications.soldStocksNotification(amount, c, totalPriceForCorporation));
             }
         }
@@ -892,7 +892,7 @@ public class GameController {
             player.addToEarnedStocks(major, amountToEarn);
 
             if (player.equals(gameView.getPlayer())) {
-                GameFrame.showSuccessNotification(
+                gameView.showSuccessNotification(
                         GameNotifications.tradedStocksNotification(amountToGive, c, amountToEarn, major));
             }
         }
