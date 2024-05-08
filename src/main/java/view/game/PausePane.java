@@ -126,9 +126,7 @@ public class PausePane extends BlurPane {
         js.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(js, "growx, h 40%");
 
-        jtf = new TextField("Enter your message");
-        jtf.setLabelColor(mainColor);
-        jtf.setLineColor(mainColor);
+        jtf = new TextField("Enter your message", mainColor);
         jtf.setOpaque(false);
         jtf.addActionListener((e) -> {
             String msg = jtf.getText();
@@ -162,6 +160,8 @@ public class PausePane extends BlurPane {
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 getJFrame().requestFocus();
+                if (jtf.getText().isBlank())
+                    jtf.setText("");
             }
         };
         addMouseListener(ml);
@@ -179,6 +179,7 @@ public class PausePane extends BlurPane {
         jt.setVisible(true);
         jt.setContentType("text/html");
         jt.setAuthor(p);
+        jt.setSelectionColor(mainColor.darker());
 
         if (p == null)
             jt.setText(msg);

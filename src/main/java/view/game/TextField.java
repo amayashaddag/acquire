@@ -64,6 +64,11 @@ public class TextField extends JTextField {
         this(label);
         setLabelColor(color);
         setLineColor(color);
+        setSelectionColor(color.darker());
+    }
+
+    public TextField(Color c) {
+        this("", c);
     }
 
     public TextField() {
