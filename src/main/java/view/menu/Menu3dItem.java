@@ -103,6 +103,14 @@ public class Menu3dItem {
         this.colorShadowLeft = colorShadowLeft;
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+    }
+
     public Menu3dItem(Component com, double x, double y, double height, double shadowSize, String text) {
         this.x = x;
         this.y = y;
@@ -126,6 +134,7 @@ public class Menu3dItem {
     private Color background = getDefaultBackground();
     private Color colorShadowTop = getDefaultColorShadowTop();
     private Color colorShadowLeft = getDefaultColorShadowLeft();
+    private boolean isSelected = false;
 
     public void render(Graphics2D g2, float angle, int left, Component com) {
         width = com.getWidth() - left;
@@ -231,5 +240,23 @@ public class Menu3dItem {
 
     public Color getDefaultBackgroundSelected() {
         return new Color(51, 153, 180);
+    }
+
+    public Color getDefaultColorShadowTop2() {
+        return isSelected ? getDefaultColorShadowTopSelected() : getDefaultColorShadowTop();
+    }
+
+    public Color getDefaultColorShadowLeft2() {
+        return isSelected ? getDefaultColorShadowLeftSelected() : getDefaultColorShadowLeft();
+    }
+
+    public Color getDefaultBackground2() {
+        return isSelected ? getDefaultBackgroundSelected() : getDefaultBackground();
+    }
+
+    public void resetColor() {
+        colorShadowLeft = getDefaultColorShadowLeft2();
+        colorShadowTop = getDefaultColorShadowTop2();
+        background = getDefaultBackground2();
     }
 }

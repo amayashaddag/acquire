@@ -76,6 +76,7 @@ public class Menu3D extends JComponent {
     private float angle = 150f;
     private int overIndex = -1;
     private int pressedIndex = -1;
+    private int showedIndex = -1;
 
     public Menu3D(String... labels) {
         setOpaque(false);
@@ -92,16 +93,53 @@ public class Menu3D extends JComponent {
             public void mouseClicked(MouseEvent e) {
                 int index = getOverIndex(e.getPoint());
                 if (index != pressedIndex) {
-                    pressedIndex = index;
-                    if (pressedIndex != -1) {
-                        items.get(pressedIndex).getAnimator().show();
-                        hideMenu(pressedIndex);
+                    if (index != -1) {
+                        Menu3dItem item = items.get(index);
+                        item.setSelected(true);
+                        item.resetColor();
+                        if (index != showedIndex)
+                            item.getAnimator().show();
                         runEvent();
                     }
+                    if (pressedIndex != -1) {
+                        Menu3dItem item = items.get(pressedIndex);
+                        item.setSelected(false);
+                        item.resetColor();
+                        if (pressedIndex != index)
+                            item.getAnimator().hide();
+                    }
+                    pressedIndex = index;
+                }
+                repaint();
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int index = getOverIndex(e.getPoint());
+                if (index != showedIndex) {
+                    showedIndex = index;
+                    if (showedIndex != -1) {
+                        items.get(showedIndex).getAnimator().show();
+                        hideMenu(showedIndex);
+                    }
+                }
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (pressedIndex == -1) {
+                    hideMenu(showedIndex);
+                    showedIndex = -1;
+                } else if (showedIndex != pressedIndex) {
+                    // TODO : pas encore parfait
+                    items.get(pressedIndex).getAnimator().show();
+                    hideMenu(showedIndex);
+                    showedIndex = pressedIndex;
                 }
             }
         };
         addMouseListener(mouse);
+        addMouseMotionListener(mouse);
     }
 
     public void addEvent(EventMenu event) {

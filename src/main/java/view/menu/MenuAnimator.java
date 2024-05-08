@@ -60,15 +60,9 @@ public class MenuAnimator {
         animator.removeTarget(targetColor1);
         animator.removeTarget(targetColor2);
         animator.removeTarget(targetColor3);
-        if (show) {
-            targetColor1 = new PropertySetter(item, "background", item.getBackground(), item.getDefaultBackgroundSelected());
-            targetColor2 = new PropertySetter(item, "colorShadowTop", item.getBackground(), item.getDefaultColorShadowTopSelected());
-            targetColor3 = new PropertySetter(item, "colorShadowLeft", item.getBackground(), item.getDefaultColorShadowLeftSelected());
-        } else {
-            targetColor1 = new PropertySetter(item, "background", item.getBackground(), item.getDefaultBackground());
-            targetColor2 = new PropertySetter(item, "colorShadowTop", item.getBackground(), item.getDefaultColorShadowTop());
-            targetColor3 = new PropertySetter(item, "colorShadowLeft", item.getBackground(), item.getDefaultColorShadowLeft());
-        }
+        targetColor1 = new PropertySetter(item, "background", item.getBackground(), item.getDefaultBackground2());
+        targetColor2 = new PropertySetter(item, "colorShadowTop", item.getBackground(), item.getDefaultColorShadowTop2());
+        targetColor3 = new PropertySetter(item, "colorShadowLeft", item.getBackground(), item.getDefaultColorShadowLeft2());
         animator.addTarget(targetColor1);
         animator.addTarget(targetColor2);
         animator.addTarget(targetColor3);
