@@ -106,7 +106,7 @@ public class Menu3D extends JComponent {
                         item.setSelected(false);
                         item.resetColor();
                         if (pressedIndex != index)
-                            item.getAnimator().hide();
+                            hideMenu(index);
                     }
                     pressedIndex = index;
                 }
@@ -128,13 +128,12 @@ public class Menu3D extends JComponent {
             @Override
             public void mouseExited(MouseEvent e) {
                 if (pressedIndex == -1) {
-                    hideMenu(showedIndex);
                     showedIndex = -1;
+                    hideMenu(showedIndex);
                 } else if (showedIndex != pressedIndex) {
-                    // TODO : pas encore parfait
+                    showedIndex = pressedIndex;
                     items.get(pressedIndex).getAnimator().show();
                     hideMenu(showedIndex);
-                    showedIndex = pressedIndex;
                 }
             }
         };
