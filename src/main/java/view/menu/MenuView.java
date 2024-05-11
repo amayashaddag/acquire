@@ -1,6 +1,7 @@
 package view.menu;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
@@ -15,6 +16,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
+
+import org.jdesktop.animation.timing.Animator;
+import org.jdesktop.animation.timing.TimingTargetAdapter;
+
 import com.formdev.flatlaf.FlatClientProperties;
 import control.menu.MenuController;
 import model.tools.PlayerAnalytics;
@@ -59,7 +64,7 @@ public class MenuView extends Form {
             @Override
             public void setOpaque(boolean isOpaque) {
                 if (isOpaque)
-                    setBorder(new ColorableArcableFlatBorder(MenuResources.Assets.getColor("blue").darker(), 10));
+                    setBorder(new ColorableArcableFlatBorder(mainLeftColor.darker(), 10));
                 else
                     setBorder(null);
         
@@ -76,6 +81,9 @@ public class MenuView extends Form {
         menu3d.addMenuItem("RANKING", this::ranking);
         menu3d.addMenuItem("SPECTATOR", this::spectator);
         menu3d.addMenuItem("EXIT", this::exit);
+        menu3d.addMenuItem("test", () -> {
+            smoothTransform(panel, 100, 100, 100,100);
+        }); // FIXME : test
         menu3d.addGlobalEvent(controller::abortMutiGame);
         menu3d.addGlobalEvent(() -> panel.setVisible(false));
 
@@ -369,6 +377,32 @@ public class MenuView extends Form {
         }).start();
     }
 
+    private void displayLoginView() {
+        mig.setComponentConstraints(panel, "x 50%, y 40%, w 45%, h 50%");
+        revalidate();
+        panel.removeAll();
+        panel.setOpaque(false);
+        LoginView lv = new LoginView(controller);
+        lv.setOpaque(false);
+        panel.add(lv);
+        panel.setVisible(true);
+        repaint();
+    }
+
+    private void smoothTransform(Component com, int x, int y, int w, int h) {
+        Animator animator = new Animator(1000, new TimingTargetAdapter() {
+            @Override
+            public void timingEvent(float fraction) {
+                int newX = (int) (getWidth() * fraction);
+                com.setLocation(newX, com.getLocation().y);
+                com.getParent().repaint();
+            }
+        });
+        animator.setAcceleration(0.2f);
+        animator.setDeceleration(0.2f);
+        animator.start();
+    }
+
     @Override
     public void show() {
         GameFrame.currentFrame.add(this);
@@ -385,17 +419,5 @@ public class MenuView extends Form {
         g.setContentPane(this);
         g.repaint();
         g.revalidate();
-    }
-
-    private void displayLoginView() {
-        mig.setComponentConstraints(panel, "x 50%, y 40%, w 45%, h 50%");
-        revalidate();
-        panel.removeAll();
-        panel.setOpaque(false);
-        LoginView lv = new LoginView(controller);
-        lv.setOpaque(false);
-        panel.add(lv);
-        panel.setVisible(true);
-        repaint();
     }
 }
