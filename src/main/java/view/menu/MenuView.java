@@ -1,7 +1,6 @@
 package view.menu;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
@@ -16,10 +15,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
-
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
-
 import com.formdev.flatlaf.FlatClientProperties;
 import control.menu.MenuController;
 import model.tools.PlayerAnalytics;
@@ -41,6 +38,8 @@ import view.window.GameFrame;
  * @version 1
  */
 public class MenuView extends Form {
+    private final static int ANIMATION_TIME = 600;
+
     private final MenuController controller;
     private final Menu3D menu3d = new Menu3D();
     private final JPanel panel;
@@ -49,6 +48,7 @@ public class MenuView extends Form {
     private boolean haveJoinAGame = false;
     private int numberOfPlayerByGame = 6;
     private Color mainLeftColor;
+    private Animator animator;
 
     public MenuView(MenuController controller) {
         super();
@@ -82,14 +82,20 @@ public class MenuView extends Form {
         menu3d.addMenuItem("SPECTATOR", this::spectator);
         menu3d.addMenuItem("EXIT", this::exit);
         menu3d.addGlobalEvent(controller::abortMutiGame);
-        menu3d.addGlobalEvent(() -> panel.setVisible(false));
 
         panel.setVisible(false);
         panel.setOpaque(false);
 
         add(menu3d, "x 10%, y 40%, w 25%, h 50%");
-        add(panel, "x 60%, y 40%, w 30%, h 50%");
+        add(panel);
         repaint();
+
+        if (controller.isConnected()) 
+            GameFrame.showSuccessNotification("You're connected as " + 
+            controller.getPlayerCredentials().pseudo() + " !") ;
+        else GameFrame.showErrorNotification(
+                "You're not connected !"
+            );
     }
 
     private void changeUi() {
@@ -161,13 +167,16 @@ public class MenuView extends Form {
     }
 
     public void multiPlayer() {
+        updatePanelPourcent(this::multiPlayerWork, 
+            0.6, 0.40, 0.30, 0.50);
+    }
+
+    private void multiPlayerWork() {
         if (!controller.isConnected()) {
             displayLoginView();
             return;
         }
 
-        mig.setComponentConstraints(panel, "x 60%, y 40%, w 30%, h 50%");
-        revalidate();
         panel.removeAll();
         panel.setLayout(new MigLayout("al center, fill, insets 0, wrap"));
 
@@ -250,21 +259,20 @@ public class MenuView extends Form {
 
         scroll.setOpaque(false);
         scrollPane.setOpaque(false);
-        panel.setOpaque(true);
         scroll.getViewport().setOpaque(false);
-        panel.repaint();
-        panel.setVisible(true);
-        repaint();
+        panel.setOpaque(true);
     }
 
-    public void ranking() {
+    private void ranking() {
+        updatePanelPourcent(this::rankingWork,
+            0.6, 0.3, 0.3, 0.5);
+    }
+
+    private void rankingWork() {
         if (!controller.isConnected()) {
             displayLoginView();
             return;
         }
-
-        mig.setComponentConstraints(panel, "x 60%, w 30%, h 50%");
-        revalidate();
         panel.removeAll();
 
         javax.swing.JTable table = new javax.swing.JTable();
@@ -316,11 +324,14 @@ public class MenuView extends Form {
 
         panel.add(table);
         panel.add(scroll);
-        panel.setVisible(true);
-        repaint();
     }
 
-    public void profile() {
+    private void profile() {
+        updatePanelPourcent(this::profileWork, 
+            0.6, 0.4, 0.2, 0.3);
+    }
+
+    private void profileWork() {
         class HBC extends HorizontalBarChart {
             HBC() {
                 super();
@@ -334,7 +345,6 @@ public class MenuView extends Form {
             return;
         }
 
-        mig.setComponentConstraints(panel, "x 60%, y 40%, w 20%, h 30%");
         panel.removeAll();
 
         PlayerAnalytics p = controller.getPlayerAnalytics();
@@ -356,13 +366,10 @@ public class MenuView extends Form {
         panel.add(jb, "x 25%, gapy 10");
 
         panel.setOpaque(true);
-        panel.setVisible(true);
-        panel.revalidate();
-        revalidate();
-        repaint();
     }
 
     public void exit() {
+        hidePanel();
         new Thread(() -> {
             try {
                 Thread.sleep(500);
@@ -374,7 +381,7 @@ public class MenuView extends Form {
         }).start();
     }
 
-    private void displayLoginView() {
+    private void displayLoginView() {   // FIXME : à refaire
         mig.setComponentConstraints(panel, "x 50%, y 40%, w 45%, h 50%");
         revalidate();
         panel.removeAll();
@@ -386,18 +393,93 @@ public class MenuView extends Form {
         repaint();
     }
 
-    private void smoothTransform(Component com, int x, int y, int w, int h) {
-        Animator animator = new Animator(1000, new TimingTargetAdapter() {
+    private void hidePanel() {
+        if (!panel.isVisible()) return;
+        
+        int x = panel.getX();
+        int y = panel.getY();
+        int deltaX = getWidth() + 100 - panel.getX();
+        animator = new Animator(ANIMATION_TIME, new TimingTargetAdapter() {
             @Override
             public void timingEvent(float fraction) {
-                int newX = (int) (getWidth() * fraction);
-                com.setLocation(newX, com.getLocation().y);
-                com.getParent().repaint();
+                int newX = x + (int) (deltaX * fraction);
+                panel.setLocation(newX, y);
+                repaint();
+            }
+
+            @Override
+            public void end() {
+                panel.setVisible(false);
             }
         });
-        animator.setAcceleration(0.2f);
-        animator.setDeceleration(0.2f);
+        animator.setAcceleration(0.1f);
+        animator.setDeceleration(0.1f);
         animator.start();
+    }
+
+    private void showPanel(int x, int y, int w, int h) {
+        if (panel.isVisible()) return;
+
+        int startX = getWidth() + 100;
+        int deltaX = x - startX;
+        animator = new Animator(ANIMATION_TIME, new TimingTargetAdapter() {
+            @Override
+            public void timingEvent(float fraction) {
+                int newX = startX + (int) (deltaX * fraction);
+                panel.setLocation(newX, y);
+                repaint();
+            }
+
+            @Override
+            public void begin() {
+                mig.setComponentConstraints(panel, "x " + startX +",y " + y +",w " + w +",h " + h);
+                panel.setVisible(true);
+                revalidate();
+            }
+        });
+        animator.setAcceleration(0.1f);
+        animator.setDeceleration(0.1f);
+        animator.start();
+    }
+
+    /**
+     * Smooth hide the Panel. Do your work and smooth show the Panel
+     * @param work must do all the update you want in your panel
+     */
+    private void updatePanel(Runnable work, int x, int y, int w, int h) {
+        if (panel.isVisible()) {
+            hidePanel();
+            if (animator != null)
+                animator.addTarget(new TimingTargetAdapter() {
+                    @Override
+                    public void end() {
+                        updatePanel(work, x, y, w, h);
+                    }
+                });
+        } else {
+            work.run();
+            showPanel(x, y, w, h);
+        }
+    }
+
+    /**
+     * Same as updatePane but coordinate are in % like on a miglayout.
+     * For exemple "x 10%, y 20%, w 15%, h 80%" -> (0.1, 0.2, 0.15, 0.8)
+     * @param work
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     */
+    private void updatePanelPourcent(Runnable work, double x, double y, double w, double h) {
+        int width = getWidth();
+        int height = getHeight();
+        updatePanel(work, 
+            (int) (width * x), 
+            (int) (height * y), 
+            (int) (width * w), 
+            (int) (height * h)
+        );
     }
 
     @Override
