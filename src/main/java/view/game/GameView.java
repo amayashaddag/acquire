@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -80,7 +81,7 @@ public class GameView extends Form {
     private void paintMap(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
 
-        g2d.drawImage(GameResources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
+        g2d.drawImage(GameResources.GImage.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
         g2d.setTransform(mouseListener.getAffineTransform());
 
         Board board = controller.getBoard();
@@ -99,13 +100,13 @@ public class GameView extends Form {
                 y += (cellHeight / 3);
 
                 if (new Point(row, col).equals(jetonsPanel.getSelection()))
-                    g2d.drawImage(GameResources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.GImage.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOwned())
-                    g2d.drawImage(GameResources.Assets.getCorpImage(currentCell.getCorporation()), x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.GImage.getCorpImage(currentCell.getCorporation()), x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOccupied())
-                    g2d.drawImage(GameResources.Assets.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.GImage.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isEmpty())
-                    g2d.drawImage(GameResources.Assets.EMPTY_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.GImage.EMPTY_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
             }
         }
 
@@ -115,7 +116,18 @@ public class GameView extends Form {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        paintMap(g);
+        if (isEnabled()) {
+            paintMap(g);
+        } else {
+            BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = image.createGraphics();
+            paintMap(g2d);
+            g2d.dispose();
+            g.drawImage(
+                GameResources.GImage.applyGaussianBlur(image, 2, 1), 
+                0, 0, null);
+        }
+        
     }
 
     /**

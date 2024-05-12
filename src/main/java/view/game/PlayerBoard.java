@@ -84,7 +84,7 @@ public class PlayerBoard extends javax.swing.JPanel {
 
             for (HashMap.Entry<Corporation, Integer> entry : earnedStocks.entrySet()) {
                 if (entry.getValue() > 0) {
-                    int rgb = GameResources.Assets.getCorpColor(entry.getKey()).getRGB();
+                    int rgb = GameResources.GImage.getCorpColor(entry.getKey()).getRGB();
                     int red = (rgb >> 16) & 0xFF;
                     int green = (rgb >> 8) & 0xFF;
                     int blue = rgb & 0xFF;

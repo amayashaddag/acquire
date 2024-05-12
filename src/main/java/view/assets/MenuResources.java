@@ -91,7 +91,7 @@ public class MenuResources {
             else if (s.equals("purple"))
                 corp = Corporation.CONTINENTAL;
             else return null;
-            return view.assets.GameResources.Assets.getCorpColor(corp);
+            return view.assets.GameResources.GImage.getCorpColor(corp);
         }
     }
 

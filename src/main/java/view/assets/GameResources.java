@@ -4,6 +4,8 @@ import model.game.Corporation;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -36,12 +38,13 @@ public class GameResources {
      * <p>
      * ! Specials characters are not allowed (except
      * '-' and '_')!
+     * @apiNote all about game's images (ressources/utils)
      */
-    public static class Assets {
+    public static class GImage {
         static {
             File dir = new File(MAIN_PATH + RESSOURCES_PATH + IMAGES_PATH);
 
-            Class<?> clazz = Assets.class;
+            Class<?> clazz = GImage.class;
             Field[] fields = clazz.getFields();
 
             for (Field field : fields) {
@@ -98,13 +101,13 @@ public class GameResources {
 
         public static Image getCorpImage(Corporation c) {
             return switch (c) {
-                case IMPERIAL -> GameResources.Assets.CYAN_TOWER_CELL;
-                case FESTIVAL -> GameResources.Assets.YELLOW_TOWER_CELL;
-                case AMERICAN -> GameResources.Assets.RED_TOWER_CELL;
-                case SACKSON -> GameResources.Assets.BLUE_TOWER_CELL;
-                case TOWER -> GameResources.Assets.GREEN_TOWER_CELL;
-                case WORLDWIDE -> GameResources.Assets.ORANGE_TOWER_CELL;
-                case CONTINENTAL -> GameResources.Assets.PURPLE_TOWER_CELL;
+                case IMPERIAL -> GameResources.GImage.CYAN_TOWER_CELL;
+                case FESTIVAL -> GameResources.GImage.YELLOW_TOWER_CELL;
+                case AMERICAN -> GameResources.GImage.RED_TOWER_CELL;
+                case SACKSON -> GameResources.GImage.BLUE_TOWER_CELL;
+                case TOWER -> GameResources.GImage.GREEN_TOWER_CELL;
+                case WORLDWIDE -> GameResources.GImage.ORANGE_TOWER_CELL;
+                case CONTINENTAL -> GameResources.GImage.PURPLE_TOWER_CELL;
             };
         }
 
@@ -117,12 +120,30 @@ public class GameResources {
 
         public static void saveImage(BufferedImage image, String filename) {
             try {
-                File file = new File(filename);
+                File file = new File(filename + ".png");
                 ImageIO.write(image, "png", file);
                 System.out.println("Image saved as " + file.getAbsolutePath());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+        public static BufferedImage applyGaussianBlur(BufferedImage srcImage, int radius, int iterations) {
+            int size = radius * 2 + 1;
+            float weight = 1.0f / (size * size);
+            float[] data = new float[size * size];
+    
+            for (int i = 0; i < data.length; i++) {
+                data[i] = weight;
+            }
+    
+            Kernel kernel = new Kernel(size, size, data);
+            ConvolveOp op = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+            BufferedImage result = srcImage;
+            for (int i = 0; i < iterations; i++) {
+                result = op.filter(result, null);
+            }
+            return result;
+        }    
     }
 }
