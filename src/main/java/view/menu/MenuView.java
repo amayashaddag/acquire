@@ -3,6 +3,7 @@ package view.menu;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,6 +73,13 @@ public class MenuView extends Form {
                     setBorder(null);
         
                 super.setOpaque(isOpaque);
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(this.getBackground());
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
             }
         };
         panel.setBackground(mainLeftColor);
@@ -144,16 +152,39 @@ public class MenuView extends Form {
     }
 
     public void singlePlayer() {
-        new Thread(() -> {
-            try {
-                Thread.sleep(ANIMATION_TIME);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                undoUI();
-                controller.startSingleGame();
-            }
-        }).start();
+        updatePanelPourcent(this::singlePlayerWork, 
+            0.55, 0.45, 0.20, 0.25);
+    }
+
+    private void singlePlayerWork() {
+        panel.removeAll();
+        panel.setLayout(new MigLayout("align x, fill, insets 0"));
+
+        String btnContraints = "w 70%, h 5%, wrap";
+
+        JSpinner spinner = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
+        spinner.addChangeListener((e) -> numberOfPlayerByGame = (int) spinner.getValue());
+        JPanel spinnerPane = new JPanel();
+        spinnerPane.add(new JLabel("Player by game : "));
+        spinnerPane.add(spinner);
+        spinnerPane.setBackground(mainLeftColor.darker());
+        spinner.setBackground(mainLeftColor);
+
+        JButton ezBtn = new JButton("Easy");
+        ezBtn.setBackground(MenuResources.Assets.getColor("green"));
+        ezBtn.addActionListener((e) -> controller.startSingleGameEasy(numberOfPlayerByGame));
+        JButton medBtn = new JButton("Medium");
+        medBtn.setBackground(MenuResources.Assets.getColor("orange"));
+        medBtn.addActionListener((e) -> controller.startSingleGameMedium(numberOfPlayerByGame));
+        JButton hardBtn = new JButton("Hard");
+        hardBtn.setBackground(MenuResources.Assets.getColor("red"));
+        hardBtn.addActionListener((e) -> controller.startSingleGameHard(numberOfPlayerByGame));
+
+        panel.add(ezBtn, "x 13%, gapy 2%,"+btnContraints);
+        panel.add(medBtn, "x 13%, gapy 2%,"+btnContraints);
+        panel.add(hardBtn, "x 13%, gapy 2%,"+btnContraints);
+        panel.add(spinnerPane, "center x, y 70%, gapy 5%," + btnContraints);
+        panel.setOpaque(true);
     }
 
     public void spectator() {

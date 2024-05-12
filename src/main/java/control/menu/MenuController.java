@@ -104,6 +104,21 @@ public class MenuController {
         return session != null;
     }
 
+    public void startSingleGameEasy(int numberOfPlayer) {
+        // FIXME : to implement
+        startSingleGame();
+    }
+
+    public void startSingleGameMedium(int numberOfPlayer) {
+        // FIXME : to implement
+        startSingleGame();
+    }
+
+    public void startSingleGameHard(int numberOfPlayer) {
+        // FIXME : to implement
+        startSingleGame();
+    }
+
     public void startSingleGame() {
         view.undoUI();
 
