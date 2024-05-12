@@ -125,7 +125,7 @@ public class GameView extends Form {
             g2d.dispose();
             g.drawImage(
                 GameResources.GImage.applyGaussianBlur(image, 2, 1), 
-                0, 0, null);
+                0, 0, this);
         }
         
     }

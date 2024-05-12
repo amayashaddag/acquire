@@ -1,6 +1,7 @@
 package view.menu;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
@@ -11,9 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTable;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
@@ -143,7 +146,7 @@ public class MenuView extends Form {
     public void singlePlayer() {
         new Thread(() -> {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(ANIMATION_TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
@@ -156,7 +159,7 @@ public class MenuView extends Form {
     public void spectator() {
         new Thread(() -> {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(ANIMATION_TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
@@ -265,7 +268,7 @@ public class MenuView extends Form {
 
     private void ranking() {
         updatePanelPourcent(this::rankingWork,
-            0.6, 0.3, 0.3, 0.5);
+            0.55, 0.50, 0.30, 0.50);
     }
 
     private void rankingWork() {
@@ -274,9 +277,14 @@ public class MenuView extends Form {
             return;
         }
         panel.removeAll();
+        panel.setOpaque(false);
 
-        javax.swing.JTable table = new javax.swing.JTable();
-        javax.swing.JScrollPane scroll = new javax.swing.JScrollPane();
+        JTable table = new JTable();
+        JScrollPane scroll = new JScrollPane();
+        table.setBackground(mainLeftColor);
+        table.setSelectionBackground(Color.RED);
+        table.setSelectionForeground(Color.BLUE);
+        table.setGridColor(Color.GREEN);
 
         table.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {},
                 new String[] { "No", "Name", "Best Score", "Region" }) {
@@ -293,7 +301,22 @@ public class MenuView extends Form {
             table.getColumnModel().getColumn(2).setPreferredWidth(150);
         }
 
-        table.setDefaultRenderer(Object.class, new TableGradientCell());
+        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
+                Component renderer = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (row % 3 == 0) 
+                    renderer.setBackground(mainLeftColor.brighter());
+                else if (row % 3 == 1)
+                    renderer.setBackground(mainLeftColor);
+                else
+                    renderer.setBackground(mainLeftColor.darker());
+                
+                return renderer;
+            }
+        });
         table.getTableHeader().putClientProperty(FlatClientProperties.STYLE, ""
                 + "hoverBackground:null;"
                 + "pressedBackground:null;"
@@ -302,7 +325,6 @@ public class MenuView extends Form {
                 "border:3,0,3,0,$Table.background,10,10");
         scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
                 "hoverTrackColor:null");
-        table.setDefaultRenderer(Object.class, new TableGradientCell());
         DefaultTableModel model = (DefaultTableModel) table.getModel();
 
         int i = 0;
@@ -372,7 +394,7 @@ public class MenuView extends Form {
         hidePanel();
         new Thread(() -> {
             try {
-                Thread.sleep(500);
+                Thread.sleep(ANIMATION_TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
