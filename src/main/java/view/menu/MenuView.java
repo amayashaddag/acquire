@@ -9,9 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
-import java.util.function.Function;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -83,9 +80,11 @@ public class MenuView extends Form {
 
             @Override
             protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setColor(this.getBackground());
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                if (isOpaque()) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setColor(this.getBackground());
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                }
             }
         };
         panel.setBackground(mainLeftColor);
@@ -163,7 +162,6 @@ public class MenuView extends Form {
     }
 
     private void singlePlayerWork() {
-        panel.removeAll();
         panel.setLayout(new MigLayout("align x, fill, insets 0"));
 
         String btnContraints = "w 70%, h 5%, wrap";
@@ -201,12 +199,10 @@ public class MenuView extends Form {
 
     public void spectator() {
         updatePanelPourcent(this::spectatorWork, 
-            0.55, 0.45, 0.20, 0.25);
+            0.55, 0.5, 0.3, 0.20);
     }
 
     private void spectatorWork() {
-        panel.removeAll();
-
         BiConsumer<JSpinner,Consumer<Integer>> f = (s,g) -> {
             Object o = s.getValue();
             if (o instanceof Integer)
@@ -225,7 +221,7 @@ public class MenuView extends Form {
         JSpinner spinner2 = new JSpinner(new SpinnerNumberModel(100, 1, 1000000, 10));
         spinner2.addChangeListener((e) -> f.accept(spinner1, (i)-> numberOfSimulation=i));
         JPanel spinnerPane2 = new JPanel();
-        spinnerPane2.add(new JLabel("Toqer by simulation : "));
+        spinnerPane2.add(new JLabel("Simulation's deep : "));
         spinnerPane2.add(spinner2);
         spinnerPane2.setBackground(mainLeftColor.darker());
         spinner2.setBackground(mainLeftColor);
@@ -236,7 +232,9 @@ public class MenuView extends Form {
         
         String btnContraints = "w 70%, h 5%, wrap";
         panel.setLayout(new MigLayout("align x, fill, insets 0"));
-        panel.add(spinnerPane1, "center x, y 70%, gapy 5%," + btnContraints);
+        panel.add(spinnerPane1, "center x, gapy 2%," + btnContraints);
+        panel.add(spinnerPane2, "center x, gapy 2%," + btnContraints);
+        panel.add(btn, "center x, gapy 2%," + btnContraints);
         panel.setOpaque(true);
     }
 
@@ -250,8 +248,6 @@ public class MenuView extends Form {
             displayLoginView();
             return;
         }
-
-        panel.removeAll();
         panel.setLayout(new MigLayout("al center, fill, insets 0, wrap"));
 
         JPanel scrollPane = new JPanel();
@@ -351,15 +347,11 @@ public class MenuView extends Form {
             displayLoginView();
             return;
         }
-        panel.removeAll();
-        panel.setOpaque(false);
 
         JTable table = new JTable();
         JScrollPane scroll = new JScrollPane();
-        table.setBackground(mainLeftColor);
         table.setSelectionBackground(Color.RED);
         table.setSelectionForeground(Color.BLUE);
-        table.setGridColor(Color.GREEN);
 
         table.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {},
                 new String[] { "No", "Name", "Best Score", "Region" }) {
@@ -421,6 +413,10 @@ public class MenuView extends Form {
 
         panel.add(table);
         panel.add(scroll);
+        scroll.setOpaque(false);
+        scroll.getViewport().setOpaque(false);
+        table.setOpaque(false);
+        panel.setOpaque(false);
     }
 
     public void profile() {
@@ -441,8 +437,6 @@ public class MenuView extends Form {
             displayLoginView();
             return;
         }
-
-        panel.removeAll();
 
         PlayerAnalytics p = controller.getPlayerAnalytics();
         panel.setLayout(new MigLayout("al center, filly, insets 10, wrap 1"));
@@ -554,6 +548,7 @@ public class MenuView extends Form {
                     }
                 });
         } else {
+            panel.removeAll();
             work.run();
             showPanel(x, y, w, h);
         }
