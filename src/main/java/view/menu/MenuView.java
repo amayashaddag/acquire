@@ -63,7 +63,7 @@ public class MenuView extends Form {
         this.controller = controller;
         setLayout(mig);
 
-        mainLeftColor = MenuResources.Assets.getColor("purple");
+        mainLeftColor = MenuResources.MImage.getColor("purple");
         saveUI();
         changeUi();
 
@@ -181,13 +181,13 @@ public class MenuView extends Form {
         };
 
         JButton ezBtn = new JButton("Easy");
-        ezBtn.setBackground(MenuResources.Assets.getColor("green"));
+        ezBtn.setBackground(MenuResources.MImage.getColor("green"));
         ezBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
         JButton medBtn = new JButton("Medium");
-        medBtn.setBackground(MenuResources.Assets.getColor("orange"));
+        medBtn.setBackground(MenuResources.MImage.getColor("orange"));
         medBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
         JButton hardBtn = new JButton("Hard");
-        hardBtn.setBackground(MenuResources.Assets.getColor("red"));
+        hardBtn.setBackground(MenuResources.MImage.getColor("red"));
         hardBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
 
         panel.add(ezBtn, "x 13%, y 5%, gapy 2%,"+btnContraints);
@@ -227,7 +227,7 @@ public class MenuView extends Form {
         spinner2.setBackground(mainLeftColor);
 
         JButton btn = new JButton("Start");
-        btn.setBackground(MenuResources.Assets.getColor("green"));
+        btn.setBackground(MenuResources.MImage.getColor("green"));
         btn.addActionListener((e) -> controller.startSpectatorGame(numberOfPlayerByGame, numberOfSimulation));
         
         String btnContraints = "w 70%, h 5%, wrap";
@@ -263,7 +263,7 @@ public class MenuView extends Form {
             multiPlayer();
         } else if (aMultiGameIsLaunching) {
             createGameBtn.setText("Abort game");
-            createGameBtn.setBackground(MenuResources.Assets.getColor("red"));
+            createGameBtn.setBackground(MenuResources.MImage.getColor("red"));
             createGameBtn.addActionListener((e) -> {
                 controller.abortMutiGame();
                 aMultiGameIsLaunching = false;
@@ -271,14 +271,14 @@ public class MenuView extends Form {
             });
 
             JButton startBtn = new JButton("Start Game");
-            startBtn.setBackground(MenuResources.Assets.getColor("green"));
+            startBtn.setBackground(MenuResources.MImage.getColor("green"));
             startBtn.addActionListener((e) -> {
                 controller.launchMultiGame();
             });
             panel.add(startBtn, "x 13%, y 5%, gapy 1%,"+btnContraints);
         } else if (haveJoinAGame) {
             JButton startBtn = new JButton("Quit queue");
-            startBtn.setBackground(MenuResources.Assets.getColor("red"));
+            startBtn.setBackground(MenuResources.MImage.getColor("red"));
             startBtn.addActionListener((e) -> {
                 controller.quitGame();
                 haveJoinAGame = false;
@@ -286,7 +286,7 @@ public class MenuView extends Form {
             panel.add(startBtn, btnContraints);
         } else {
             createGameBtn.setText("Create new game");
-            createGameBtn.setBackground(MenuResources.Assets.getColor("green"));
+            createGameBtn.setBackground(MenuResources.MImage.getColor("green"));
             createGameBtn.addActionListener((e) -> {
                 controller.createMultiGame(numberOfPlayerByGame);
                 aMultiGameIsLaunching = true;
@@ -450,7 +450,7 @@ public class MenuView extends Form {
         hbc.setDataset(dataset);
         panel.add(hbc, "gapy 10");
         JButton jb = new JButton("Change account");
-        jb.setBackground(MenuResources.Assets.getColor("blue").darker());
+        jb.setBackground(MenuResources.MImage.getColor("blue").darker());
         jb.addActionListener((e) -> {
             displayLoginView();
         });
@@ -477,7 +477,7 @@ public class MenuView extends Form {
         revalidate();
         panel.removeAll();
         panel.setOpaque(false);
-        LoginView lv = new LoginView(controller);
+        LoginView lv = new LoginView(controller, mainLeftColor);
         lv.setOpaque(false);
         panel.add(lv);
         panel.setVisible(true);
@@ -582,7 +582,7 @@ public class MenuView extends Form {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(MenuResources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
+        g.drawImage(MenuResources.MImage.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
     }
 
     @Override

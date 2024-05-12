@@ -27,11 +27,11 @@ public class MenuResources {
      * ! Specials characters are not allowed (except
      * '-' and '_')!
      */
-    public static class Assets {
+    public static class MImage {
         static {
             File dir = new File(MAIN_PATH + RESSOURCES_PATH + IMAGES_PATH);
 
-            Class<?> clazz = Assets.class;
+            Class<?> clazz = MImage.class;
             Field[] fields = clazz.getFields();
 
             for (Field field : fields) {

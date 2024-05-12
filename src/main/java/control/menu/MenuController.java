@@ -101,7 +101,8 @@ public class MenuController {
     }
 
     public boolean isConnected() {
-        return session != null;
+        return false;
+        // FIXME : marche pas !
     }
 
     public void startSingleGameEasy(int numberOfPlayer) {

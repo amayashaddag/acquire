@@ -1,11 +1,11 @@
 package view.login;
 
-import com.formdev.flatlaf.extras.components.FlatTextField;
 import view.assets.LoginInterfaceResources;
+import view.game.TextField;
 
-public class PseudoField extends FlatTextField {
+public class PseudoField extends TextField {
     public PseudoField(){
         super();
-        this.setPlaceholderText(LoginInterfaceResources.PSEUDO_PLACEHOLDER_TEXT);
+        this.setLabelText(LoginInterfaceResources.PSEUDO_PLACEHOLDER_TEXT);
     }
 }

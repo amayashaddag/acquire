@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import view.game.GameView;
+import view.game.TextField;
 import view.window.Form;
 import view.window.GameFrame;
 
@@ -46,14 +47,14 @@ public class LoginView extends JPanel {
     private final JPanel loginButtons;
 
 
-    private final PseudoField pseudoArea;
+    private final TextField pseudoArea;
     private final PasswordField passwordArea;
-    private final EmailField emailArea;
+    private final TextField emailArea;
     private final Border originalBorder;
 
     private final MenuController menuController;
 
-    public LoginView(MenuController menuController) {
+    public LoginView(MenuController menuController, Color c) {
         super();
         this.setOpaque(false);
 
@@ -130,13 +131,13 @@ public class LoginView extends JPanel {
             parent.setContentPane(view);
         });
 
-        emailArea = new EmailField();
+        emailArea = new TextField(LoginInterfaceResources.EMAIL_PLACEHOLDER_TEXT, c);
         emailArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
         emailArea.setPreferredSize(new Dimension(400, 36));
 
         originalBorder = emailArea.getBorder();
 
-        pseudoArea = new PseudoField();
+        pseudoArea = new TextField(LoginInterfaceResources.PSEUDO_PLACEHOLDER_TEXT, c);
         pseudoArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
         pseudoArea.setVisible(false);
         pseudoArea.setPreferredSize(new Dimension(400, 36));
