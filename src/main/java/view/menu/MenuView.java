@@ -412,8 +412,8 @@ public class MenuView extends Form {
                 panel.setVisible(false);
             }
         });
-        animator.setAcceleration(0.1f);
-        animator.setDeceleration(0.1f);
+        animator.setAcceleration(0.2f);
+        animator.setDeceleration(0.2f);
         animator.start();
     }
 
@@ -437,8 +437,8 @@ public class MenuView extends Form {
                 revalidate();
             }
         });
-        animator.setAcceleration(0.1f);
-        animator.setDeceleration(0.1f);
+        animator.setAcceleration(0.2f);
+        animator.setDeceleration(0.2f);
         animator.start();
     }
 

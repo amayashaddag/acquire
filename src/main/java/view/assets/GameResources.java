@@ -130,11 +130,23 @@ public class GameResources {
 
         public static BufferedImage applyGaussianBlur(BufferedImage srcImage, int radius, int iterations) {
             int size = radius * 2 + 1;
-            float weight = 1.0f / (size * size);
             float[] data = new float[size * size];
+            float totalWeight = 0.0f;
+            int center = size / 2;
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    int dx = i - center;
+                    int dy = j - center;
+                    float distance = (float) Math.sqrt(dx * dx + dy * dy);
+                    float gaussian = (float) Math.exp(-(distance * distance) / (2 * radius * radius));
+                    data[i * size + j] = gaussian;
+                    totalWeight += gaussian;
+                }
+            }
     
             for (int i = 0; i < data.length; i++) {
-                data[i] = weight;
+                data[i] /= totalWeight;
             }
     
             Kernel kernel = new Kernel(size, size, data);
