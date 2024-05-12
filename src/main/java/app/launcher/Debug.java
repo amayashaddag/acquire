@@ -1,21 +1,17 @@
 package app.launcher;
 
 import java.awt.Component;
-import java.awt.Point;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
-import org.jdesktop.animation.timing.interpolation.PropertySetter;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 import control.firebaseinit.FirebaseClient;
 import control.menu.MenuController;
-import net.miginfocom.swing.MigLayout;
 import view.window.GameFrame;
 
 public class Debug extends JFrame {

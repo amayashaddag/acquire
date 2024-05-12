@@ -1,13 +1,15 @@
 package view.game;
 
-import model.tools.AutoSetter;
-import view.window.*;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
+
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import java.awt.Component;
-import javax.swing.JFrame;
+
+import model.tools.AutoSetter;
+import view.window.Form;
 
 /**
  * @author Arthur Deck

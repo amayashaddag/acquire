@@ -91,7 +91,10 @@ public class GameDatabaseConnection {
                 .whereEqualTo(UID_FIELD, c.uid()).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
         if (!docs.isEmpty()) {
-            removePlayer(c.uid());
+            for (QueryDocumentSnapshot doc : docs) {
+                String joinedGameId = (String) doc.get(GAME_ID_FIELD);
+                removePlayer(c.uid(), joinedGameId);
+            }
         }
 
         HashMap<String, Object> newPlayer = new HashMap<>();
@@ -123,9 +126,10 @@ public class GameDatabaseConnection {
         }
     }
 
-    // TODO : Should correct removePlayer to redistribute cash and stocks after player quitting game
+    public static void removePlayer(String uid, String gameId) throws Exception {
 
-    public static void removePlayer(String uid) throws Exception {
+        deleteUserStocks(uid);
+
         CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
         ApiFuture<QuerySnapshot> future = collection.whereEqualTo(UID_PLAYER_FIELD, uid).get();
         QuerySnapshot snapshot = future.get();
@@ -133,6 +137,17 @@ public class GameDatabaseConnection {
         for (QueryDocumentSnapshot doc : snapshot) {
             ApiFuture<WriteResult> deleteFuture = doc.getReference().delete();
             deleteFuture.get();
+        }
+    }
+
+    private static void deleteUserStocks(String uid) throws Exception {
+        CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
+        ApiFuture<QuerySnapshot> reader = collection.whereEqualTo(UID_FIELD, uid).get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+
+        for (QueryDocumentSnapshot doc : docs) {
+            ApiFuture<WriteResult> deleteDoc = doc.getReference().delete();
+            deleteDoc.get();
         }
     }
 
@@ -566,7 +581,8 @@ public class GameDatabaseConnection {
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
 
         if (docs.isEmpty()) {
-            throw new Exception();
+            AuthController.addToAnalytics(userId);
+            return getPlayerAnalytics(userId);
         }
 
         DocumentSnapshot doc = docs.get(0);
@@ -850,9 +866,31 @@ public class GameDatabaseConnection {
     }
 
     public static String getWinner(String gameId) throws Exception {
+        ApiFuture<QuerySnapshot> reader = database.collection(PLAYER_TABLE_NAME)
+                .whereEqualTo(GAME_ID_FIELD, gameId)
+                .get();
+        List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
+        String winner = null;
+        long score = 0;
 
-        // TODO : Should implement
+        if (docs.isEmpty()) {
+            throw new Exception();
+        }
 
-        return null;
+        for (QueryDocumentSnapshot doc : docs) {
+            Long currentPlayerScore = (Long) doc.get(NET_FIELD);
+            String currentPlayerPseudo = (String) doc.get(PSEUDO_PLAYER_FIELD);
+
+            if (currentPlayerScore == null || currentPlayerPseudo == null) {
+                throw new NullPointerException();
+            }
+
+            if (currentPlayerScore > score) {
+                winner = currentPlayerPseudo;
+                score = currentPlayerScore;
+            }
+        }
+
+        return winner;
     }
 }

@@ -110,7 +110,7 @@ public class AuthController {
         return userId;
     }
 
-    private static void addToAnalytics(String userId) throws Exception {
+    public static void addToAnalytics(String userId) throws Exception {
         if (alreadyExistingAnalytics(userId)) {
             throw new Exception();
         }

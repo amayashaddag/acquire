@@ -1,18 +1,11 @@
 package view.login;
 
-import control.auth.AlreadyRegisteredUserException;
-import control.auth.AuthController;
-import control.auth.NotExistingUserException;
-import control.auth.NotStrongEnoughPasswordException;
-import control.auth.TooLongPasswordException;
-import control.auth.WrongPasswordException;
-import control.game.GameController; 
-import control.menu.MenuController;
-import model.game.Player;
-import view.assets.Fonts;
-import view.assets.LoginInterfaceResources;
-
-import com.formdev.flatlaf.extras.components.FlatButton;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -22,16 +15,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.util.LinkedList;
-import java.util.List;
 
-import view.game.GameView;
+import com.formdev.flatlaf.extras.components.FlatButton;
+
+import control.auth.AlreadyRegisteredUserException;
+import control.auth.AuthController;
+import control.auth.NotExistingUserException;
+import control.auth.NotStrongEnoughPasswordException;
+import control.auth.TooLongPasswordException;
+import control.auth.WrongPasswordException;
+import control.menu.MenuController;
+import view.assets.Fonts;
+import view.assets.LoginInterfaceResources;
 import view.game.TextField;
 import view.window.Form;
 import view.window.GameFrame;
@@ -115,22 +110,6 @@ public class LoginView extends JPanel {
         comeBackToLoginButton.addActionListener((ActionListener) -> fromSignInMenuToLoginMenu());
         comeBackToLoginButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
 
-        FlatButton offlineModeButton = new FlatButton();
-        offlineModeButton.setText(LoginInterfaceResources.OFFLINE_BUTTON_TEXT);
-        offlineModeButton.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
-        offlineModeButton.addActionListener((ActionListener) -> {
-            GameFrame parent = (GameFrame) SwingUtilities.getWindowAncestor(LoginView.this);
-            SwingUtilities.invokeLater(() -> parent.setVisible(true));
-
-            Player p = Player.createHumanPlayer("PLAYER", "");
-            List<Player> players = new LinkedList<>();
-            players.add(p);
-
-            GameController controller = new GameController(players, p, "", false);
-            GameView view = controller.getGameView();
-            parent.setContentPane(view);
-        });
-
         emailArea = new TextField(LoginInterfaceResources.EMAIL_PLACEHOLDER_TEXT, c);
         emailArea.setFont(Fonts.REGULAR_PARAGRAPH_FONT);
         emailArea.setPreferredSize(new Dimension(400, 36));
@@ -147,7 +126,6 @@ public class LoginView extends JPanel {
         passwordArea.setPreferredSize(new Dimension(400, 36));
 
         offlineModeContainer = new JPanel();
-        offlineModeContainer.add(offlineModeButton);
         offlineModeContainer.setPreferredSize(
                 new Dimension(GameFrame.DEFAULT_WIDTH / 5, GameFrame.DEFAULT_HEIGHT / 4));
         offlineModeContainer.setOpaque(false);

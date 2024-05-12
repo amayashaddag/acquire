@@ -59,9 +59,8 @@ public class GameController {
     public final static int BOT_TURN_OBSERVER_DELAY = 20;
     public final static int BOT_TURN_DELAY = 500;
     public final static int GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
-    public final static int NUM_SIMULATIONS = 3;
 
-    public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online) {
+    public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online, int numberOfSimulations) {
         this.board = new Board();
         this.currentPlayers = currentPlayers;
         this.numberOfPlayers = currentPlayers.size();
@@ -124,7 +123,7 @@ public class GameController {
                         }
 
                         BotController botController = new BotController(this);
-                        MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, NUM_SIMULATIONS);
+                        MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, numberOfSimulations);
                         Action nextAction = monteCarlo.runMonteCarlo();
 
                         handleCellPlacing(nextAction, p);
@@ -995,7 +994,7 @@ public class GameController {
         if (onlineMode) {
             try {
                 Player p = gameView.getPlayer();
-                GameDatabaseConnection.removePlayer(p.getUID());
+                GameDatabaseConnection.removePlayer(p.getUID(), gameId);
             } catch (Exception e) {
                 errorInterrupt(e);
             }
@@ -1018,5 +1017,13 @@ public class GameController {
         // Signaler un joueur pour msg offensant
         // Lorsque plus d'1/3 de la game signal le joueur on le ban chat
         // Que penses-tu de l'idée ?
+    }
+
+    public static GameController createOnlineGameController(List<Player> players, Player currentPlayer, String gameId) {
+        return new GameController(players, currentPlayer, gameId, true, 0);
+    }
+
+    public static GameController createOfflineGameController(List<Player> players, Player currentPlayer, int numberOfSimulations) {
+        return new GameController(players, currentPlayer, null, false, numberOfSimulations);
     }
 }

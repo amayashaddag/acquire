@@ -1,5 +1,6 @@
 package control.menu;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -40,6 +41,10 @@ public class MenuController {
 
     public static final int DEFAULT_MAX_PLAYERS = 3;
     public static final int ONLINE_OBSERVER_DELAY = 2000;
+
+    private static final int EASY_MODE_NUM_SIMULATIONS = 1;
+    private static final int MEDIUM_MODE_NUM_SIMULATIONS = 5;
+    private static final int HARD_MODE_NUM_SIMULATIONS = 10;
 
     public MenuController() {
         loadSession();
@@ -101,37 +106,37 @@ public class MenuController {
     }
 
     public boolean isConnected() {
-        return false;
-        // FIXME : marche pas !
+        return session != null;
     }
 
     public void startSingleGameEasy(int numberOfPlayer) {
-        // FIXME : to implement
-        System.out.println("start an ez game");
+        startSingleGame(numberOfPlayer, EASY_MODE_NUM_SIMULATIONS, false);
     }
 
     public void startSingleGameMedium(int numberOfPlayer) {
-        // FIXME : to implement
-        System.out.println("start an med game");
+        startSingleGame(numberOfPlayer, MEDIUM_MODE_NUM_SIMULATIONS, false);
     }
 
     public void startSingleGameHard(int numberOfPlayer) {
-        // FIXME : to implement
-        System.out.println("start an hard game");
+        startSingleGame(numberOfPlayer, HARD_MODE_NUM_SIMULATIONS, false);
     }
 
-    public void startSingleGame() {
+    public void startSingleGame(int numberOfPlayers, int difficulty, boolean spectator) {
         view.undoUI();
 
         List<Player> players = new LinkedList<>();
+
+        for (int i = 0; i < numberOfPlayers - 1; i++) {
+            Player bot = Player.createBotPlayer();
+            players.add(bot);
+        }
 
         Player p = Player.createHumanPlayer("Player", null);
-        Player bot = Player.createBotPlayer();
+        if (!spectator) {
+            players.add(p);
+        }
 
-        players.add(p);
-        players.add(bot);
-
-        GameController controller = new GameController(players, p, null, false);
+        GameController controller = GameController.createOfflineGameController(players, p, difficulty);
         GameView gameView = controller.getGameView();
 
         SwingUtilities.invokeLater(() -> {
@@ -146,36 +151,8 @@ public class MenuController {
         });
     }
 
-    public void startSpectatorGame(int numberOfPlayer, int numberOfSimulation) {
-        // TODO : implements
-        System.out.println("start an spectat game");
-    }
-
-    public void startSpectatorGame() {
-        view.undoUI();
-
-        List<Player> players = new LinkedList<>();
-
-        Player spectator = Player.createHumanPlayer("SPECTATOR", null);
-        Player bot1 = Player.createBotPlayer();
-        Player bot2 = Player.createBotPlayer();
-
-        players.add(bot1);
-        players.add(bot2);
-
-        GameController controller = new GameController(players, spectator, null, false);
-        GameView gameView = controller.getGameView();
-
-        SwingUtilities.invokeLater(() -> {
-            GameFrame parent = GameFrame.currentFrame;
-            parent.setContentPane(gameView);
-            gameView.setVisible(true);
-            gameView.revalidate();
-            gameView.repaint();
-            parent.requestFocus();
-
-            onlineObserver.stop();
-        });
+    public void startSpectatorGame(int numberOfPlayers, int numberOfSimulations) {
+        startSingleGame(numberOfPlayers + 1, numberOfSimulations, true);
     }
 
     public PlayerAnalytics getPlayerAnalytics(String uid) {
@@ -237,11 +214,10 @@ public class MenuController {
             }
 
             Player currentPlayer = currentPlayerOpt.get();
-            GameController controller = new GameController(
+            GameController controller = GameController.createOnlineGameController(
                     currentPlayers,
                     currentPlayer,
-                    joinedGameAnalytics.gameID(),
-                    true);
+                    joinedGameAnalytics.gameID());
             GameView gameView = controller.getGameView();
             GameFrame parent = GameFrame.currentFrame;
 
@@ -296,7 +272,7 @@ public class MenuController {
 
     public void quitGame() {
         try {
-            GameDatabaseConnection.removePlayer(session.uid());
+            GameDatabaseConnection.removePlayer(session.uid(), joinedGameAnalytics.gameID());
         } catch (Exception e) {
             errorInterrupt(e);
         }
@@ -305,7 +281,14 @@ public class MenuController {
 
     public void saveSession() {
         try {
-            FileOutputStream fos = new FileOutputStream(FILE_OUTPUT);
+
+            File file = new File(FILE_OUTPUT);
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(session);
             oos.close();
@@ -317,7 +300,14 @@ public class MenuController {
 
     public void loadSession() {
         try {
-            FileInputStream fis = new FileInputStream(FILE_OUTPUT);
+
+            File file = new File(FILE_OUTPUT);
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileInputStream fis = new FileInputStream(file);
 
             if (fis.available() > 0) {
                 ObjectInputStream ois = new ObjectInputStream(fis);
