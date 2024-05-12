@@ -234,6 +234,8 @@ public class MenuView extends Form {
         btn.setBackground(MenuResources.Assets.getColor("green"));
         btn.addActionListener((e) -> controller.startSpectatorGame(numberOfPlayerByGame, numberOfSimulation));
         
+        String btnContraints = "w 70%, h 5%, wrap";
+        panel.setLayout(new MigLayout("align x, fill, insets 0"));
         panel.add(spinnerPane1, "center x, y 70%, gapy 5%," + btnContraints);
         panel.setOpaque(true);
     }
