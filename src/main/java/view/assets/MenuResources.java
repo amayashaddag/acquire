@@ -9,7 +9,7 @@ import model.game.Corporation;
 import javax.imageio.ImageIO;
 
 /**
- * All ressouces used for Menu
+ * All ressouces used for Menu and some utils methods.
  *
  * @author Arthur Deck
  * @version 0.1

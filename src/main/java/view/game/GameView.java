@@ -76,10 +76,8 @@ public class GameView extends Form {
     public void pause() {
         pausePane.pause();
     }
-    
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+
+    private void paintMap(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
 
         g2d.drawImage(GameResources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
@@ -112,6 +110,12 @@ public class GameView extends Form {
         }
 
         g2d.dispose();
+    }
+    
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        paintMap(g);
     }
 
     /**

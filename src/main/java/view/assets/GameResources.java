@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import javax.imageio.ImageIO;
 
 /**
- * All ressouces used for in game
+ * All ressouces used for in game and some utils methods.
  * 
  * @author Arthur Deck
  * @version 0.1
@@ -113,6 +113,16 @@ public class GameResources {
             BufferedImage bfi = GameResources.imageToBufferedImage(img);
             int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
             return new Color(clr, true);
+        }
+
+        public static void saveImage(BufferedImage image, String filename) {
+            try {
+                File file = new File(filename);
+                ImageIO.write(image, "png", file);
+                System.out.println("Image saved as " + file.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
