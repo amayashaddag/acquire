@@ -106,17 +106,17 @@ public class MenuController {
 
     public void startSingleGameEasy(int numberOfPlayer) {
         // FIXME : to implement
-        startSingleGame();
+        System.out.println("start an ez game");
     }
 
     public void startSingleGameMedium(int numberOfPlayer) {
         // FIXME : to implement
-        startSingleGame();
+        System.out.println("start an med game");
     }
 
     public void startSingleGameHard(int numberOfPlayer) {
         // FIXME : to implement
-        startSingleGame();
+        System.out.println("start an hard game");
     }
 
     public void startSingleGame() {
@@ -143,6 +143,11 @@ public class MenuController {
 
             onlineObserver.stop();
         });
+    }
+
+    public void startSpectatorGame(int numberOfPlayer, int numberOfSimulation) {
+        // TODO : implements
+        System.out.println("start an spectat game");
     }
 
     public void startSpectatorGame() {

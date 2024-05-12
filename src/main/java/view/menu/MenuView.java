@@ -7,6 +7,11 @@ import java.awt.Graphics2D;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
+import java.util.function.Function;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -51,6 +56,7 @@ public class MenuView extends Form {
     private boolean aMultiGameIsLaunching = false;
     private boolean haveJoinAGame = false;
     private int numberOfPlayerByGame = 6;
+    private int numberOfSimulation = 100;
     private Color mainLeftColor;
     private Animator animator;
 
@@ -163,24 +169,30 @@ public class MenuView extends Form {
         String btnContraints = "w 70%, h 5%, wrap";
 
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
-        spinner.addChangeListener((e) -> numberOfPlayerByGame = (int) spinner.getValue());
         JPanel spinnerPane = new JPanel();
         spinnerPane.add(new JLabel("Player by game : "));
         spinnerPane.add(spinner);
         spinnerPane.setBackground(mainLeftColor.darker());
         spinner.setBackground(mainLeftColor);
 
+        Consumer<Consumer<Integer>> f = (g) -> {
+            Object o = spinner.getValue();
+            if (o instanceof Integer)
+                g.accept((int)o);
+            else spinner.setValue(numberOfPlayerByGame);
+        };
+
         JButton ezBtn = new JButton("Easy");
         ezBtn.setBackground(MenuResources.Assets.getColor("green"));
-        ezBtn.addActionListener((e) -> controller.startSingleGameEasy(numberOfPlayerByGame));
+        ezBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
         JButton medBtn = new JButton("Medium");
         medBtn.setBackground(MenuResources.Assets.getColor("orange"));
-        medBtn.addActionListener((e) -> controller.startSingleGameMedium(numberOfPlayerByGame));
+        medBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
         JButton hardBtn = new JButton("Hard");
         hardBtn.setBackground(MenuResources.Assets.getColor("red"));
-        hardBtn.addActionListener((e) -> controller.startSingleGameHard(numberOfPlayerByGame));
+        hardBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
 
-        panel.add(ezBtn, "x 13%, gapy 2%,"+btnContraints);
+        panel.add(ezBtn, "x 13%, y 5%, gapy 2%,"+btnContraints);
         panel.add(medBtn, "x 13%, gapy 2%,"+btnContraints);
         panel.add(hardBtn, "x 13%, gapy 2%,"+btnContraints);
         panel.add(spinnerPane, "center x, y 70%, gapy 5%," + btnContraints);
@@ -188,16 +200,42 @@ public class MenuView extends Form {
     }
 
     public void spectator() {
-        new Thread(() -> {
-            try {
-                Thread.sleep(ANIMATION_TIME);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                undoUI();
-                controller.startSpectatorGame();
-            }
-        }).start();
+        updatePanelPourcent(this::spectatorWork, 
+            0.55, 0.45, 0.20, 0.25);
+    }
+
+    private void spectatorWork() {
+        panel.removeAll();
+
+        BiConsumer<JSpinner,Consumer<Integer>> f = (s,g) -> {
+            Object o = s.getValue();
+            if (o instanceof Integer)
+                g.accept((int)o);
+            else s.setValue(numberOfPlayerByGame);
+        };
+
+        JSpinner spinner1 = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
+        spinner1.addChangeListener((e) -> f.accept(spinner1, (i)-> numberOfPlayerByGame=i));
+        JPanel spinnerPane1 = new JPanel();
+        spinnerPane1.add(new JLabel("Player by game : "));
+        spinnerPane1.add(spinner1);
+        spinnerPane1.setBackground(mainLeftColor.darker());
+        spinner1.setBackground(mainLeftColor);
+
+        JSpinner spinner2 = new JSpinner(new SpinnerNumberModel(100, 1, 1000000, 10));
+        spinner2.addChangeListener((e) -> f.accept(spinner1, (i)-> numberOfSimulation=i));
+        JPanel spinnerPane2 = new JPanel();
+        spinnerPane2.add(new JLabel("Toqer by simulation : "));
+        spinnerPane2.add(spinner2);
+        spinnerPane2.setBackground(mainLeftColor.darker());
+        spinner2.setBackground(mainLeftColor);
+
+        JButton btn = new JButton("Start");
+        btn.setBackground(MenuResources.Assets.getColor("green"));
+        btn.addActionListener((e) -> controller.startSpectatorGame(numberOfPlayerByGame, numberOfSimulation));
+        
+        panel.add(spinnerPane1, "center x, y 70%, gapy 5%," + btnContraints);
+        panel.setOpaque(true);
     }
 
     public void multiPlayer() {
@@ -283,7 +321,11 @@ public class MenuView extends Form {
 
         // FIXME : changer couleur fleches JSPinner
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
-        spinner.addChangeListener((e) -> numberOfPlayerByGame = (int) spinner.getValue());
+        spinner.addChangeListener((e) -> {
+            Object o = spinner.getValue();
+            if (o instanceof Integer)
+                numberOfPlayerByGame = (int)o;
+        });
         JPanel spinnerPane = new JPanel();
         spinnerPane.add(new JLabel("Player by game : "));
         spinnerPane.add(spinner);
@@ -297,7 +339,7 @@ public class MenuView extends Form {
         panel.setOpaque(true);
     }
 
-    private void ranking() {
+    public void ranking() {
         updatePanelPourcent(this::rankingWork,
             0.55, 0.50, 0.30, 0.50);
     }
@@ -379,7 +421,7 @@ public class MenuView extends Form {
         panel.add(scroll);
     }
 
-    private void profile() {
+    public void profile() {
         updatePanelPourcent(this::profileWork, 
             0.6, 0.4, 0.2, 0.3);
     }
