@@ -260,14 +260,22 @@ public class MenuView extends Form {
             aMultiGameIsLaunching = false;
             haveJoinAGame = false;
             controller.abortMutiGame();
-            multiPlayer();
+            panel.removeAll();
+            multiPlayerWork();
+            panel.repaint();
+            mig.setComponentConstraints(panel, "x 60%, y 40%, w 30%, h 50%");
+            revalidate();
         } else if (aMultiGameIsLaunching) {
             createGameBtn.setText("Abort game");
             createGameBtn.setBackground(MenuResources.MImage.getColor("red"));
             createGameBtn.addActionListener((e) -> {
                 controller.abortMutiGame();
                 aMultiGameIsLaunching = false;
-                multiPlayer();
+                panel.removeAll();
+                multiPlayerWork();
+                panel.repaint();
+                mig.setComponentConstraints(panel, "x 60%, y 40%, w 30%, h 50%");
+                revalidate();
             });
 
             JButton startBtn = new JButton("Start Game");
@@ -290,7 +298,11 @@ public class MenuView extends Form {
             createGameBtn.addActionListener((e) -> {
                 controller.createMultiGame(numberOfPlayerByGame);
                 aMultiGameIsLaunching = true;
-                multiPlayer();
+                panel.removeAll();
+                multiPlayerWork();
+                panel.repaint();
+                mig.setComponentConstraints(panel, "x 60%, y 40%, w 30%, h 50%");
+                revalidate();
             });
         }
         panel.add(createGameBtn, "x 13%, gapy 5%," + btnContraints);
@@ -339,7 +351,7 @@ public class MenuView extends Form {
 
     public void ranking() {
         updatePanelPourcent(this::rankingWork,
-            0.55, 0.50, 0.30, 0.50);
+            0.55, 0.45, 0.30, 0.50);
     }
 
     private void rankingWork() {
