@@ -914,11 +914,13 @@ public class GameController {
     }
 
     public void sendChat(String chat, Player p) {
-        try {
-            long currentTime = Instant.now().toEpochMilli();
-            GameDatabaseConnection.sendChat(chat, p.getUID(), p.getPseudo(), gameId, currentTime);
-        } catch (Exception e) {
-            errorInterrupt(e);
+        if (onlineMode) {
+            try {
+                long currentTime = Instant.now().toEpochMilli();
+                GameDatabaseConnection.sendChat(chat, p.getUID(), p.getPseudo(), gameId, currentTime);
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
         }
     }
 

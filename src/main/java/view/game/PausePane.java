@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.ui.FlatScrollBarUI;
@@ -90,6 +91,7 @@ public class PausePane extends BlurPane {
             HBC() {
                 super();
                 super.valuesFormat = new DecimalFormat();
+                setHeader(new JLabel("Actions"));
             }
         }
 
@@ -169,7 +171,6 @@ public class PausePane extends BlurPane {
         barChart1.addMouseListener(ml);
 
         recieveChat(null, "Welcome on the on online chat. Please be respectfull and courtoie. Good Game !");
-        sendChat("connected");
     }
 
     public void recieveChat(Player p, String msg) {
@@ -270,10 +271,7 @@ public class PausePane extends BlurPane {
 
     private void sendChat(String msg) {
         recieveChat(player, msg);
-        
-        if (g.getController().isOnlineMode()) { // FIXME : pas propre, trouver une meilleur solution
-            g.getController().sendChat(msg, player);
-        }
+        g.getController().sendChat(msg, player);
     }
 
     private DefaultPieDataset<String> createData() {

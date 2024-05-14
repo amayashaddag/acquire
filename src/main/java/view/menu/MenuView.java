@@ -98,7 +98,7 @@ public class MenuView extends Form {
         menu3d.addMenuItem("SPECTATOR", this::spectator);
         menu3d.addMenuItem("EXIT", this::exit);
         menu3d.addGlobalEvent(controller::abortMutiGame);
-
+        menu3d.addMenuItem("logintest", this::displayLoginView);
         panel.setVisible(false);
         panel.setOpaque(false);
 
@@ -488,10 +488,9 @@ public class MenuView extends Form {
         mig.setComponentConstraints(panel, "x 50%, y 40%, w 45%, h 50%");
         revalidate();
         panel.removeAll();
-        panel.setOpaque(false);
         LoginView lv = new LoginView(controller, mainLeftColor);
-        lv.setOpaque(false);
-        panel.add(lv);
+        panel.add(lv, "w 100%, h 100");
+        panel.revalidate();
         panel.setVisible(true);
         repaint();
     }
