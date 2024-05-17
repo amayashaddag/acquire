@@ -22,6 +22,7 @@ import model.game.Corporation;
 import model.game.Player;
 import model.tools.Action;
 import model.tools.Couple;
+import model.tools.PlayerState;
 import model.tools.Point;
 import view.game.GameNotifications;
 import view.game.GameView;
@@ -44,6 +45,7 @@ public class GameController {
     private final Timer refresher;
     private final Map<Point, Corporation> newPlacedCells;
     private final Executor executor;
+    private final List<PlayerState> gameState;
 
     private long lastNotificationTime;
     private long lastKeepSellTradeStockTime;
@@ -60,13 +62,15 @@ public class GameController {
     public final static int BOT_TURN_DELAY = 500;
     public final static int GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
 
-    public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online, int numberOfSimulations) {
+    public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online,
+            int numberOfSimulations) {
         this.board = new Board();
         this.currentPlayers = currentPlayers;
         this.numberOfPlayers = currentPlayers.size();
         this.playerTurnIndex = 0;
         this.gameId = gameId;
         this.newPlacedCells = new HashMap<>();
+        this.gameState = new LinkedList<>();
 
         initPlayersDecks();
 
@@ -819,6 +823,15 @@ public class GameController {
             return;
         }
 
+        for (Player p : currentPlayers) {
+            PlayerState currentPlayerState = new PlayerState(
+                    p.getPseudo(),
+                    p.getNet(),
+                    p.getCash(),
+                    p.getEarnedStocks());
+            gameState.add(currentPlayerState);
+        }
+
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
 
@@ -909,7 +922,6 @@ public class GameController {
                 errorInterrupt(e);
             }
         }
-
         exitGame();
     }
 
@@ -1025,7 +1037,14 @@ public class GameController {
         return new GameController(players, currentPlayer, gameId, true, 0);
     }
 
-    public static GameController createOfflineGameController(List<Player> players, Player currentPlayer, int numberOfSimulations) {
+    public static GameController createOfflineGameController(List<Player> players, Player currentPlayer,
+            int numberOfSimulations) {
         return new GameController(players, currentPlayer, null, false, numberOfSimulations);
     }
+
+    public List<PlayerState> getGameState() {
+        return gameState;
+    }
 }
+
+
