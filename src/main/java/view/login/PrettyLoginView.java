@@ -50,7 +50,7 @@ public class PrettyLoginView extends JPanel {
 
     public void login() {
         removeAll();
-        add(lp);
+        add(lp, "w 100%, h 100%");
         repaint();
         try {
             getParent().revalidate();
@@ -60,7 +60,7 @@ public class PrettyLoginView extends JPanel {
 
     public void register() {
         removeAll();
-        add(rp);
+        add(rp, "w 100%, h 100%");
         repaint();
         try {
             getParent().revalidate();

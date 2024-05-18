@@ -491,14 +491,14 @@ public class MenuView extends Form {
 
     private void displayLoginView(Runnable r) {  
         updatePanelPourcent(() -> {
-            mig.setComponentConstraints(panel, "x 55%, y 45%, w 30%, h 35%");
+            mig.setComponentConstraints(panel, "x 55%, y 40%, w 30%, h 40%");
             panel.revalidate();
             PrettyLoginView lv = new PrettyLoginView(controller, mainLeftColor.darker(), r);
             lv.setSize(panel.getSize());
             panel.add(lv);
             panel.setBackground(mainLeftColor);
             panel.setOpaque(true);
-        }, 0.55, 0.45, 0.30, 0.30);
+        }, 0.55, 0.40, 0.30, 0.40);
     }
 
     private void hidePanel() {
