@@ -923,15 +923,21 @@ public class GameController {
     private void endGame() {
         if (onlineMode) {
             try {
-                if (gameId != null) {
-                    GameDatabaseConnection.removeGame(gameId);
-                } else {
-                    throw new NullPointerException();
-                }
+                String winnerUserId = GameDatabaseConnection.getWinner(gameId);
+                Player p = gameView.getPlayer();
+
+                GameDatabaseConnection.updateAnalytics(p.getUID(), winnerUserId);
+                GameDatabaseConnection.removePlayer(p.getUID(), gameId);
+
             } catch (Exception e) {
                 errorInterrupt(e);
             }
         }
+
+        stopObservers();
+
+        // TODO : Afficher l'écran de fin de jeu avec toutes les infos
+        
         exitGame();
     }
 
@@ -1024,12 +1030,8 @@ public class GameController {
             }
         }
 
-        System.out.println(gameState);
-
         stopObservers();
-
         GameFrame.clearCurrentFrame();
-
         MenuController menuController = new MenuController();
         menuController.start();
     }

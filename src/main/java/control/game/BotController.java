@@ -650,6 +650,8 @@ public class BotController implements Cloneable {
             List<Map<Corporation, Integer>> combinationsOfBuyingStocks = generateCombinations(possibleBuyingStocks,
                     Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
 
+            System.out.println(combinationsOfBuyingStocks);
+
             for (Map<Corporation, Integer> comb : combinationsOfBuyingStocks) {
                 int stocksPrice = calculateStocksPrice(comb);
 
@@ -724,6 +726,22 @@ public class BotController implements Cloneable {
         
         return possibleActions;
     }
+
+    /* public List<Action> getPossibleActions() {
+        List<Action> possibleActions = new LinkedList<>();
+        Map<Corporation, Integer> 
+        int numberOfGeneratedCombinations = 0;
+        
+        for (Point p : currentPlayer.getDeck()) {
+            if (board.adjacentOwnedCells(p).size() > 1) {
+
+            } else if (!board.adjacentOccupiedCells(p).isEmpty()) {
+
+            } else {
+
+            }
+        }
+    } */
 
     /**
      * This method is a "helper" for {@link #getPossibleActions()} method.
