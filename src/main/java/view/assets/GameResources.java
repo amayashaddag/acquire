@@ -158,4 +158,8 @@ public class GameResources {
             return result;
         }    
     }
+
+    public static Color getColor(String s) {
+        return MenuResources.getColor(s);
+    }
 }

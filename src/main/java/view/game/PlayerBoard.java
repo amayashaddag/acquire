@@ -24,7 +24,7 @@ import javax.swing.*;
 public class PlayerBoard extends javax.swing.JPanel {
     private final GameView g;
     private final Dimension INITIAL_DIMENSION = new Dimension(100, 80);
-    private final Dimension ZOOM_DIMENSION = new Dimension(140, 100);
+    private final Dimension ZOOM_DIMENSION = new Dimension(200, 120);
     private final MigLayout mig;
 
     public PlayerBoard(GameView g) {
@@ -36,7 +36,7 @@ public class PlayerBoard extends javax.swing.JPanel {
         for (Player p : g.getController().getCurrentPlayers()) {
             PlayerItem item = new PlayerItem(p);
             if (p.equals(g.getController().getCurrentPlayer())) {
-                item = new PlayerItem(p, INITIAL_DIMENSION, new Dimension(200, 120));
+                item = new PlayerItem(p, INITIAL_DIMENSION, ZOOM_DIMENSION);
                 item.setBorder(new ColorableArcableFlatBorder(Color.GREEN));
             }
             else if (p.equals(g.getPlayer()))
@@ -66,8 +66,8 @@ public class PlayerBoard extends javax.swing.JPanel {
             this.player = p;
             this.arc = 10;
             this.maxCharPsd = (5*(int)initial.getWidth())/100;
-            this.playingBorder = new ColorableArcableFlatBorder(Color.RED, this.arc);
-            this.currentPlayerBorder = new ColorableArcableFlatBorder(Color.GREEN, this.arc);
+            this.playingBorder = new ColorableArcableFlatBorder(GameResources.getColor("red"), this.arc);
+            this.currentPlayerBorder = new ColorableArcableFlatBorder(GameResources.getColor("green"), this.arc);
             this.setHorizontalAlignment(SwingConstants.CENTER);
             this.setVerticalAlignment(SwingConstants.CENTER);
         }

@@ -54,7 +54,9 @@ public class PrettyLoginView extends JPanel {
         }
     }
 
-    class LoginPane extends JPanel {        
+    class LoginPane extends JPanel {   
+        JLabel jbl = new JLabel();
+
         LoginPane(Color c) {
             setLayout(new MigLayout("al center"));
             setOpaque(false);
@@ -67,9 +69,8 @@ public class PrettyLoginView extends JPanel {
             tf2.setOpaque(false);
             add(tf2, "w 80%, gapy 5%, wrap");
 
-            JLabel jbl = new JLabel();
             jbl.setOpaque(false);
-            jbl.setForeground(MenuResources.getColor("red"));
+            jbl.setForeground(MenuResources.getColor("red").darker());
             add(jbl, "w 80%, gapy 5%, wrap");
 
             JButton btn = new JButton("Login");
@@ -77,7 +78,6 @@ public class PrettyLoginView extends JPanel {
                 try {
                     if (tf1.getText().isEmpty() || String.copyValueOf(tf2.getPassword()).isEmpty()) {
                         jbl.setText(LoginInterfaceResources.EMPTY_FIELD);
-                        getParent().repaint(); 
                         return;
                     }
                     String res = AuthController.loginWithEmailAndPassword(tf1.getText(),
@@ -88,11 +88,8 @@ public class PrettyLoginView extends JPanel {
                     control.getView().repaint();
                 } catch (NotExistingUserException e) {
                     jbl.setText(LoginInterfaceResources.NOT_EXISTING_USER_MESSAGE);
-                    repaint();
-                    getParent().repaint(); 
                 } catch (WrongPasswordException e) {
                     jbl.setText(LoginInterfaceResources.WRONG_PASSWORD_MESSAGE);
-                    getParent().repaint();  
                 } catch (Exception e) {
                     GameFrame.showError(e, () -> System.exit(1));
                 }

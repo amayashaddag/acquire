@@ -248,15 +248,15 @@ public class MenuView extends Form {
     }
 
     public void multiPlayer() {
+        if (!controller.isConnected()) {
+            displayLoginView();
+            return;
+        }
         updatePanelPourcent(this::multiPlayerWork, 
             0.6, 0.40, 0.30, 0.50);
     }
 
     private void multiPlayerWork() {
-        if (!controller.isConnected()) {
-            displayLoginView();
-            return;
-        }
         panel.setLayout(new MigLayout("al center, fill, insets 0, wrap"));
 
         JPanel scrollPane = new JPanel();
@@ -359,20 +359,21 @@ public class MenuView extends Form {
     }
 
     public void ranking() {
-        updatePanelPourcent(this::rankingWork,
-            0.55, 0.45, 0.30, 0.50);
-    }
-
-    private void rankingWork() {
         if (!controller.isConnected()) {
             displayLoginView();
             return;
         }
+        updatePanelPourcent(this::rankingWork,
+            0.55, 0.45, 0.30, 0.30);
+    }
 
+    private void rankingWork() {
         JTable table = new JTable();
-        JScrollPane scroll = new JScrollPane();
-        table.setSelectionBackground(Color.RED);
-        table.setSelectionForeground(Color.BLUE);
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.getVerticalScrollBar().setBackground(mainLeftColor);
 
         table.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {},
                 new String[] { "No", "Name", "Best Score", "Region" }) {
@@ -382,7 +383,6 @@ public class MenuView extends Form {
                 return canEdit[columnIndex];
             }
         });
-        scroll.setViewportView(table);
         if (table.getColumnModel().getColumnCount() > 0) {
             table.getColumnModel().getColumn(0).setPreferredWidth(10);
             table.getColumnModel().getColumn(1).setPreferredWidth(150);
@@ -409,10 +409,6 @@ public class MenuView extends Form {
                 + "hoverBackground:null;"
                 + "pressedBackground:null;"
                 + "separatorColor:$TableHeader.background");
-        scroll.putClientProperty(FlatClientProperties.STYLE,
-                "border:3,0,3,0,$Table.background,10,10");
-        scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
-                "hoverTrackColor:null");
         DefaultTableModel model = (DefaultTableModel) table.getModel();
 
         int i = 0;
@@ -435,12 +431,15 @@ public class MenuView extends Form {
         panel.add(table);
         panel.add(scroll);
         scroll.setOpaque(false);
-        scroll.getViewport().setOpaque(false);
         table.setOpaque(false);
         panel.setOpaque(false);
     }
 
     public void profile() {
+        if (!controller.isConnected()) {
+            displayLoginView();
+            return;
+        }
         updatePanelPourcent(this::profileWork, 
             0.6, 0.4, 0.2, 0.3);
     }
@@ -452,11 +451,6 @@ public class MenuView extends Form {
                 super.valuesFormat = new DecimalFormat();
                 setBackground(mainLeftColor);
             }
-        }
-
-        if (!controller.isConnected()) {
-            displayLoginView();
-            return;
         }
 
         PlayerAnalytics p = controller.getPlayerAnalytics();
@@ -494,11 +488,6 @@ public class MenuView extends Form {
     }
 
     private void displayLoginView() {  
-        
-        // panel.setVisible(true);
-        // revalidate();
-        // repaint();
-
         updatePanelPourcent(() -> {
             mig.setComponentConstraints(panel, "x 55%, y 45%, w 30%, h 35%");
             panel.revalidate();
@@ -507,7 +496,7 @@ public class MenuView extends Form {
             panel.add(lv);
             panel.setBackground(mainLeftColor);
             panel.setOpaque(true);
-        }, 0.55, 0.45, 0.30, 0.35);
+        }, 0.55, 0.45, 0.30, 0.30);
     }
 
     private void hidePanel() {
@@ -553,6 +542,13 @@ public class MenuView extends Form {
                 panel.setVisible(true);
                 revalidate();
             }
+
+            @Override
+            public void end() {
+                mig.setComponentConstraints(panel, "x " +x +",y " + y +",w " + w +",h " + h);
+                panel.setVisible(true);
+                revalidate();
+            }
         });
         animator.setAcceleration(0.2f);
         animator.setDeceleration(0.2f);
@@ -575,6 +571,7 @@ public class MenuView extends Form {
                 });
         } else {
             panel.removeAll();
+            panel.setSize(w,h);
             work.run();
             showPanel(x, y, w, h);
         }
