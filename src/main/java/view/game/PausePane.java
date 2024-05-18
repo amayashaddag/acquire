@@ -129,6 +129,7 @@ public class PausePane extends BlurPane {
         add(js, "growx, h 40%");
 
         jtf = new TextField("Enter your message", mainColor);
+        jtf.setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
         jtf.setOpaque(false);
         jtf.addActionListener((e) -> {
             String msg = jtf.getText();
