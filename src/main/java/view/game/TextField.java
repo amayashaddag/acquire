@@ -151,6 +151,7 @@ public class TextField extends JTextField {
     private void createHintText(Graphics2D g2) {
         Insets in = getInsets();
         g2.setColor(labelColor);
+        g2.setFont(view.assets.Fonts.BOLD_PARAGRAPH_FONT);
         FontMetrics ft = g2.getFontMetrics();
         Rectangle2D r2 = ft.getStringBounds(labelText, g2);
         double height = getHeight() - in.top - in.bottom;

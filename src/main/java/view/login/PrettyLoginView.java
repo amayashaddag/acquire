@@ -57,6 +57,7 @@ public class PrettyLoginView extends JPanel {
     class LoginPane extends JPanel {        
         LoginPane(Color c) {
             setLayout(new MigLayout("al center"));
+            setOpaque(false);
             
             TextField tf1 = new TextField("Email", c);
             tf1.setOpaque(false);
@@ -76,20 +77,23 @@ public class PrettyLoginView extends JPanel {
                 try {
                     if (tf1.getText().isEmpty() || String.copyValueOf(tf2.getPassword()).isEmpty()) {
                         jbl.setText(LoginInterfaceResources.EMPTY_FIELD);
-                        repaint();
+                        getParent().repaint(); 
                         return;
                     }
                     String res = AuthController.loginWithEmailAndPassword(tf1.getText(),
                         String.copyValueOf(tf2.getPassword()));
                     
                     control.setSession(res);
-                    control.getView().multiPlayer();
+                    control.getView().multiPlayer(); 
+                    control.getView().repaint();
                 } catch (NotExistingUserException e) {
                     jbl.setText(LoginInterfaceResources.NOT_EXISTING_USER_MESSAGE);
                     repaint();
+                    getParent().repaint(); 
+                    System.err.println(isVisible());
                 } catch (WrongPasswordException e) {
                     jbl.setText(LoginInterfaceResources.WRONG_PASSWORD_MESSAGE);
-                    repaint();
+                    getParent().repaint();  
                 } catch (Exception e) {
                     GameFrame.showError(e, () -> System.exit(1));
                 }

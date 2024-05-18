@@ -37,7 +37,6 @@ import raven.chart.data.pie.DefaultPieDataset;
 import view.assets.Fonts;
 import view.assets.MenuResources;
 import view.game.ColorableArcableFlatBorder;
-import view.login.LoginView;
 import view.login.PrettyLoginView;
 import view.window.Form;
 import view.window.GameFrame;
@@ -494,15 +493,16 @@ public class MenuView extends Form {
         }).start();
     }
 
-    private void displayLoginView() {   // FIXME : à refaire
-        mig.setComponentConstraints(panel, "x 60%, y 40%, w 30%, h 40%");
-        revalidate();
-        panel.removeAll();
-        PrettyLoginView lv = new PrettyLoginView(controller, mainLeftColor);
+    private void displayLoginView() {  
+        mig.setComponentConstraints(panel, "x 60%, y 45%, w 30%, h 35%");
+        panel.revalidate();
+        PrettyLoginView lv = new PrettyLoginView(controller, mainLeftColor.darker());
         lv.setSize(panel.getSize());
         panel.add(lv);
-        panel.revalidate();
+        panel.setBackground(mainLeftColor);
+        panel.setOpaque(true);
         panel.setVisible(true);
+        revalidate();
         repaint();
     }
 
