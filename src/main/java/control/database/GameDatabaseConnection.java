@@ -83,7 +83,9 @@ public class GameDatabaseConnection {
                 ANALYTICS_TABLE,
                 KEEP_SELL_TRADE_STOCKS_TABLE,
                 MAJOR_CORPORATION_TABLE,
-                CHAT_TABLE);
+                CHAT_TABLE,
+                AuthController.REGISTERED_USERS_TABLE,
+                AuthController.ANALYTICS_TABLE);
     }
 
     public static void addPlayer(String gameId, PlayerCredentials c) throws Exception {

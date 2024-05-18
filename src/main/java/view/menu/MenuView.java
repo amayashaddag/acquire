@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -21,9 +22,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
+
 import com.formdev.flatlaf.FlatClientProperties;
+
 import control.menu.MenuController;
 import model.tools.PlayerAnalytics;
 import model.tools.PreGameAnalytics;
@@ -116,10 +120,15 @@ public class MenuView extends Form {
     }
 
     private void changeUi() {
+        UIManager.put("control", Color.RED);
         UIManager.put("Button.background", mainLeftColor.darker());
         UIManager.put("Button.disabledBackground", mainLeftColor.darker());
         UIManager.put("Label.background", mainLeftColor);
-        UIManager.put("Label.font", view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
+        UIManager.put("Label.font", Fonts.REGULAR_PARAGRAPH_FONT);
+        UIManager.put("Spinner.buttonBackground", mainLeftColor);
+        UIManager.put("Button.font", Fonts.BOLD_PARAGRAPH_FONT);
+        UIManager.put("Spinner.font", Fonts.REGULAR_PARAGRAPH_FONT);
+        UIManager.put("Table.font", Fonts.REGULAR_PARAGRAPH_FONT);
     }
 
     private Color Button_background;

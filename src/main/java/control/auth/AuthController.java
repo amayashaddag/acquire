@@ -28,8 +28,8 @@ public class AuthController {
     private final static String PLAYED_GAMES_FIELD = "played-games";
     private final static String WON_GAMES_FIELD = "won-games";
 
-    private final static String REGISTERED_USERS_TABLE = "registered-users";
-    private final static String ANALYTICS_TABLE = "analytics";
+    public final static String REGISTERED_USERS_TABLE = "registered-users";
+    public final static String ANALYTICS_TABLE = "analytics";
 
     private final static String ALPHA_NUMERIC_AND_SYMBOLS_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}$";
     private final static int MAX_PASSWORD_LENGTH = 20;
