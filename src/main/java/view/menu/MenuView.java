@@ -494,16 +494,20 @@ public class MenuView extends Form {
     }
 
     private void displayLoginView() {  
-        mig.setComponentConstraints(panel, "x 60%, y 45%, w 30%, h 35%");
-        panel.revalidate();
-        PrettyLoginView lv = new PrettyLoginView(controller, mainLeftColor.darker());
-        lv.setSize(panel.getSize());
-        panel.add(lv);
-        panel.setBackground(mainLeftColor);
-        panel.setOpaque(true);
-        panel.setVisible(true);
-        revalidate();
-        repaint();
+        
+        // panel.setVisible(true);
+        // revalidate();
+        // repaint();
+
+        updatePanelPourcent(() -> {
+            mig.setComponentConstraints(panel, "x 55%, y 45%, w 30%, h 35%");
+            panel.revalidate();
+            PrettyLoginView lv = new PrettyLoginView(controller, mainLeftColor.darker());
+            lv.setSize(panel.getSize());
+            panel.add(lv);
+            panel.setBackground(mainLeftColor);
+            panel.setOpaque(true);
+        }, 0.55, 0.45, 0.30, 0.35);
     }
 
     private void hidePanel() {
@@ -612,5 +616,11 @@ public class MenuView extends Form {
         g.setContentPane(this);
         g.repaint();
         g.revalidate();
+    }
+
+    @Override
+    public void repaint() {
+        panel.repaint();
+        super.repaint();
     }
 }

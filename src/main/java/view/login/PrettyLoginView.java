@@ -90,7 +90,6 @@ public class PrettyLoginView extends JPanel {
                     jbl.setText(LoginInterfaceResources.NOT_EXISTING_USER_MESSAGE);
                     repaint();
                     getParent().repaint(); 
-                    System.err.println(isVisible());
                 } catch (WrongPasswordException e) {
                     jbl.setText(LoginInterfaceResources.WRONG_PASSWORD_MESSAGE);
                     getParent().repaint();  
