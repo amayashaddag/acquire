@@ -620,7 +620,8 @@ public class MenuView extends Form {
 
     @Override
     public void repaint() {
-        panel.repaint();
+        if (panel != null)
+            panel.repaint();
         super.repaint();
     }
 }
