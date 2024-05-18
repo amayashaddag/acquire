@@ -50,14 +50,22 @@ public class PrettyLoginView extends JPanel {
 
     public void login() {
         removeAll();
-        add(lp, "w 100%, h 100%");
+        add(lp);
         repaint();
+        try {
+            getParent().revalidate();
+            getParent().repaint();
+        } catch (Exception e) {}
     }
 
     public void register() {
         removeAll();
-        add(rp, "w 100%, h 100%");
+        add(rp);
         repaint();
+        try {
+            getParent().revalidate();
+            getParent().repaint();
+        } catch (Exception e) {}
     }
 
     class RegisterPane extends JPanel {
