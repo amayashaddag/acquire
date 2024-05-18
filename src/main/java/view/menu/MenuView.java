@@ -34,6 +34,7 @@ import view.assets.Fonts;
 import view.assets.MenuResources;
 import view.game.ColorableArcableFlatBorder;
 import view.login.LoginView;
+import view.login.PrettyLoginView;
 import view.window.Form;
 import view.window.GameFrame;
 
@@ -63,7 +64,7 @@ public class MenuView extends Form {
         this.controller = controller;
         setLayout(mig);
 
-        mainLeftColor = MenuResources.MImage.getColor("purple");
+        mainLeftColor = MenuResources.getColor("purple");
         saveUI();
         changeUi();
 
@@ -181,13 +182,13 @@ public class MenuView extends Form {
         };
 
         JButton ezBtn = new JButton("Easy");
-        ezBtn.setBackground(MenuResources.MImage.getColor("green"));
+        ezBtn.setBackground(MenuResources.getColor("green"));
         ezBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
         JButton medBtn = new JButton("Medium");
-        medBtn.setBackground(MenuResources.MImage.getColor("orange"));
+        medBtn.setBackground(MenuResources.getColor("orange"));
         medBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
         JButton hardBtn = new JButton("Hard");
-        hardBtn.setBackground(MenuResources.MImage.getColor("red"));
+        hardBtn.setBackground(MenuResources.getColor("red"));
         hardBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
 
         panel.add(ezBtn, "x 13%, y 5%, gapy 2%,"+btnContraints);
@@ -227,7 +228,7 @@ public class MenuView extends Form {
         spinner2.setBackground(mainLeftColor);
 
         JButton btn = new JButton("Start");
-        btn.setBackground(MenuResources.MImage.getColor("green"));
+        btn.setBackground(MenuResources.getColor("green"));
         btn.addActionListener((e) -> controller.startSpectatorGame(numberOfPlayerByGame, numberOfSimulation));
         
         String btnContraints = "w 70%, h 5%, wrap";
@@ -267,7 +268,7 @@ public class MenuView extends Form {
             revalidate();
         } else if (aMultiGameIsLaunching) {
             createGameBtn.setText("Abort game");
-            createGameBtn.setBackground(MenuResources.MImage.getColor("red"));
+            createGameBtn.setBackground(MenuResources.getColor("red"));
             createGameBtn.addActionListener((e) -> {
                 controller.abortMutiGame();
                 aMultiGameIsLaunching = false;
@@ -279,14 +280,14 @@ public class MenuView extends Form {
             });
 
             JButton startBtn = new JButton("Start Game");
-            startBtn.setBackground(MenuResources.MImage.getColor("green"));
+            startBtn.setBackground(MenuResources.getColor("green"));
             startBtn.addActionListener((e) -> {
                 controller.launchMultiGame();
             });
             panel.add(startBtn, "x 13%, y 5%, gapy 1%,"+btnContraints);
         } else if (haveJoinAGame) {
             JButton startBtn = new JButton("Quit queue");
-            startBtn.setBackground(MenuResources.MImage.getColor("red"));
+            startBtn.setBackground(MenuResources.getColor("red"));
             startBtn.addActionListener((e) -> {
                 controller.quitGame();
                 haveJoinAGame = false;
@@ -294,7 +295,7 @@ public class MenuView extends Form {
             panel.add(startBtn, btnContraints);
         } else {
             createGameBtn.setText("Create new game");
-            createGameBtn.setBackground(MenuResources.MImage.getColor("green"));
+            createGameBtn.setBackground(MenuResources.getColor("green"));
             createGameBtn.addActionListener((e) -> {
                 controller.createMultiGame(numberOfPlayerByGame);
                 aMultiGameIsLaunching = true;
@@ -462,7 +463,7 @@ public class MenuView extends Form {
         hbc.setDataset(dataset);
         panel.add(hbc, "gapy 10");
         JButton jb = new JButton("Change account");
-        jb.setBackground(MenuResources.MImage.getColor("blue").darker());
+        jb.setBackground(MenuResources.getColor("blue").darker());
         jb.addActionListener((e) -> {
             displayLoginView();
         });
@@ -485,11 +486,12 @@ public class MenuView extends Form {
     }
 
     private void displayLoginView() {   // FIXME : à refaire
-        mig.setComponentConstraints(panel, "x 50%, y 40%, w 45%, h 50%");
+        mig.setComponentConstraints(panel, "x 60%, y 40%, w 30%, h 40%");
         revalidate();
         panel.removeAll();
-        LoginView lv = new LoginView(controller, mainLeftColor);
-        panel.add(lv, "w 100%, h 100");
+        PrettyLoginView lv = new PrettyLoginView(controller, mainLeftColor);
+        lv.setSize(panel.getSize());
+        panel.add(lv);
         panel.revalidate();
         panel.setVisible(true);
         repaint();

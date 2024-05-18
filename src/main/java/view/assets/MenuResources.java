@@ -72,27 +72,29 @@ public class MenuResources {
             }
         }
 
+        public static Image EYE_HIDE;
+        public static Image EYE;
         public static Image BACKGROUND;
+    }
 
-        public static Color getColor(String s) {
-            Corporation corp;
-            if (s.equals("red"))
-                corp = Corporation.AMERICAN;
-            else if (s.equals("cyan"))
-                corp = Corporation.IMPERIAL;
-            else if (s.equals("yellow"))
-                corp = Corporation.FESTIVAL;
-            else if (s.equals("blue"))
-                corp = Corporation.SACKSON;
-            else if (s.equals("green"))
-                corp = Corporation.TOWER;
-            else if (s.equals("orange"))
-                corp = Corporation.WORLDWIDE;
-            else if (s.equals("purple"))
-                corp = Corporation.CONTINENTAL;
-            else return null;
-            return view.assets.GameResources.GImage.getCorpColor(corp);
-        }
+    public static Color getColor(String s) {
+        Corporation corp;
+        if (s.equals("red"))
+            corp = Corporation.AMERICAN;
+        else if (s.equals("cyan"))
+            corp = Corporation.IMPERIAL;
+        else if (s.equals("yellow"))
+            corp = Corporation.FESTIVAL;
+        else if (s.equals("blue"))
+            corp = Corporation.SACKSON;
+        else if (s.equals("green"))
+            corp = Corporation.TOWER;
+        else if (s.equals("orange"))
+            corp = Corporation.WORLDWIDE;
+        else if (s.equals("purple"))
+            corp = Corporation.CONTINENTAL;
+        else return null;
+        return view.assets.GameResources.GImage.getCorpColor(corp);
     }
 
     public static final String JOINED_GAME_MESSAGE = "You successfully joined a game.";
