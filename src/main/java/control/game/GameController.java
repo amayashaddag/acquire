@@ -45,7 +45,7 @@ public class GameController {
     private final Timer refresher;
     private final Map<Point, Corporation> newPlacedCells;
     private final Executor executor;
-    private final List<PlayerState> gameState;
+    private final List<List<PlayerState>> gameState;
 
     private long lastNotificationTime;
     private long lastKeepSellTradeStockTime;
@@ -67,7 +67,6 @@ public class GameController {
         this.board = new Board();
         this.currentPlayers = currentPlayers;
         this.numberOfPlayers = currentPlayers.size();
-        this.playerTurnIndex = 0;
         this.gameId = gameId;
         this.newPlacedCells = new HashMap<>();
         this.gameState = new LinkedList<>();
@@ -77,6 +76,8 @@ public class GameController {
         this.gameView = new GameView(this, currentPlayer);
         this.onlineMode = online;
         this.executor = Executors.newSingleThreadExecutor();
+
+        this.playerTurnIndex = 0;
 
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
@@ -823,14 +824,20 @@ public class GameController {
             return;
         }
 
+        List<PlayerState> currentGameState = new LinkedList<>();
+
         for (Player p : currentPlayers) {
             PlayerState currentPlayerState = new PlayerState(
                     p.getPseudo(),
                     p.getNet(),
                     p.getCash(),
                     p.getEarnedStocks());
-            gameState.add(currentPlayerState);
+            currentGameState.add(currentPlayerState);
         }
+
+        gameState.add(currentGameState);
+
+        
 
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
@@ -1014,6 +1021,8 @@ public class GameController {
             }
         }
 
+        System.out.println(gameState);
+
         stopObservers();
 
         GameFrame.clearCurrentFrame();
@@ -1042,7 +1051,7 @@ public class GameController {
         return new GameController(players, currentPlayer, null, false, numberOfSimulations);
     }
 
-    public List<PlayerState> getGameState() {
+    public List<List<PlayerState>> getGameState() {
         return gameState;
     }
 }
