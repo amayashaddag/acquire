@@ -112,14 +112,19 @@ public class PasswordField extends JPasswordField {
                 if (showAndHide) {
                     int x = getWidth() - 30;
                     if (new Rectangle(x, 0, 30, 30).contains(me.getPoint())) {
-                        hide = !hide;
-                        if (hide) {
-                            setEchoChar('*');
-                        } else {
-                            setEchoChar((char) 0);
-                        }
+                        hide = false;
+                        setEchoChar((char) 0);
                         repaint();
                     }
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (showAndHide) {
+                    hide = true;
+                    setEchoChar('•');
+                    repaint();
                 }
             }
         });

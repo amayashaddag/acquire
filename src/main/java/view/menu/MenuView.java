@@ -101,8 +101,8 @@ public class MenuView extends Form {
         menu3d.addMenuItem("RANKING", this::ranking);
         menu3d.addMenuItem("SPECTATOR", this::spectator);
         menu3d.addMenuItem("EXIT", this::exit);
+        menu3d.addMenuItem("test login", this::displayLoginViewTest);
         menu3d.addGlobalEvent(controller::abortMutiGame);
-        menu3d.addMenuItem("logintest", this::displayLoginView);
         panel.setVisible(false);
         panel.setOpaque(false);
 
@@ -249,7 +249,7 @@ public class MenuView extends Form {
 
     public void multiPlayer() {
         if (!controller.isConnected()) {
-            displayLoginView();
+            displayLoginView(this::multiPlayer);
             return;
         }
         updatePanelPourcent(this::multiPlayerWork, 
@@ -338,7 +338,6 @@ public class MenuView extends Form {
         scroll.getVerticalScrollBar().setBackground(mainLeftColor);
         panel.add(scroll, "h 75%, w 100%, wrap");
 
-        // FIXME : changer couleur fleches JSPinner
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(4, 1, 10, 1));
         spinner.addChangeListener((e) -> {
             Object o = spinner.getValue();
@@ -360,7 +359,7 @@ public class MenuView extends Form {
 
     public void ranking() {
         if (!controller.isConnected()) {
-            displayLoginView();
+            displayLoginView(this::ranking);
             return;
         }
         updatePanelPourcent(this::rankingWork,
@@ -437,7 +436,7 @@ public class MenuView extends Form {
 
     public void profile() {
         if (!controller.isConnected()) {
-            displayLoginView();
+            displayLoginView(this::profile);
             return;
         }
         updatePanelPourcent(this::profileWork, 
@@ -465,9 +464,8 @@ public class MenuView extends Form {
         hbc.setDataset(dataset);
         panel.add(hbc, "gapy 10");
         JButton jb = new JButton("Change account");
-        jb.setBackground(MenuResources.getColor("blue").darker());
         jb.addActionListener((e) -> {
-            displayLoginView();
+            displayLoginView(this::profile);
         });
         panel.add(jb, "x 25%, gapy 10");
 
@@ -487,11 +485,15 @@ public class MenuView extends Form {
         }).start();
     }
 
-    private void displayLoginView() {  
+    private void displayLoginViewTest() {   // FIXME : pour les test
+        displayLoginView(null);
+    }
+
+    private void displayLoginView(Runnable r) {  
         updatePanelPourcent(() -> {
             mig.setComponentConstraints(panel, "x 55%, y 45%, w 30%, h 35%");
             panel.revalidate();
-            PrettyLoginView lv = new PrettyLoginView(controller, mainLeftColor.darker());
+            PrettyLoginView lv = new PrettyLoginView(controller, mainLeftColor.darker(), r);
             lv.setSize(panel.getSize());
             panel.add(lv);
             panel.setBackground(mainLeftColor);
