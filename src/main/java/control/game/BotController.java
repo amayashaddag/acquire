@@ -637,7 +637,7 @@ public class BotController implements Cloneable {
      */
     public List<Action> getPossibleActions() {
         List<Action> possibleActions = new LinkedList<>();
-        Action possibleAction = null;
+        Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
         int numberOfGeneratedCombinations = 0;
 
         for (Point p : currentPlayer.getDeck()) {
@@ -646,37 +646,20 @@ public class BotController implements Cloneable {
                 continue;
             }
 
-            Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
-            List<Map<Corporation, Integer>> combinationsOfBuyingStocks = generateCombinations(possibleBuyingStocks,
-                    Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
+            if (board.adjacentOwnedCells(p).size() > 1) {
+                for (MergingChoice choice : MergingChoice.values()) {
+                    List<Map<Corporation, Integer>> combinationsOfPossibleBuying = generateCombinations(
+                            possibleBuyingStocks, Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
+                    for (Map<Corporation, Integer> possibleBuying : combinationsOfPossibleBuying) {
+                        int stocksPrice = calculateStocksPrice(possibleBuying);
 
-            System.out.println(combinationsOfBuyingStocks);
-
-            for (Map<Corporation, Integer> comb : combinationsOfBuyingStocks) {
-                int stocksPrice = calculateStocksPrice(comb);
-
-                for (Corporation c : board.unplacedCorporations()) {
-                    if (currentPlayer.hasEnoughCash(stocksPrice)) {
-                        if (board.adjacentOwnedCells(p).size() > 1) {
-                            for (MergingChoice mergingChoice : MergingChoice.values()) {
-                                possibleAction = new Action(p, c, comb, mergingChoice);
-                                possibleActions.add(possibleAction);
-                                numberOfGeneratedCombinations++;
-
-                                if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
-                                    return possibleActions;
-                                }
-                            }
-                        } else {
-                            possibleAction = new Action(p, c, comb, null);
-                            possibleActions.add(possibleAction);
-
-                            numberOfGeneratedCombinations++;
-
-                            if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
-                                return possibleActions;
-                            }
+                        if (!currentPlayer.hasEnoughCash(stocksPrice)) {
+                            continue;
                         }
+
+                        Action action = new Action(p, null, possibleBuying, choice);
+                        possibleActions.add(action);
+                        numberOfGeneratedCombinations++;
 
                         if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
                             return possibleActions;
@@ -684,64 +667,53 @@ public class BotController implements Cloneable {
                     }
                 }
 
-                if (board.unplacedCorporations().isEmpty()) {
-                    if (currentPlayer.hasEnoughCash(stocksPrice)) {
-                        if (board.adjacentOwnedCells(p).size() > 1) {
-                            for (MergingChoice mergingChoice : MergingChoice.values()) {
-                                possibleAction = new Action(p, null, comb, mergingChoice);
-                                possibleActions.add(possibleAction);
+            } else if (!board.adjacentOccupiedCells(p).isEmpty()) {
+                for (Corporation c : board.unplacedCorporations()) {
+                    Map<Corporation, Integer> possibleBuyingAfterFounding = new HashMap<>(possibleBuyingStocks);
+                    possibleBuyingAfterFounding.put(c, Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
+                    List<Map<Corporation, Integer>> combinationsOfPossibleBuying = generateCombinations(
+                            possibleBuyingAfterFounding, Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
+                    for (Map<Corporation, Integer> possibleBuying : combinationsOfPossibleBuying) {
 
-                                numberOfGeneratedCombinations++;
+                        int stocksPrice = calculateStocksPrice(possibleBuying);
 
-                                if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
-                                    return possibleActions;
-                                }
-                            }
-                        } else {
-                            possibleAction = new Action(p, null, comb, null);
-                            possibleActions.add(possibleAction);
+                        if (!currentPlayer.hasEnoughCash(stocksPrice)) {
+                            continue;
+                        }
 
-                            numberOfGeneratedCombinations++;
+                        Action action = new Action(p, c, possibleBuying, null);
+                        possibleActions.add(action);
+                        numberOfGeneratedCombinations++;
 
-                            if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
-                                return possibleActions;
-                            }
+                        if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
+                            return possibleActions;
                         }
                     }
-                }
-            }
 
-            if (combinationsOfBuyingStocks.isEmpty()) {
-                if (board.adjacentOwnedCells(p).size() > 1) {
-                    for (MergingChoice mergingChoice : MergingChoice.values()) {
-                        possibleAction = new Action(p, null, new HashMap<>(), mergingChoice);
-                        possibleActions.add(possibleAction);
+                }
+            } else {
+                List<Map<Corporation, Integer>> combinationsOfPossibleBuying = generateCombinations(
+                        possibleBuyingStocks, Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS);
+                for (Map<Corporation, Integer> possibleBuying : combinationsOfPossibleBuying) {
+                    int stocksPrice = calculateStocksPrice(possibleBuying);
+
+                    if (!currentPlayer.hasEnoughCash(stocksPrice)) {
+                        continue;
                     }
-                } else {
-                    possibleAction = new Action(p, null, new HashMap<>(), null);
-                    possibleActions.add(possibleAction);
+
+                    Action action = new Action(p, null, possibleBuying, null);
+                    possibleActions.add(action);
+                    numberOfGeneratedCombinations++;
+
+                    if (numberOfGeneratedCombinations > MAX_NUMBER_OF_GENERATED_COMBINATIONS) {
+                        return possibleActions;
+                    }
                 }
             }
         }
-        
+
         return possibleActions;
     }
-
-    /* public List<Action> getPossibleActions() {
-        List<Action> possibleActions = new LinkedList<>();
-        Map<Corporation, Integer> 
-        int numberOfGeneratedCombinations = 0;
-        
-        for (Point p : currentPlayer.getDeck()) {
-            if (board.adjacentOwnedCells(p).size() > 1) {
-
-            } else if (!board.adjacentOccupiedCells(p).isEmpty()) {
-
-            } else {
-
-            }
-        }
-    } */
 
     /**
      * This method is a "helper" for {@link #getPossibleActions()} method.
