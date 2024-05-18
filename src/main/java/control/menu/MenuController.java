@@ -311,7 +311,12 @@ public class MenuController {
 
             if (fis.available() > 0) {
                 ObjectInputStream ois = new ObjectInputStream(fis);
-                session = (PlayerCredentials) ois.readObject();
+                PlayerCredentials temp = (PlayerCredentials) ois.readObject();
+
+                if (AuthController.alreadyRegisteredUser(temp.email())) {
+                    session = temp;
+                }
+
                 ois.close();
             }
 

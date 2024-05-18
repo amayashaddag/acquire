@@ -865,6 +865,9 @@ public class GameController {
 
             onlineObserver.start();
         }
+
+        GameFrame parent = GameFrame.currentFrame;
+        parent.requestFocus();
     }
 
     /**
