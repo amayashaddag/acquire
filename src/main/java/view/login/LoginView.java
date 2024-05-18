@@ -17,6 +17,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import com.formdev.flatlaf.extras.components.FlatButton;
+import com.google.cloud.GcpLaunchStage.Deprecated;
 
 import control.auth.AlreadyRegisteredUserException;
 import control.auth.AuthController;
@@ -31,6 +32,7 @@ import view.game.TextField;
 import view.window.Form;
 import view.window.GameFrame;
 
+@Deprecated
 public class LoginView extends JPanel {
 
     private final JLabel errorLabel;
