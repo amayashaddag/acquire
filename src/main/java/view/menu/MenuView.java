@@ -363,7 +363,9 @@ public class MenuView extends Form {
         if (panel.isVisible()) {
             int index = menu3d.getPressedIndex();
             if (index != -1 && menu3d.getItems().get(index).getText().equals("MULTI PLAYER")) {
+                System.out.println("Before remove all");
                 panel.removeAll();
+                System.out.println("After remove game");
                 multiPlayerWork();
                 revalidate();
                 repaint();

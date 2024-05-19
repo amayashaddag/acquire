@@ -52,13 +52,14 @@ public class MenuController {
         this.onlineObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
 
+                System.out.println("Searching for games");
+
                 view.updateMultiPlayer();
 
                 view.repaint();
                 view.revalidate();
 
                 if (joinedGameAnalytics == null) {
-                    onlineObserver.stop();
                     return;
                 }
 
@@ -215,6 +216,8 @@ public class MenuController {
             if (currentPlayerOpt.isEmpty()) {
                 throw new Exception();
             }
+
+            view.undoUI();
 
             Player currentPlayer = currentPlayerOpt.get();
             GameController controller = GameController.createOnlineGameController(
