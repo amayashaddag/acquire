@@ -1090,12 +1090,50 @@ public class GameController {
         return corporationsRepartition;
     }
 
-    public Map<Corporation, Double> getStockCorporationRepartitionData() {
-        return null;
+    public Map<Corporation, Double> getStockCorporationsRepartitionData() {
+        Map<Corporation, Double> stockCorporationsRepartition = new HashMap<>();
+        Map<Corporation, Integer> remainingStocks = board.getRemainingStocks();
+        int totalBoughtStocks = 0;
+
+        for (Corporation c : remainingStocks.keySet()) {
+            int boughtStocks = Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS - remainingStocks.get(c);
+            totalBoughtStocks += boughtStocks;
+        }
+
+        for (Corporation c : remainingStocks.keySet()) {
+            int boughtStocks = Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS - remainingStocks.get(c);
+            double percent = ((double) boughtStocks / (double) totalBoughtStocks) * 100.0;
+            
+            stockCorporationsRepartition.put(c, percent);
+        }
+
+        return stockCorporationsRepartition;
     }
 
-    public Map<Player, Double> getPlayerCorporationRepartitionData() {
-        return null;
+    public Map<Player, Double> getPlayerCorporationsRepartitionData() {
+        Map<Player, Double> playerCorporporationsRepartition = new HashMap<>();
+        Map<Player, Integer> totalStocksPerPlayer = new HashMap<>();
+        int totalBoughtStocks = 0;
+
+        for (Player p : currentPlayers) {
+            int totalBoughtStocksPerPlayer = 0;
+            Map<Corporation, Integer> earnedStocks = p.getEarnedStocks();
+
+            for (Corporation c : earnedStocks.keySet()) {
+                totalBoughtStocksPerPlayer += earnedStocks.get(c);
+            }
+
+            totalStocksPerPlayer.put(p, totalBoughtStocksPerPlayer);
+            totalBoughtStocks += totalBoughtStocksPerPlayer;
+        }
+
+        for (Player p : totalStocksPerPlayer.keySet()) {
+            double percent = ((double) totalStocksPerPlayer.get(p) / (double) totalBoughtStocks) * 100.0;
+
+            playerCorporporationsRepartition.put(p, percent);
+        }
+
+        return playerCorporporationsRepartition;
     }
 }
 
