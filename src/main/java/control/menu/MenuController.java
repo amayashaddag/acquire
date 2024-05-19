@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-
+import java.net.InetAddress;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -365,10 +365,11 @@ public class MenuController {
     }
 
     public boolean haveOnlineConnection() {
-        if (!FirebaseClient.isConnected()) {
-            FirebaseClient.initialize();
-        }
-
-        return FirebaseClient.isConnected();
+            try {
+                InetAddress ipAddress = InetAddress.getByName("www.google.com");
+                return ipAddress.isReachable(1000); // 1000 ms timeout
+            } catch (Exception e) {
+                return false;
+            }
     }
 }
