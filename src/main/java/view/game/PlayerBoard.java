@@ -24,7 +24,7 @@ import javax.swing.*;
 public class PlayerBoard extends javax.swing.JPanel {
     private final GameView g;
     private final Dimension INITIAL_DIMENSION = new Dimension(100, 80);
-    private final Dimension ZOOM_DIMENSION = new Dimension(200, 120);
+    private final Dimension ZOOM_DIMENSION = new Dimension(180, 100);
     private final MigLayout mig;
 
     public PlayerBoard(GameView g) {
