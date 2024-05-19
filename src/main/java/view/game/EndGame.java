@@ -76,24 +76,28 @@ public class EndGame extends JPanel {
         add(pieChart1, "split 3,height 290");
 
         pieChart2 = new PieChart();
+        Map<Corporation, Double> map2 = null;   // FIXME :::  ic
         JLabel header2 = new JLabel("Stock corporations repartition");
         header2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart2.setHeader(header2);
+        pieChart2.getChartColor().addColor(createPieColor(map2));
         pieChart2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
-        pieChart2.setDataset(createPieData(null));  // FIXME : control...
+        pieChart2.setDataset(createPieData(map2));  // FIXME : control...
         add(pieChart2, "height 290");
 
         pieChart3 = new PieChart();
+        Map<Corporation, Double> map3 = null;   // FIXME :::  ic
         JLabel header3 = new JLabel("Actions");
         header3.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart3.setHeader(header3);
+        pieChart3.getChartColor().addColor(createPieColor(map3));
         pieChart3.setChartType(PieChart.ChartType.DONUT_CHART);
         pieChart3.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
-        pieChart3.setDataset(createPieData(null));  // FIXME : ...
+        pieChart3.setDataset(createPieData(map3));  
         add(pieChart3, "height 290");
     }
 
