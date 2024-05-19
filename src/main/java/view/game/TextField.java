@@ -65,6 +65,7 @@ public class TextField extends JTextField {
         setLabelColor(color);
         setLineColor(color);
         setSelectionColor(color.darker());
+        setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
     }
 
     public TextField(Color c) {

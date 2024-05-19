@@ -144,6 +144,7 @@ public class MenuView extends Form {
         UIManager.put("Button.background", Button_background);
         UIManager.put("Label.background", Label_background);
         UIManager.put("Button.disabledBackground", Button_disabledBackground);
+        UIManager.put("Button.font", Fonts.REGULAR_FONT_PATH);
     }
 
     public boolean haveJoinAGame() {

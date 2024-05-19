@@ -85,6 +85,7 @@ public class PasswordField extends JPasswordField {
         setLabelColor(color);
         setLineColor(color);
         setSelectionColor(color.darker());
+        setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
     }
 
     public PasswordField(Color c) {

@@ -18,6 +18,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 
 import control.game.GameController;
 import model.game.Corporation;
+import model.game.Player;
 import net.miginfocom.swing.MigLayout;
 import raven.chart.ChartLegendRenderer;
 import raven.chart.bar.HorizontalBarChart;
@@ -72,7 +73,7 @@ public class EndGame extends JPanel {
         pieChart1.getChartColor().addColor(createPieColor(map1));
         pieChart1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
-        pieChart1.setDataset(createPieData(map1));
+        pieChart1.setDataset(createCorpPieData(map1));
         add(pieChart1, "split 3,height 290");
 
         pieChart2 = new PieChart();
@@ -84,20 +85,20 @@ public class EndGame extends JPanel {
         pieChart2.getChartColor().addColor(createPieColor(map2));
         pieChart2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
-        pieChart2.setDataset(createPieData(map2));  // FIXME : control...
+        pieChart2.setDataset(createCorpPieData(map2)); 
         add(pieChart2, "height 290");
 
         pieChart3 = new PieChart();
-        Map<Corporation, Double> map3 = null;   // FIXME :::  ic
+        Map<Player, Double> map3 = null;   // FIXME :::  ic
         JLabel header3 = new JLabel("Actions");
         header3.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart3.setHeader(header3);
-        pieChart3.getChartColor().addColor(createPieColor(map3));
+        pieChart3.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"), Color.decode("#c084fc"));
         pieChart3.setChartType(PieChart.ChartType.DONUT_CHART);
         pieChart3.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
-        pieChart3.setDataset(createPieData(map3));  
+        pieChart3.setDataset(createPlayerPieData(map3));  
         add(pieChart3, "height 290");
     }
 
@@ -154,10 +155,17 @@ public class EndGame extends JPanel {
         return dataset;
     }
 
-    private DefaultPieDataset<String> createPieData(Map<Corporation, Double> map) {
+    private DefaultPieDataset<String> createCorpPieData(Map<Corporation, Double> map) {
         DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
         for (Map.Entry<Corporation, Double> e : map.entrySet()) 
             dataset.addValue(e.getKey().toString(), e.getValue());
+        return dataset;
+    }
+
+    private DefaultPieDataset<String> createPlayerPieData(Map<Player, Double> map) {
+        DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+        for (Map.Entry<Player, Double> e : map.entrySet()) 
+            dataset.addValue(e.getKey().getPseudo(), e.getValue());
         return dataset;
     }
 

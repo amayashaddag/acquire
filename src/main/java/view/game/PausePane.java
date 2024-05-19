@@ -91,7 +91,7 @@ public class PausePane extends BlurPane {
             HBC() {
                 super();
                 super.valuesFormat = new DecimalFormat();
-                setHeader(new JLabel("Actions"));
+                setHeader(new JLabel("\t Actions"));
             }
         }
 
@@ -152,6 +152,7 @@ public class PausePane extends BlurPane {
         add(jtf, "growx");
 
         JButton exitButton = new JButton("Exit");
+        exitButton.setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
         exitButton.setBackground(mainColor);
         exitButton.addActionListener((e) -> g.getController().exitGame());
         add(exitButton, "x 93%, y 1%, gap 10");
