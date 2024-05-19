@@ -95,11 +95,19 @@ public class MenuView extends Form {
         panel.setBorder(new ColorableArcableFlatBorder(mainLeftColor.darker(),15));
         panel.setVisible(false);
 
+
+        Consumer<Runnable> onlineMethods = (r) -> {
+            if (controller.haveOnlineConnection())
+                r.run();
+            else
+                GameFrame.showErrorNotification("You're not connected to internet.");
+        };
+
         menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
-        menu3d.addMenuItem("MULTI PLAYER", this::multiPlayer);
-        menu3d.addMenuItem("PROFIL", this::profile);
-        menu3d.addMenuItem("RANKING", this::ranking);
+        menu3d.addMenuItem("MULTI PLAYER", () -> onlineMethods.accept(this::multiPlayer));
+        menu3d.addMenuItem("PROFIL", () -> onlineMethods.accept(this::profile));
+        menu3d.addMenuItem("RANKING", () -> onlineMethods.accept(this::ranking));
         menu3d.addMenuItem("SPECTATOR", this::spectator);
         menu3d.addMenuItem("EXIT", this::exit);
         menu3d.addGlobalEvent(controller::abortMutiGame);

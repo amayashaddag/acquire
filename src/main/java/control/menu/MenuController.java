@@ -358,4 +358,8 @@ public class MenuController {
             parent.dispose();
         });
     }
+
+    public boolean haveOnlineConnection() {
+        return FirebaseClient.isConnected();
+    }
 }
