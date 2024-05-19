@@ -16,7 +16,8 @@ import raven.toast.Notifications;
 import view.game.GameView;
 
 /**
- * This is the class Frame for the view of the game
+ * This is the class Frame for the view of the game.
+ * Must be use as a static class with {@link GameFrame.currentFrame}.
  * 
  * @author Arthur Deck
  * @version 0.1
@@ -31,6 +32,8 @@ public class GameFrame extends JFrame {
 
     public final static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
     public static GameFrame currentFrame = new GameFrame();
+
+    private boolean isEmpty = false;
 
     public GameFrame() {
         super();
@@ -49,8 +52,12 @@ public class GameFrame extends JFrame {
         return currentFrame;
     }
 
-    public void setGameView(GameController controller, Player player) {
-        this.setForm(new GameView(controller, player));
+    public static boolean isEmpty() {
+        return currentFrame.isEmpty;
+    }
+
+    public static void setGameView(GameController controller, Player player) {
+        setForm(new GameView(controller, player));
     }
 
     /**
@@ -63,12 +70,17 @@ public class GameFrame extends JFrame {
      *             component you want to set
      * @apiNote example : setForm(new MapView())
      */
-    public void setForm(Form form) {
+    private void setFormWork(Form form) {
         this.getContentPane().removeAll();
         form.setOn(this);
         this.repaint();
         this.revalidate();
         this.repaint();
+        isEmpty = false;
+    }
+
+    public static void setForm(Form form) {
+        currentFrame.setFormWork(form);
     }
 
     /**

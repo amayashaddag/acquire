@@ -601,7 +601,7 @@ public class MenuView extends Form {
 
     @Override
     public void show() {
-        GameFrame.currentFrame.add(this);
+        GameFrame.setForm(this);
     }
 
     @Override
@@ -613,8 +613,8 @@ public class MenuView extends Form {
     @Override
     public void setOn(GameFrame g) {
         g.setContentPane(this);
-        g.repaint();
         g.revalidate();
+        g.repaint();
     }
 
     @Override
