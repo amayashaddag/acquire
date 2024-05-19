@@ -15,10 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import control.game.GameController;
@@ -482,7 +484,12 @@ public class GameView extends Form {
     public static void showError(Exception e) {showError(e, ()->{});}
 
     public void endGame() {
-        pausePane.blurWith(new EndGame(controller));
+        JScrollPane scroll = new JScrollPane(new EndGame(controller));
+        scroll.getViewport().setOpaque(false);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        pausePane.blurWith(scroll);
     }
 
     public void updatePlayerDeck() {
