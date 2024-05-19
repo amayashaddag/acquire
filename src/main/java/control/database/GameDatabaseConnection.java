@@ -352,7 +352,14 @@ public class GameDatabaseConnection {
             return true;
         }
 
-        return false;
+        DocumentSnapshot doc = docs.get(0);
+        Long gameState = (Long) doc.get(GAME_STATE_FIELD);
+
+        if (gameState == null) {
+            throw new NullPointerException();
+        }
+
+        return gameState == GameController.GAME_ENDED_STATE;
     }
 
     public static synchronized boolean isGameStarted(String gameId) throws Exception {

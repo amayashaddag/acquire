@@ -61,7 +61,7 @@ public class GameController {
     public final static int ONLINE_OBSERVER_DELAY = 2000;
     public final static int BOT_TURN_OBSERVER_DELAY = 20;
     public final static int BOT_TURN_DELAY = 500;
-    public final static int GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
+    public final static int GAME_ENDED_STATE = 1, GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
 
     private final static int NUMBER_OF_TURNS_FOR_LIMITED_GAMES = 10;
     private final static boolean LIMITED_GAME_FOR_DEBUG = true;
@@ -825,6 +825,11 @@ public class GameController {
             gameEnded = true;
 
             if (onlineMode) {
+                try {
+                    GameDatabaseConnection.setGameState(gameId, GAME_ENDED_STATE);
+                } catch (Exception e) {
+                    errorInterrupt(e);
+                }
                 endGame();
             }
 
