@@ -1095,13 +1095,15 @@ public class GameController {
         Map<Corporation, Integer> remainingStocks = board.getRemainingStocks();
         int totalBoughtStocks = 0;
 
+        System.out.println(remainingStocks);
+
         for (Corporation c : remainingStocks.keySet()) {
-            int boughtStocks = Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS - remainingStocks.get(c);
+            int boughtStocks = Board.INITIAL_STOCKS_PER_COMPANY - remainingStocks.get(c);
             totalBoughtStocks += boughtStocks;
         }
 
         for (Corporation c : remainingStocks.keySet()) {
-            int boughtStocks = Board.MAXIMUM_AMOUNT_OF_BUYING_STOCKS - remainingStocks.get(c);
+            int boughtStocks = Board.INITIAL_STOCKS_PER_COMPANY - remainingStocks.get(c);
             double percent = ((double) boughtStocks / (double) totalBoughtStocks) * 100.0;
             
             stockCorporationsRepartition.put(c, percent);
