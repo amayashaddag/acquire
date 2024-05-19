@@ -4,8 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -122,13 +122,13 @@ public class EndGame extends JPanel {
         // BarChart 1
         barChart1 = new HorizontalBarChart();
         opaque(barChart1);
-        JLabel header1 = new JLabel("Monthly Income");
+        JLabel header1 = new JLabel("Cash repartition");
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1;"
                 + "border:0,0,5,0");
         barChart1.setHeader(header1);
         barChart1.setBarColor(Color.decode("#f97316"));
-        barChart1.setDataset(createData());
+        barChart1.setDataset(createBarData(controller.getPlayersCashRepartition()));
         JPanel panel1 = new JPanel(new BorderLayout());
         panel1.setOpaque(false);
         panel1.putClientProperty(FlatClientProperties.STYLE, ""
@@ -139,13 +139,13 @@ public class EndGame extends JPanel {
         // BarChart 2
         barChart2 = new HorizontalBarChart();
         opaque(barChart2);
-        JLabel header2 = new JLabel("Monthly Expense");
+        JLabel header2 = new JLabel("Net repartition");
         header2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1;"
                 + "border:0,0,5,0");
         barChart2.setHeader(header2);
         barChart2.setBarColor(Color.decode("#10b981"));
-        barChart2.setDataset(createData());
+        barChart2.setDataset(createBarData(controller.getPlayersNetRepartition()));
         JPanel panel2 = new JPanel(new BorderLayout());
         panel2.setOpaque(false);
         panel2.putClientProperty(FlatClientProperties.STYLE, ""
@@ -154,15 +154,10 @@ public class EndGame extends JPanel {
         add(panel2);
     }
 
-    private DefaultPieDataset<String> createData() {
+    private DefaultPieDataset<String> createBarData(Map<Player, Integer> map) {
         DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-        Random random = new Random();
-        dataset.addValue("July (ongoing)", 0);
-        dataset.addValue("June", random.nextInt(100));
-        dataset.addValue("May", random.nextInt(100));
-        dataset.addValue("April", random.nextInt(100));
-        dataset.addValue("March", random.nextInt(100));
-        dataset.addValue("February", random.nextInt(100));
+        for (Map.Entry<Player, Integer> e : map.entrySet()) 
+            dataset.addValue(e.getKey().getPseudo(), e.getValue());
         return dataset;
     }
 
@@ -194,16 +189,11 @@ public class EndGame extends JPanel {
 
     private void createLineChartData() {
         DefaultCategoryDataset<String, String> categoryDataset = new DefaultCategoryDataset<>();
-        Random ran = new Random();
-        int randomDate = 30;
-        for (int i = 1; i <= randomDate; i++) {
-            categoryDataset.addValue(ran.nextInt(700) + 5, "aaaaa", ""+i);
-            categoryDataset.addValue(ran.nextInt(700) + 5, "bbbb", ""+i);
-            categoryDataset.addValue(ran.nextInt(700) + 5, "cccc", ""+i);
-            categoryDataset.addValue(ran.nextInt(700) + 5, "ddd", ""+i);
-            categoryDataset.addValue(ran.nextInt(700) + 5, "ee", ""+i);
-            categoryDataset.addValue(ran.nextInt(700) + 5, "f", ""+i);
-            categoryDataset.addValue(ran.nextInt(700) + 5, "gg", ""+i);
+        List<Map<String, Integer>> list = controller.getPlayersNetEvolution();
+        for (int i = 0; i < list.size(); i++) {
+            for (Map.Entry<String, Integer> entry : list.get(i).entrySet()) {
+                categoryDataset.addValue(entry.getValue(), entry.getKey(), ""+i);
+            }
         }
 
         /**
