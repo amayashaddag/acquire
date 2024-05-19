@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class FirebaseClient {
 
@@ -23,12 +24,11 @@ public class FirebaseClient {
                     .build();
 
             FirebaseApp.initializeApp(options);
+            FirebaseApp.getInstance();
+            FirebaseDatabase.getInstance();
 
-            if (FirebaseApp.getApps().isEmpty()) {
-                isConnected = false;
-            } else {
-                isConnected = true;
-            }
+            isConnected = true;
+
         } catch (Exception e) {
             isConnected = false;
         }

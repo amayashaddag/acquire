@@ -18,7 +18,7 @@ import view.window.GameFrame;
 
 public class Debug extends JFrame {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         FirebaseClient.initialize();
 
@@ -47,13 +47,6 @@ public class Debug extends JFrame {
         } catch (Exception e) {
             GameFrame.showError(e, frame::dispose);
         }
-
-        // MigLayout mig = new MigLayout();
-        // frame.setLayout(mig);
-        // JButton btn = new JButton("Clique ici");
-        // frame.add(btn, "w 20, h 20");
-            
-        // btn.addActionListener((e) ->f(frame, btn, 200, 200));
     }
 
     public static void f(JFrame frame, Component com, int x, int y) {

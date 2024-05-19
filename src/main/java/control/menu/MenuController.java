@@ -308,6 +308,11 @@ public class MenuController {
     }
 
     public void loadSession() {
+
+        if (!FirebaseClient.isConnected()) {
+            return;
+        }
+
         try {
 
             File file = new File(FILE_OUTPUT);
@@ -360,6 +365,10 @@ public class MenuController {
     }
 
     public boolean haveOnlineConnection() {
+        if (!FirebaseClient.isConnected()) {
+            FirebaseClient.initialize();
+        }
+
         return FirebaseClient.isConnected();
     }
 }
