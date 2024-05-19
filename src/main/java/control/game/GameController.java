@@ -1070,6 +1070,13 @@ public class GameController {
     public List<List<PlayerState>> getGameState() {
         return gameState;
     }
+
+    public Map<String, Double> getCorporationsRepartitonData() {
+        Map<Corporation, Integer> corporationSizes = board.getCorporationSizes();
+        int mapSize = Board.BOARD_WIDTH * Board.BOARD_HEIGHT;
+
+        return null;
+    }
 }
 
 
