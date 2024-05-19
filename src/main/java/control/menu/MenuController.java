@@ -8,7 +8,6 @@ import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.net.InetAddress;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -50,32 +49,33 @@ public class MenuController {
     public MenuController() {
         loadSession();
 
-        this.onlineObserver = !FirebaseClient.isConnected() ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
-            try {
-                if (view != null) {
-                    view.updateMultiPlayer();
-                    view.repaint();
-                    view.revalidate();
-                }
-                
-                if (joinedGameAnalytics == null) {
-                    return;
-                }
+        this.onlineObserver = !FirebaseClient.isConnected() ? null
+                : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
+                    try {
+                        if (view != null) {
+                            view.updateMultiPlayer();
+                            view.repaint();
+                            view.revalidate();
+                        }
 
-                if (GameDatabaseConnection.isGameStarted(joinedGameAnalytics.gameID())) {
-                    joinGame();
-                    return;
-                }
+                        if (joinedGameAnalytics == null) {
+                            return;
+                        }
 
-                if (GameDatabaseConnection.isGameEnded(joinedGameAnalytics.gameID())) {
-                    joinedGameAnalytics = null;
-                    return;
-                }
+                        if (GameDatabaseConnection.isGameStarted(joinedGameAnalytics.gameID())) {
+                            joinGame();
+                            return;
+                        }
 
-            } catch (Exception e) {
-                errorInterrupt(e);
-            }
-        });
+                        if (GameDatabaseConnection.isGameEnded(joinedGameAnalytics.gameID())) {
+                            joinedGameAnalytics = null;
+                            return;
+                        }
+
+                    } catch (Exception e) {
+                        errorInterrupt(e);
+                    }
+                });
 
         if (FirebaseClient.isConnected()) {
             onlineObserver.start();
@@ -355,7 +355,7 @@ public class MenuController {
     private void errorInterrupt(Exception e) {
         GameFrame.showError(e, () -> {
             GameFrame parent = GameFrame.currentFrame;
-            
+
             if (FirebaseClient.isConnected()) {
                 onlineObserver.stop();
             }
@@ -365,11 +365,10 @@ public class MenuController {
     }
 
     public boolean haveOnlineConnection() {
-            try {
-                InetAddress ipAddress = InetAddress.getByName("www.google.com");
-                return ipAddress.isReachable(1000); // 1000 ms timeout
-            } catch (Exception e) {
-                return false;
-            }
+        if (!FirebaseClient.isConnected()) {
+            FirebaseClient.initialize();
+        }
+
+        return FirebaseClient.isConnected();
     }
 }

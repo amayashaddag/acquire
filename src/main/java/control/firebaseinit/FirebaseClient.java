@@ -1,11 +1,15 @@
 package control.firebaseinit;
 
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.cloud.FirestoreClient;
 
 public class FirebaseClient {
 
@@ -16,6 +20,18 @@ public class FirebaseClient {
     private static boolean isConnected = false;
 
     public static void initialize() {
+
+        try {
+            URL url = new URL("http://www.google.com");
+            URLConnection conn = url.openConnection();
+            conn.connect();
+            conn.getInputStream().close();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            return;
+        }
+
         try {
             FileInputStream serviceAccount = new FileInputStream(FIREBASE_CREDENTIALS_FILE_PATH);
 
@@ -24,11 +40,9 @@ public class FirebaseClient {
                     .build();
 
             FirebaseApp.initializeApp(options);
-            FirebaseApp.getInstance();
-            FirebaseDatabase.getInstance();
+            FirestoreClient.getFirestore();
 
             isConnected = true;
-
         } catch (Exception e) {
             isConnected = false;
         }
