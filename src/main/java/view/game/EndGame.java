@@ -77,7 +77,7 @@ public class EndGame extends JPanel {
         add(pieChart1, "split 3,height 290");
 
         pieChart2 = new PieChart();
-        Map<Corporation, Double> map2 = controller.getStockCorporationRepartitionData();
+        Map<Corporation, Double> map2 = controller.getStockCorporationsRepartitionData();
         JLabel header2 = new JLabel("Stock corporations repartition");
         header2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
@@ -89,7 +89,7 @@ public class EndGame extends JPanel {
         add(pieChart2, "height 290");
 
         pieChart3 = new PieChart();
-        Map<Player, Double> map3 = controller.getPlayerCorporationRepartitionData();
+        Map<Player, Double> map3 = controller.getPlayerCorporationsRepartitionData();
         JLabel header3 = new JLabel("Actions");
         header3.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
