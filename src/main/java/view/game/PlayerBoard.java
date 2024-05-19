@@ -105,9 +105,8 @@ public class PlayerBoard extends javax.swing.JPanel {
 
             if (this.getSize().equals(this.initialDimension)) {
                 String psd = player.getPseudo();
-
                 if(psd.length() > maxCharPsd)
-                    psd = psd.substring(0, maxCharPsd+5) +"...";
+                    psd = psd.substring(0, maxCharPsd) +"...";
 
                 this.setText(psd);
             } else if (this.getSize().equals(this.zoomingDimension)) {
