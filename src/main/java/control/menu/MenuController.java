@@ -76,6 +76,8 @@ public class MenuController {
                 errorInterrupt(e);
             }
         });
+
+        onlineObserver.start();
     }
 
     public void start() {
@@ -195,7 +197,6 @@ public class MenuController {
                 GameDatabaseConnection.addPlayer(gameAnalytics.gameID(), session);
 
                 this.joinedGameAnalytics = gameAnalytics;
-                this.onlineObserver.start();
             } else {
                 GameFrame.showInfoNotification(MenuResources.JOINED_GAME_MESSAGE);
             }
