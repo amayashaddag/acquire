@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "acquire-du-coup",
+  "private_key_id": "aca17fdc14e67b0b239558edb1b30ff7ad689758",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCqVODOdIReH43s\nPLP4CbYd6c51LxZPyf7CmgUugzgPohLGhSvh0Audd92YPumJONfFDVLQPyTLiCR+\nj3DaxkgSQ0Haz+UmFhI4QbK6t3QT7KXxNcalcugz9VJE2a5pPhn3tUAC4H8YB/Ei\n2vgmoF5vXP1p3B82nvxHAgdGkOMvTHWRt4yuzjcbjxJvRv9s5vCn7K4ffMuYgpd3\nL6hvpDlmkqtxUTCmZnG4ckxmKqAuA2u58putSfYn7rmaWF7IVA3OmFl+hlOe9m13\nydWm8R17tugG2FOrXNV+sZeVKIpYsaQi0JGUx3ado8qondbxCzZDC4+O3L+dLhUg\nerOub2ZhAgMBAAECggEATeMiKUX+gUvMign4AaPvMx6G2e7+NN4ZMMNdOzelmwBx\ntXWP62JG7WqyWbvq7mSfxeuhwrgdCzTl+zl8UY35xuAabQRDtHbDPhZMtDTPT40X\nFIWSoHU62QeE5xbjOhy7oxmue6JMe6CmE1otvvv2MtZCyvVtEH0CvzWePhZizG1b\nDmv04j3NUWz27utot90nJJQrV6RYamH2PVMI4zSnMjAPmo1/4NTiKd4UwA3Vlatu\n6ZuSRMSWcZx0s7uOXabsirD/zND45SDEJxFENy1icLrjl1osLc5Bt4kkOM9Roum4\nIhq1OrsAOBR6ATEpqWjiibP0Asw/wn/p2rHNiga1QQKBgQDV0d4n/xN6CHIdziFm\nKMNdT8K7jr9MLusJKITG8lyDqW85dYdam11mjAOotsWYF6EeENd7dVMOx3cR6xXb\nmuXBocwGkDThN7KJ+aOLcaW4WouYdCOp8K5klI4aAGTsv6dsgUDGjMNNGBaxrFka\nsaOLhrnmfa5GqUZ+Ph3yfi0A2wKBgQDL7s6RQlz6/zTwkHO2wspVI/4S/n8I7Csp\n/ayaxeCzoVSiafn+pqwThYt9kU2cfbRoixVrqZ94VyYA7zkzRzfP63yM5stQ3Wj8\ncCl5SlRVbXV9nWLDFVjiTw0/gxouUmqeUBOgNExfNdO+LpuSD2iohtJugsJ5X5xP\ncnWPVhVMcwKBgAz8Lc2oA/rJQITm28hkeVjVWzIgvSVXRBbOSyH53fxw8bw/kvTB\nsq5jmmVIlD9kT/iPdUaeHWksW+LOsAkiIwnbVZSgdVWoGEOg0XnKcRH9DbU4eGH9\np9mb2/VgSMDH8tb4EoL8UXABIn+vw8mHODNk/y0sPMU1yn4oL5FmcD05AoGAAjsp\nnWM5ezGBlcQuz+gPqKDNLc4E+8cBreLtmX/itnRkZaZ9KrEOHuSOIyCM1dJ2P9KN\nuHDRotJpQwda+9mina643R3FSawyctiTS5VpmMmqyGYJZ5L7NvagcXpwteMG8ZZ0\nsIMB9uSy3VjLMOzkOzvGX5kkoYlPP3tEF/5cG0sCgYBCC/77RZAHiMe/o6DRrteI\nYJivSgzDyiPorJZf/pcurM/AjCZW1Ks3RINqToDpbybm6sPXkJO9pqz4fXSklLHh\nGWr/1uSWdIZ533IhegH4tJGyttbiRGPSqTmvcHY4WStl1QhaS89NfWClPUjbSImS\nqXlhFmajKZTxbDVPaGB9FQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-zgbhe@acquire-du-coup.iam.gserviceaccount.com",
+  "client_id": "110404285414819380422",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-zgbhe%40acquire-du-coup.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

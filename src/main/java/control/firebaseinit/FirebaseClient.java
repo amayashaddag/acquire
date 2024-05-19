@@ -9,7 +9,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class FirebaseClient {
 
-    public static final String FIREBASE_CREDENTIALS_FILE_PATH = "src/main/ressources/auth/emergency-alternative.json";
+    public static final String FIREBASE_CREDENTIALS_FILE_PATH = "src/main/ressources/auth/very-emergency-alternative.json";
     public static final String FIREBASE_EXCEPTION_MESSAGE = "Failed to connect to Firebase console in initializer.\n" +
             "Please contact support.";
 
