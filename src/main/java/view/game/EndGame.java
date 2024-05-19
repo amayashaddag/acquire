@@ -65,7 +65,7 @@ public class EndGame extends JPanel {
 
     private void createPieChart() { 
         pieChart1 = new PieChart();
-        Map<Corporation, Double> map1 = null;    // FIXME : ivicici
+        Map<Corporation, Double> map1 = controller.getMapCorporationsRepartitonData();    
         JLabel header1 = new JLabel("Map's corporations repartition");
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
@@ -77,7 +77,7 @@ public class EndGame extends JPanel {
         add(pieChart1, "split 3,height 290");
 
         pieChart2 = new PieChart();
-        Map<Corporation, Double> map2 = null;   // FIXME :::  ic
+        Map<Corporation, Double> map2 = controller.getStockCorporationRepartitionData();
         JLabel header2 = new JLabel("Stock corporations repartition");
         header2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
@@ -89,7 +89,7 @@ public class EndGame extends JPanel {
         add(pieChart2, "height 290");
 
         pieChart3 = new PieChart();
-        Map<Player, Double> map3 = null;   // FIXME :::  ic
+        Map<Player, Double> map3 = controller.getPlayerCorporationRepartitionData();
         JLabel header3 = new JLabel("Actions");
         header3.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
@@ -179,17 +179,12 @@ public class EndGame extends JPanel {
 
     private void createLineChartData() {
         DefaultCategoryDataset<String, String> categoryDataset = new DefaultCategoryDataset<>();
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy");
         Random ran = new Random();
         int randomDate = 30;
         for (int i = 1; i <= randomDate; i++) {
-            String date = df.format(cal.getTime());
-            categoryDataset.addValue(ran.nextInt(700) + 5, "Income", date);
-            categoryDataset.addValue(ran.nextInt(700) + 5, "Expense", date);
-            categoryDataset.addValue(ran.nextInt(700) + 5, "Profit", date);
-
-            cal.add(Calendar.DATE, 1);
+            categoryDataset.addValue(ran.nextInt(700) + 5, "aaaaa", ""+i);
+            categoryDataset.addValue(ran.nextInt(700) + 5, "bbbb", ""+i);
+            categoryDataset.addValue(ran.nextInt(700) + 5, "cccc", ""+i);
         }
 
         /**

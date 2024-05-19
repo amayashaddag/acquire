@@ -63,7 +63,7 @@ public class GameController {
     public final static int BOT_TURN_DELAY = 500;
     public final static int GAME_ENDED_STATE = 1, GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
 
-    private final static int NUMBER_OF_TURNS_FOR_LIMITED_GAMES = 1;
+    private final static int NUMBER_OF_TURNS_FOR_LIMITED_GAMES = 3;
     private final static boolean LIMITED_GAME_FOR_DEBUG = true;
 
     public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online,
