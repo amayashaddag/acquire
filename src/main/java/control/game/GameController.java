@@ -51,6 +51,7 @@ public class GameController {
     private long lastKeepSellTradeStockTime;
     private long lastChatMessageTime;
     private int playerTurnIndex;
+    private int currentNumberOfTurns;
     private boolean gameEnded;
 
     private Map<Corporation, Integer> registredStocksToKeepSellTrade;
@@ -61,6 +62,9 @@ public class GameController {
     public final static int BOT_TURN_OBSERVER_DELAY = 20;
     public final static int BOT_TURN_DELAY = 500;
     public final static int GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
+
+    private final static int NUMBER_OF_TURNS_FOR_LIMITED_GAMES = 10;
+    private final static boolean LIMITED_GAME_FOR_DEBUG = true;
 
     public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online,
             int numberOfSimulations) {
@@ -78,6 +82,7 @@ public class GameController {
         this.executor = Executors.newSingleThreadExecutor();
 
         this.playerTurnIndex = 0;
+        this.currentNumberOfTurns = 0;
 
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
@@ -132,6 +137,14 @@ public class GameController {
                         Action nextAction = monteCarlo.runMonteCarlo();
 
                         handleCellPlacing(nextAction, p);
+
+                        if (LIMITED_GAME_FOR_DEBUG) {
+                            currentNumberOfTurns ++;
+
+                            if (currentNumberOfTurns > NUMBER_OF_TURNS_FOR_LIMITED_GAMES) {
+                                gameEnded = true;
+                            }
+                        }
 
                         GameFrame parent = GameFrame.currentFrame;
                         parent.requestFocus();
@@ -258,31 +271,31 @@ public class GameController {
         playerTurnIndex++;
     }
 
-    private void setCurrentPlayer() throws Exception {
+    private synchronized void setCurrentPlayer() throws Exception {
         Player currentPlayer = currentPlayers.get(playerTurnIndex);
 
         GameDatabaseConnection.setCurrentPlayer(gameId, currentPlayer.getUID());
     }
 
-    private void setCashNet() throws Exception {
+    private synchronized void setCashNet() throws Exception {
         for (Player p : currentPlayers) {
             GameDatabaseConnection.setCash(p.getCash(), p, gameId);
             GameDatabaseConnection.setNet(p.getNet(), p, gameId);
         }
     }
 
-    private void setNewPlacedCells() throws Exception {
+    private synchronized void setNewPlacedCells() throws Exception {
         GameDatabaseConnection.setNewPlacedCells(newPlacedCells, gameId);
         newPlacedCells.clear();
     }
 
-    private void setNewEarnedStocks() throws Exception {
+    private synchronized void setNewEarnedStocks() throws Exception {
         for (Player p : currentPlayers) {
             GameDatabaseConnection.setStocks(p, gameId);
         }
     }
 
-    private void updateCurrentPlayer() throws Exception {
+    private synchronized void updateCurrentPlayer() throws Exception {
         String uid = GameDatabaseConnection.getCurrentPlayer(gameId);
 
         for (int i = 0; i < currentPlayers.size(); i++) {
@@ -295,7 +308,7 @@ public class GameController {
         }
     }
 
-    private void updateLastNotification() throws Exception {
+    private synchronized void updateLastNotification() throws Exception {
         Couple<String, Long> notification = GameDatabaseConnection.getLastNotification(gameId);
 
         if (notification == null) {
@@ -308,7 +321,7 @@ public class GameController {
         }
     }
 
-    private void updateKeepSellOrTradeStocks() {
+    private synchronized void updateKeepSellOrTradeStocks() {
         try {
             Map<Corporation, Long> stocks = GameDatabaseConnection.getKeepSellOrTradeStocks(gameId,
                     lastKeepSellTradeStockTime);
@@ -934,14 +947,12 @@ public class GameController {
             }
         }
 
-        stopObservers();
-
         // TODO : Afficher l'écran de fin de jeu avec toutes les infos
         
         exitGame();
     }
 
-    public void sendChat(String chat, Player p) {
+    public synchronized void sendChat(String chat, Player p) {
         if (onlineMode) {
             try {
                 long currentTime = Instant.now().toEpochMilli();
@@ -1006,7 +1017,7 @@ public class GameController {
         return totalNet;
     }
 
-    private void stopObservers() {
+    private synchronized void stopObservers() {
         if (onlineMode) {
             chatObserver.stop();
             onlineObserver.stop();
@@ -1020,7 +1031,7 @@ public class GameController {
         refresher.stop();
     }
 
-    public void exitGame() {
+    public synchronized void exitGame() {
         if (onlineMode) {
             try {
                 Player p = gameView.getPlayer();
@@ -1031,6 +1042,7 @@ public class GameController {
         }
 
         stopObservers();
+
         GameFrame.recreateCurrentFrame();
         MenuController menuController = new MenuController();
         menuController.start();
