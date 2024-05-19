@@ -14,6 +14,7 @@ import javax.swing.Timer;
 
 import control.auth.AuthController;
 import control.database.GameDatabaseConnection;
+import control.firebaseinit.FirebaseClient;
 import control.game.GameController;
 import model.game.Player;
 import model.tools.PlayerAnalytics;
@@ -49,7 +50,7 @@ public class MenuController {
     public MenuController() {
         loadSession();
 
-        this.onlineObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
+        this.onlineObserver = !FirebaseClient.isConnected() ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
                 if (view != null) {
                     view.updateMultiPlayer();
@@ -76,7 +77,9 @@ public class MenuController {
             }
         });
 
-        onlineObserver.start();
+        if (FirebaseClient.isConnected()) {
+            onlineObserver.start();
+        }
     }
 
     public void start() {
@@ -150,7 +153,9 @@ public class MenuController {
             gameView.repaint();
             parent.requestFocus();
 
-            onlineObserver.stop();
+            if (FirebaseClient.isConnected()) {
+                onlineObserver.stop();
+            }
         });
     }
 
@@ -345,7 +350,11 @@ public class MenuController {
     private void errorInterrupt(Exception e) {
         GameFrame.showError(e, () -> {
             GameFrame parent = GameFrame.currentFrame;
-            onlineObserver.stop();
+            
+            if (FirebaseClient.isConnected()) {
+                onlineObserver.stop();
+            }
+
             parent.dispose();
         });
     }

@@ -1068,6 +1068,10 @@ public class GameController {
             int corporationSize = corporationSizes.get(c);
             double percent = ((double) corporationSize / (double) totalCorporationsSize) * 100.0;
 
+            if (percent < 1) {
+                continue;
+            }
+
             corporationsRepartition.put(c, percent);
         }
 
@@ -1088,6 +1092,10 @@ public class GameController {
         for (Corporation c : remainingStocks.keySet()) {
             int boughtStocks = Board.INITIAL_STOCKS_PER_COMPANY - remainingStocks.get(c);
             double percent = ((double) boughtStocks / (double) totalBoughtStocks) * 100.0;
+
+            if (percent < 1) {
+                continue;
+            }
             
             stockCorporationsRepartition.put(c, percent);
         }
@@ -1114,6 +1122,10 @@ public class GameController {
 
         for (Player p : totalStocksPerPlayer.keySet()) {
             double percent = ((double) totalStocksPerPlayer.get(p) / (double) totalBoughtStocks) * 100.0;
+
+            if (percent < 1) {
+                continue;
+            }
 
             playerCorporporationsRepartition.put(p, percent);
         }

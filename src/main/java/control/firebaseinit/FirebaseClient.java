@@ -1,12 +1,10 @@
 package control.firebaseinit;
 
+import java.io.FileInputStream;
+
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseOptions;
-
-import java.io.FileInputStream;
-import java.io.IOException;
 
 public class FirebaseClient {
 
@@ -14,18 +12,29 @@ public class FirebaseClient {
     public static final String FIREBASE_EXCEPTION_MESSAGE = "Failed to connect to Firebase console in initializer.\n" +
             "Please contact support.";
 
-    public static void initialize() throws IOException, FirebaseException {
-        FileInputStream serviceAccount =
-                new FileInputStream(FIREBASE_CREDENTIALS_FILE_PATH);
+    private static boolean isConnected = false;
 
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
+    public static void initialize() {
+        try {
+            FileInputStream serviceAccount = new FileInputStream(FIREBASE_CREDENTIALS_FILE_PATH);
 
-        FirebaseApp.initializeApp(options);
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
 
-        if (FirebaseApp.getApps().isEmpty()) {
-            throw new FirebaseException(FIREBASE_EXCEPTION_MESSAGE);
+            FirebaseApp.initializeApp(options);
+
+            if (FirebaseApp.getApps().isEmpty()) {
+                isConnected = false;
+            } else {
+                isConnected = true;
+            }
+        } catch (Exception e) {
+            isConnected = false;
         }
+    }
+
+    public static boolean isConnected() {
+        return isConnected;
     }
 }
