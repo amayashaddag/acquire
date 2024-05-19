@@ -233,7 +233,7 @@ public class PausePane extends BlurPane {
                             if (!reportedPlayers.contains(p))
                                 popupMenu.add(new JMI("Report and mask player", 
                                 (f)->{
-                                    g.getController().repportPlayer(p, player);
+                                    g.getController().reportPlayer(p, player);
                                     reportedPlayers.add(p);
                                 }));
                             

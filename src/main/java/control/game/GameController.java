@@ -1052,7 +1052,7 @@ public class GameController {
         // A implementer
     }
 
-    public void repportPlayer(Player agresor, Player victim) {
+    public void reportPlayer(Player agresor, Player victim) {
         // Signaler un joueur pour msg offensant
         // Lorsque plus d'1/3 de la game signal le joueur on le ban chat
         // Que penses-tu de l'idée ?
@@ -1095,7 +1095,6 @@ public class GameController {
         Map<Corporation, Integer> remainingStocks = board.getRemainingStocks();
         int totalBoughtStocks = 0;
 
-        System.out.println(remainingStocks);
 
         for (Corporation c : remainingStocks.keySet()) {
             int boughtStocks = Board.INITIAL_STOCKS_PER_COMPANY - remainingStocks.get(c);
@@ -1136,6 +1135,26 @@ public class GameController {
         }
 
         return playerCorporporationsRepartition;
+    }
+
+    public Map<Player, Integer> getPlayersCashRepartition() {
+        Map<Player, Integer> playersCashRepartition = new HashMap<>();
+
+        for (Player p : currentPlayers) {
+            playersCashRepartition.put(p, p.getCash());
+        }
+
+        return playersCashRepartition;
+    }
+
+    public Map<Player, Integer> getPlayersNetRepartition() {
+        Map<Player, Integer> playersNetRepartition = new HashMap<>();
+
+        for (Player p : currentPlayers) {
+            playersNetRepartition.put(p, p.getNet());
+        }
+
+        return playersNetRepartition;
     }
 }
 
