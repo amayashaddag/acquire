@@ -421,7 +421,8 @@ public class MenuView extends Form {
                 + "hoverBackground:null;"
                 + "pressedBackground:null;"
                 + "separatorColor:$TableHeader.background");
-        table.getTableHeader().setBackground(mainLeftColor);
+        table.getTableHeader().setBackground(mainLeftColor.darker());
+        table.setRowHeight(20);
         DefaultTableModel model = (DefaultTableModel) table.getModel();
 
         int i = 0;
