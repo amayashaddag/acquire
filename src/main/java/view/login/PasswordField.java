@@ -4,6 +4,7 @@ import com.formdev.flatlaf.extras.components.FlatPasswordField;
 
 import view.assets.LoginInterfaceResources;
 
+@Deprecated
 public class PasswordField extends FlatPasswordField {
 
     public PasswordField() {

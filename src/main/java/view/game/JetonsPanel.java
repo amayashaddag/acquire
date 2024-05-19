@@ -17,6 +17,7 @@ import javax.swing.UIManager;
 import model.tools.Action;
 import model.tools.AutoSetter;
 import model.tools.Point;
+import view.Components.ColorableArcableFlatBorder;
 import view.window.GameFrame;
 
 /**

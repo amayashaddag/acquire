@@ -1,28 +1,42 @@
-package view.game;
+package view.Components;
 
 import java.awt.Color;
-import java.awt.Font;
+import java.awt.Cursor;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Rectangle2D;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 
-/***
- * @author RAVEN, Deck Arthur
+import view.assets.MenuResources;
+
+
+/**
+ * @author RAVEN, Arthur Deck
  */
-public class TextField extends JTextField {
+public class PasswordField extends JPasswordField {
+
+    public boolean isShowAndHide() {
+        return showAndHide;
+    }
+
+    public void setShowAndHide(boolean showAndHide) {
+        this.showAndHide = showAndHide;
+        repaint();
+    }
 
     public String getLabelText() {
         return labelText;
@@ -30,14 +44,6 @@ public class TextField extends JTextField {
 
     public void setLabelText(String labelText) {
         this.labelText = labelText;
-    }
-
-    public Color getLabelColor() {
-        return labelColor;
-    }
-
-    public void setLabelColor(Color labelColor) {
-        this.labelColor = labelColor;
     }
 
     public Color getLineColor() {
@@ -48,12 +54,12 @@ public class TextField extends JTextField {
         this.lineColor = lineColor;
     }
 
-    public Font getLabelFont() {
-        return labelFont;
+    public void setLabelColor(Color labelColor) {
+        this.labelColor = labelColor;
     }
 
-    public void setLabelFont(Font labelFont) {
-        this.labelFont = labelFont;
+    public Color getLabelColor() {
+        return labelColor;
     }
 
     private final Animator animator;
@@ -62,16 +68,19 @@ public class TextField extends JTextField {
     private boolean show;
     private boolean mouseOver = false;
     private String labelText = "Label";
-    private Font labelFont = (Font) UIManager.get("Label.font");
-    private Color labelColor = new Color(3, 155, 216);
     private Color lineColor = new Color(3, 155, 216);
+    private final Image eye;
+    private final Image eye_hide;
+    private boolean hide = true;
+    private boolean showAndHide;
+    private Color labelColor = new Color(3,155,216);
 
-    public TextField(String label) {
+    public PasswordField(String label) {
         this();
         setLabelText(label);
     }
 
-    public TextField(String label, Color color) {
+    public PasswordField(String label, Color color) {
         this(label);
         setLabelColor(color);
         setLineColor(color);
@@ -79,13 +88,13 @@ public class TextField extends JTextField {
         setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
     }
 
-    public TextField(Color c) {
+    public PasswordField(Color c) {
         this("", c);
     }
 
-    public TextField() {
-        setBorder(new EmptyBorder(20, 3, 10, 3));
-        setSelectionColor(lineColor);
+    public PasswordField() {
+        setBorder(new EmptyBorder(20, 3, 10, 30));
+        setSelectionColor(new Color(76, 204, 255));
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent me) {
@@ -97,6 +106,27 @@ public class TextField extends JTextField {
             public void mouseExited(MouseEvent me) {
                 mouseOver = false;
                 repaint();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent me) {
+                if (showAndHide) {
+                    int x = getWidth() - 30;
+                    if (new Rectangle(x, 0, 30, 30).contains(me.getPoint())) {
+                        hide = false;
+                        setEchoChar((char) 0);
+                        repaint();
+                    }
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (showAndHide) {
+                    hide = true;
+                    setEchoChar('•');
+                    repaint();
+                }
             }
         });
         addFocusListener(new FocusAdapter() {
@@ -110,10 +140,23 @@ public class TextField extends JTextField {
                 showing(true);
             }
         });
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent me) {
+                if (showAndHide) {
+                    int x = getWidth() - 30;
+                    if (new Rectangle(x, 0, 30, 30).contains(me.getPoint())) {
+                        setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    } else {
+                        setCursor(new Cursor(Cursor.TEXT_CURSOR));
+                    }
+                }
+            }
+        });
         TimingTarget target = new TimingTargetAdapter() {
             @Override
             public void begin() {
-                animateHinText = getText().equals("");
+                animateHinText = String.valueOf(getPassword()).equals("");
             }
 
             @Override
@@ -123,6 +166,8 @@ public class TextField extends JTextField {
             }
 
         };
+        eye = MenuResources.MImage.EYE;
+        eye_hide = MenuResources.MImage.EYE_HIDE;
         animator = new Animator(300, target);
         animator.setResolution(0);
         animator.setAcceleration(0.5f);
@@ -157,13 +202,22 @@ public class TextField extends JTextField {
         g2.fillRect(2, height - 1, width - 4, 1);
         createHintText(g2);
         createLineStyle(g2);
+        if (showAndHide) {
+            createShowHide(g2);
+        }
         g2.dispose();
+    }
+
+    private void createShowHide(Graphics2D g2) {
+        int x = getWidth() - 30 + 5;
+        int y = (getHeight() - 20) / 2;
+        g2.drawImage(hide ? eye_hide : eye, x, y, null);
     }
 
     private void createHintText(Graphics2D g2) {
         Insets in = getInsets();
         g2.setColor(labelColor);
-        g2.setFont(labelFont);
+        g2.setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
         FontMetrics ft = g2.getFontMetrics();
         Rectangle2D r2 = ft.getStringBounds(labelText, g2);
         double height = getHeight() - in.top - in.bottom;
@@ -178,7 +232,7 @@ public class TextField extends JTextField {
         } else {
             size = 18;
         }
-        g2.drawString(labelText, in.right, (int) (in.top + textY + ft.getAscent() - size));
+        g2.drawString(labelText, in.left, (int) (in.top + textY + ft.getAscent() - size));
     }
 
     private void createLineStyle(Graphics2D g2) {
@@ -199,7 +253,7 @@ public class TextField extends JTextField {
 
     @Override
     public void setText(String string) {
-        if (!getText().equals(string)) {
+        if (!String.valueOf(getPassword()).equals(string)) {
             showing(string.equals(""));
         }
         super.setText(string);

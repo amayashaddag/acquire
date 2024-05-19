@@ -1,7 +1,7 @@
 package view.login;
 
+import view.Components.TextField;
 import view.assets.LoginInterfaceResources;
-import view.game.TextField;
 
 @Deprecated
 public class PseudoField extends TextField {

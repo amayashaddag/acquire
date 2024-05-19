@@ -26,13 +26,14 @@ import control.auth.NotStrongEnoughPasswordException;
 import control.auth.TooLongPasswordException;
 import control.auth.WrongPasswordException;
 import control.menu.MenuController;
+import view.Components.Form;
+import view.Components.TextField;
 import view.assets.Fonts;
 import view.assets.LoginInterfaceResources;
-import view.game.TextField;
-import view.window.Form;
 import view.window.GameFrame;
 
 @Deprecated
+@SuppressWarnings("deprecation")
 public class LoginView extends JPanel {
 
     private final JLabel errorLabel;

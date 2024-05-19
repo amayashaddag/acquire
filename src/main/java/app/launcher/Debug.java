@@ -13,7 +13,7 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 
 import control.firebaseinit.FirebaseClient;
 import control.menu.MenuController;
-import view.window.Form;
+import view.Components.Form;
 import view.window.GameFrame;
 
 public class Debug extends JFrame {

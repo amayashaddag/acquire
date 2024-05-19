@@ -1,42 +1,28 @@
-package view.game;
+package view.Components;
 
 import java.awt.Color;
-import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Rectangle2D;
-import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 
-import view.assets.MenuResources;
-
-
-/**
- * @author RAVEN, Arthur Deck
+/***
+ * @author RAVEN, Deck Arthur
  */
-public class PasswordField extends JPasswordField {
-
-    public boolean isShowAndHide() {
-        return showAndHide;
-    }
-
-    public void setShowAndHide(boolean showAndHide) {
-        this.showAndHide = showAndHide;
-        repaint();
-    }
+public class TextField extends JTextField {
 
     public String getLabelText() {
         return labelText;
@@ -44,6 +30,14 @@ public class PasswordField extends JPasswordField {
 
     public void setLabelText(String labelText) {
         this.labelText = labelText;
+    }
+
+    public Color getLabelColor() {
+        return labelColor;
+    }
+
+    public void setLabelColor(Color labelColor) {
+        this.labelColor = labelColor;
     }
 
     public Color getLineColor() {
@@ -54,12 +48,12 @@ public class PasswordField extends JPasswordField {
         this.lineColor = lineColor;
     }
 
-    public void setLabelColor(Color labelColor) {
-        this.labelColor = labelColor;
+    public Font getLabelFont() {
+        return labelFont;
     }
 
-    public Color getLabelColor() {
-        return labelColor;
+    public void setLabelFont(Font labelFont) {
+        this.labelFont = labelFont;
     }
 
     private final Animator animator;
@@ -68,19 +62,16 @@ public class PasswordField extends JPasswordField {
     private boolean show;
     private boolean mouseOver = false;
     private String labelText = "Label";
+    private Font labelFont = (Font) UIManager.get("Label.font");
+    private Color labelColor = new Color(3, 155, 216);
     private Color lineColor = new Color(3, 155, 216);
-    private final Image eye;
-    private final Image eye_hide;
-    private boolean hide = true;
-    private boolean showAndHide;
-    private Color labelColor = new Color(3,155,216);
 
-    public PasswordField(String label) {
+    public TextField(String label) {
         this();
         setLabelText(label);
     }
 
-    public PasswordField(String label, Color color) {
+    public TextField(String label, Color color) {
         this(label);
         setLabelColor(color);
         setLineColor(color);
@@ -88,13 +79,13 @@ public class PasswordField extends JPasswordField {
         setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
     }
 
-    public PasswordField(Color c) {
+    public TextField(Color c) {
         this("", c);
     }
 
-    public PasswordField() {
-        setBorder(new EmptyBorder(20, 3, 10, 30));
-        setSelectionColor(new Color(76, 204, 255));
+    public TextField() {
+        setBorder(new EmptyBorder(20, 3, 10, 3));
+        setSelectionColor(lineColor);
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent me) {
@@ -106,27 +97,6 @@ public class PasswordField extends JPasswordField {
             public void mouseExited(MouseEvent me) {
                 mouseOver = false;
                 repaint();
-            }
-
-            @Override
-            public void mousePressed(MouseEvent me) {
-                if (showAndHide) {
-                    int x = getWidth() - 30;
-                    if (new Rectangle(x, 0, 30, 30).contains(me.getPoint())) {
-                        hide = false;
-                        setEchoChar((char) 0);
-                        repaint();
-                    }
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (showAndHide) {
-                    hide = true;
-                    setEchoChar('•');
-                    repaint();
-                }
             }
         });
         addFocusListener(new FocusAdapter() {
@@ -140,23 +110,10 @@ public class PasswordField extends JPasswordField {
                 showing(true);
             }
         });
-        addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent me) {
-                if (showAndHide) {
-                    int x = getWidth() - 30;
-                    if (new Rectangle(x, 0, 30, 30).contains(me.getPoint())) {
-                        setCursor(new Cursor(Cursor.HAND_CURSOR));
-                    } else {
-                        setCursor(new Cursor(Cursor.TEXT_CURSOR));
-                    }
-                }
-            }
-        });
         TimingTarget target = new TimingTargetAdapter() {
             @Override
             public void begin() {
-                animateHinText = String.valueOf(getPassword()).equals("");
+                animateHinText = getText().equals("");
             }
 
             @Override
@@ -166,8 +123,6 @@ public class PasswordField extends JPasswordField {
             }
 
         };
-        eye = MenuResources.MImage.EYE;
-        eye_hide = MenuResources.MImage.EYE_HIDE;
         animator = new Animator(300, target);
         animator.setResolution(0);
         animator.setAcceleration(0.5f);
@@ -202,22 +157,13 @@ public class PasswordField extends JPasswordField {
         g2.fillRect(2, height - 1, width - 4, 1);
         createHintText(g2);
         createLineStyle(g2);
-        if (showAndHide) {
-            createShowHide(g2);
-        }
         g2.dispose();
-    }
-
-    private void createShowHide(Graphics2D g2) {
-        int x = getWidth() - 30 + 5;
-        int y = (getHeight() - 20) / 2;
-        g2.drawImage(hide ? eye_hide : eye, x, y, null);
     }
 
     private void createHintText(Graphics2D g2) {
         Insets in = getInsets();
         g2.setColor(labelColor);
-        g2.setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
+        g2.setFont(labelFont);
         FontMetrics ft = g2.getFontMetrics();
         Rectangle2D r2 = ft.getStringBounds(labelText, g2);
         double height = getHeight() - in.top - in.bottom;
@@ -232,7 +178,7 @@ public class PasswordField extends JPasswordField {
         } else {
             size = 18;
         }
-        g2.drawString(labelText, in.left, (int) (in.top + textY + ft.getAscent() - size));
+        g2.drawString(labelText, in.right, (int) (in.top + textY + ft.getAscent() - size));
     }
 
     private void createLineStyle(Graphics2D g2) {
@@ -253,7 +199,7 @@ public class PasswordField extends JPasswordField {
 
     @Override
     public void setText(String string) {
-        if (!String.valueOf(getPassword()).equals(string)) {
+        if (!getText().equals(string)) {
             showing(string.equals(""));
         }
         super.setText(string);

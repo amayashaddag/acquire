@@ -8,10 +8,11 @@ import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Color;
 import javax.swing.JLabel;
+
+import view.Components.PasswordField;
+import view.Components.TextField;
 import view.assets.LoginInterfaceResources;
 import view.assets.MenuResources;
-import view.game.PasswordField;
-import view.game.TextField;
 import view.window.GameFrame;
 import control.auth.AlreadyRegisteredUserException;
 import control.auth.AuthController;

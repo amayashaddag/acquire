@@ -34,12 +34,12 @@ import model.tools.PreGameAnalytics;
 import net.miginfocom.swing.MigLayout;
 import raven.chart.bar.HorizontalBarChart;
 import raven.chart.data.pie.DefaultPieDataset;
+import view.Components.ColorableArcableFlatBorder;
+import view.Components.Form;
 import view.assets.Fonts;
 import view.assets.GameResources;
 import view.assets.MenuResources;
-import view.game.ColorableArcableFlatBorder;
 import view.login.PrettyLoginView;
-import view.window.Form;
 import view.window.GameFrame;
 
 /**

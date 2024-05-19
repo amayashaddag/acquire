@@ -37,8 +37,8 @@ import model.game.Player;
 import model.tools.Point;
 import net.miginfocom.swing.MigLayout;
 import raven.toast.Notifications;
+import view.Components.Form;
 import view.assets.GameResources;
-import view.window.Form;
 import view.window.GameFrame;
 
 /**

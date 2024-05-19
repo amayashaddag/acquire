@@ -25,6 +25,7 @@ import raven.chart.data.category.DefaultCategoryDataset;
 import raven.chart.data.pie.DefaultPieDataset;
 import raven.chart.line.LineChart;
 import raven.chart.pie.PieChart;
+import view.Components.ColorableArcableFlatBorder;
 import view.assets.GameResources;
 
 /**

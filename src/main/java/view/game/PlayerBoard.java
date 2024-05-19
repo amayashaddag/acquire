@@ -8,6 +8,8 @@ import java.util.HashMap;
 
 import net.miginfocom.swing.MigLayout;
 import model.tools.AutoSetter;
+import view.Components.ColorableArcableFlatBorder;
+import view.Components.GrowingJLabel;
 import view.assets.GameResources;
 
 import javax.swing.*;

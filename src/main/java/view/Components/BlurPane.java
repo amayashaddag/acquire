@@ -1,4 +1,4 @@
-package view.game;
+package view.Components;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import model.tools.AutoSetter;
-import view.window.Form;
 
 /**
  * @author Arthur Deck

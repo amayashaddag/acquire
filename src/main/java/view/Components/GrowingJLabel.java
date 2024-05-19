@@ -1,4 +1,4 @@
-package view.game;
+package view.Components;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

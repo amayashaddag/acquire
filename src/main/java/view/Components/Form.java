@@ -1,6 +1,8 @@
-package view.window;
+package view.Components;
 
 import javax.swing.JPanel;
+
+import view.window.GameFrame;
 
 /**
  * <p> A form is an abstract class for a "page".        
