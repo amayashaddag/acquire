@@ -1,6 +1,7 @@
 package view.game;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -12,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
@@ -46,12 +48,21 @@ public class TextField extends JTextField {
         this.lineColor = lineColor;
     }
 
+    public Font getLabelFont() {
+        return labelFont;
+    }
+
+    public void setLabelFont(Font labelFont) {
+        this.labelFont = labelFont;
+    }
+
     private final Animator animator;
     private boolean animateHinText = true;
     private float location;
     private boolean show;
     private boolean mouseOver = false;
     private String labelText = "Label";
+    private Font labelFont = (Font) UIManager.get("Label.font");
     private Color labelColor = new Color(3, 155, 216);
     private Color lineColor = new Color(3, 155, 216);
 
@@ -152,7 +163,7 @@ public class TextField extends JTextField {
     private void createHintText(Graphics2D g2) {
         Insets in = getInsets();
         g2.setColor(labelColor);
-        g2.setFont(view.assets.Fonts.BOLD_PARAGRAPH_FONT);
+        g2.setFont(labelFont);
         FontMetrics ft = g2.getFontMetrics();
         Rectangle2D r2 = ft.getStringBounds(labelText, g2);
         double height = getHeight() - in.top - in.bottom;

@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.Set;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -49,8 +50,6 @@ public class EndGame extends JPanel {
         setLayout(new MigLayout("wrap,fill,gap 10", "fill"));
         UIManager.put( "Panel.arc", 10 );
         UIManager.put( "Button.arc", 10 );
-        UIManager.put( "Panel.opaque", false );
-        UIManager.put( "Label.opaque", false );
 
         createPieChart();
         createLineChart();
@@ -58,14 +57,17 @@ public class EndGame extends JPanel {
 
         JButton exitButton = new JButton("Exit");
         exitButton.setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
+        exitButton.setOpaque(false);
+        exitButton.setBorder(new ColorableArcableFlatBorder(Color.decode("#f97316"), 15));
         exitButton.addActionListener((e) -> {
             controller.exitGame();
         });
-        add(exitButton, "x 47%, y 97%");
+        add(exitButton, "x 47%, y 96%");
     }
 
     private void createPieChart() {
         pieChart1 = new PieChart();
+        opaque(pieChart1);
         Map<Corporation, Double> map1 = controller.getMapCorporationsRepartitonData();    
         JLabel header1 = new JLabel("Map's corporations repartition");
         header1.setOpaque(false);
@@ -79,6 +81,7 @@ public class EndGame extends JPanel {
         add(pieChart1, "split 3,height 290");
 
         pieChart2 = new PieChart();
+        opaque(pieChart2);
         Map<Corporation, Double> map2 = controller.getStockCorporationsRepartitionData();
         JLabel header2 = new JLabel("Stock corporations repartition");
         header2.putClientProperty(FlatClientProperties.STYLE, ""
@@ -91,6 +94,7 @@ public class EndGame extends JPanel {
         add(pieChart2, "height 290");
 
         pieChart3 = new PieChart();
+        opaque(pieChart3);
         Map<Player, Double> map3 = controller.getPlayerCorporationsRepartitionData();
         JLabel header3 = new JLabel("Actions");
         header3.putClientProperty(FlatClientProperties.STYLE, ""
@@ -106,6 +110,7 @@ public class EndGame extends JPanel {
 
     private void createLineChart() {
         lineChart = new LineChart();
+        opaque(lineChart);
         lineChart.setChartType(LineChart.ChartType.CURVE);
         lineChart.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
@@ -116,6 +121,7 @@ public class EndGame extends JPanel {
     private void createBarChart() {
         // BarChart 1
         barChart1 = new HorizontalBarChart();
+        opaque(barChart1);
         JLabel header1 = new JLabel("Monthly Income");
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1;"
@@ -124,6 +130,7 @@ public class EndGame extends JPanel {
         barChart1.setBarColor(Color.decode("#f97316"));
         barChart1.setDataset(createData());
         JPanel panel1 = new JPanel(new BorderLayout());
+        panel1.setOpaque(false);
         panel1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
         panel1.add(barChart1);
@@ -131,6 +138,7 @@ public class EndGame extends JPanel {
 
         // BarChart 2
         barChart2 = new HorizontalBarChart();
+        opaque(barChart2);
         JLabel header2 = new JLabel("Monthly Expense");
         header2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1;"
@@ -139,6 +147,7 @@ public class EndGame extends JPanel {
         barChart2.setBarColor(Color.decode("#10b981"));
         barChart2.setDataset(createData());
         JPanel panel2 = new JPanel(new BorderLayout());
+        panel2.setOpaque(false);
         panel2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
         panel2.add(barChart2);
@@ -191,6 +200,10 @@ public class EndGame extends JPanel {
             categoryDataset.addValue(ran.nextInt(700) + 5, "aaaaa", ""+i);
             categoryDataset.addValue(ran.nextInt(700) + 5, "bbbb", ""+i);
             categoryDataset.addValue(ran.nextInt(700) + 5, "cccc", ""+i);
+            categoryDataset.addValue(ran.nextInt(700) + 5, "ddd", ""+i);
+            categoryDataset.addValue(ran.nextInt(700) + 5, "ee", ""+i);
+            categoryDataset.addValue(ran.nextInt(700) + 5, "f", ""+i);
+            categoryDataset.addValue(ran.nextInt(700) + 5, "gg", ""+i);
         }
 
         /**
@@ -226,4 +239,14 @@ public class EndGame extends JPanel {
     private PieChart pieChart1;
     private PieChart pieChart2;
     private PieChart pieChart3;
+
+    private void opaque(Component c) {
+        if (c instanceof JComponent) {
+            JComponent jc = ((JComponent)c);
+            jc.setOpaque(false);
+            for (Component c2 : jc.getComponents()) {
+                opaque(c2);
+            }
+        }
+    }
 }

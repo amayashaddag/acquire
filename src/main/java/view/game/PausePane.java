@@ -130,6 +130,7 @@ public class PausePane extends BlurPane {
 
         jtf = new TextField("Enter your message", mainColor);
         jtf.setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
+        jtf.setLabelFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
         jtf.setOpaque(false);
         jtf.addActionListener((e) -> {
             String msg = jtf.getText();

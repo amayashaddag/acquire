@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import javax.imageio.ImageIO;
+import javax.swing.JComponent;
 
 /**
  * All ressouces used for in game and some utils methods.
@@ -161,5 +162,19 @@ public class GameResources {
         BufferedImage bfi = GameResources.imageToBufferedImage(img);
         int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
         return new Color(clr, true);
+    }
+
+    /**
+     * Usefull for Raven's components.
+     * @param c
+     */
+    public static void setOpaque(Component c) {
+        if (c instanceof JComponent) {
+            JComponent jc = ((JComponent)c);
+            jc.setOpaque(false);
+            for (Component c2 : jc.getComponents()) {
+                setOpaque(c2);
+            }
+        }
     }
 }
