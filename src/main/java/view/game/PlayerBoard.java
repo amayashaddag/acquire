@@ -36,7 +36,7 @@ public class PlayerBoard extends javax.swing.JPanel {
         for (Player p : g.getController().getCurrentPlayers()) {
             PlayerItem item = new PlayerItem(p);
             if (p.equals(g.getController().getCurrentPlayer())) {
-                item = new PlayerItem(p, INITIAL_DIMENSION, ZOOM_DIMENSION);
+                item = new PlayerItem(p, INITIAL_DIMENSION, new Dimension(200,120));
                 item.setBorder(new ColorableArcableFlatBorder(Color.GREEN));
             }
             else if (p.equals(g.getPlayer()))
@@ -66,8 +66,8 @@ public class PlayerBoard extends javax.swing.JPanel {
             this.player = p;
             this.arc = 10;
             this.maxCharPsd = (5*(int)initial.getWidth())/100;
-            this.playingBorder = new ColorableArcableFlatBorder(GameResources.getColor("red"), this.arc);
-            this.currentPlayerBorder = new ColorableArcableFlatBorder(GameResources.getColor("green"), this.arc);
+            this.playingBorder = new ColorableArcableFlatBorder(GameResources.getColor("red").darker(), this.arc);
+            this.currentPlayerBorder = new ColorableArcableFlatBorder(GameResources.getColor("green").brighter(), this.arc);
             this.setHorizontalAlignment(SwingConstants.CENTER);
             this.setVerticalAlignment(SwingConstants.CENTER);
         }
@@ -104,28 +104,56 @@ public class PlayerBoard extends javax.swing.JPanel {
             if (this.getSize().equals(this.initialDimension)) {
                 String psd = player.getPseudo();
 
-                if(psd.length() > maxCharPsd)
-                    psd = psd.substring(0, maxCharPsd) +"...";
+                if(psd.length() > maxCharPsd+5)
+                    psd = psd.substring(0, maxCharPsd+5) +"...";
 
                 this.setText(psd);
             } else if (this.getSize().equals(this.zoomingDimension)) {
-                this.setText("""
-                                    <html>
-                                      <table>
-                                      <tr>
-                                        <td><b>Name</td>
-                                        <td>"""+player.getPseudo()+"""
-                                      </td>
-                                      </tr>
-                                      </tr>
-                                      <tr>
-                                         <td><b>Net</td>
-                                         <td>"""+player.getNet()+"""
-                                      $</td>
-                                      </tr>
-                                    </table>
-                                    </html>
-                                    """);
+                String psd = player.getPseudo();
+                if(psd.length() > maxCharPsd)
+                    psd = psd.substring(0, maxCharPsd) +"...";
+
+                if (!PlayerBoard.this.g.getPlayer().equals(this.player))
+                    this.setText("""
+                                        <html>
+                                        <table>
+                                        <tr>
+                                            <td><b>Name</td>
+                                            <td>"""+psd+"""
+                                        </td>
+                                        </tr>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Net</td>
+                                            <td>"""+player.getNet()+"""
+                                        $</td>
+                                        </tr>
+                                        </table>
+                                        </html>
+                                        """);
+                else
+                    this.setText("""
+                        <html>
+                        <table>
+                        <tr>
+                            <td><b>Name</td>
+                            <td>"""+psd+"""
+                        </td>
+                        </tr>
+                        </tr>
+                        <tr>
+                            <td><b>Net</td>
+                            <td>"""+player.getNet()+"""
+                        $</td>
+                        </tr>
+                        <tr>
+                            <td><b>Cash</td>
+                            <td>"""+player.getCash()+"""
+                        $</td>
+                        </tr>
+                        </table>
+                        </html>
+                        """);
             } else {
                 this.setText("loading...");
             }
