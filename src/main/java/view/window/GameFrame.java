@@ -130,7 +130,7 @@ public class GameFrame extends JFrame {
         }).start();
     }
 
-    public static void clearCurrentFrame() {
+    public static void recreateCurrentFrame() {
         currentFrame.dispose();
         currentFrame = new GameFrame();
     }

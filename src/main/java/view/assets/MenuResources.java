@@ -74,6 +74,7 @@ public class MenuResources {
 
         public static Image EYE_HIDE;
         public static Image EYE;
+        public static Image LOADING_BACKGROUND;
         public static Image BACKGROUND;
     }
 

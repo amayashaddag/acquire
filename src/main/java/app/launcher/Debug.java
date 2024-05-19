@@ -34,7 +34,9 @@ public class Debug extends JFrame {
 
             @Override
             protected void paintComponent(Graphics g) {
-                g.drawImage(view.assets.MenuResources.MImage.BACKGROUND, 0,0, null);
+                g.drawImage(view.assets.MenuResources.MImage.LOADING_BACKGROUND,
+                    0, 0, GameFrame.currentFrame.getWidth(),
+                    GameFrame.currentFrame.getHeight(), null);
             }
         });
         SwingUtilities.invokeLater(() -> frame.setVisible(true));

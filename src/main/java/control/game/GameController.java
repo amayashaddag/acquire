@@ -1031,7 +1031,7 @@ public class GameController {
         }
 
         stopObservers();
-        GameFrame.clearCurrentFrame();
+        GameFrame.recreateCurrentFrame();
         MenuController menuController = new MenuController();
         menuController.start();
     }
