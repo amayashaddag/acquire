@@ -27,6 +27,7 @@ import model.tools.AutoSetter;
 import net.miginfocom.swing.MigLayout;
 import raven.chart.bar.HorizontalBarChart;
 import raven.chart.data.pie.DefaultPieDataset;
+import view.assets.GameResources;
 import view.window.GameFrame;
 import javax.swing.JScrollBar;
 import javax.swing.BorderFactory;
@@ -96,9 +97,11 @@ public class PausePane extends BlurPane {
         }
 
         barChart1 = new HBC();
+        GameResources.setOpaque(barChart1);
         barChart1.setBarColor(mainColor);
         barChart1.setDataset(createData());
         JPanel panel1 = new JPanel(new BorderLayout());
+        panel1.setOpaque(false);
         panel1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
         panel1.add(barChart1);

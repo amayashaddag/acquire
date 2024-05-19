@@ -216,7 +216,7 @@ public class EndGame extends JPanel {
 
         lineChart.setCategoryDataset(categoryDataset);
         lineChart.getChartColor().addColor(Color.decode("#38bdf8"), Color.decode("#fb7185"), Color.decode("#34d399"));
-        JLabel header = new JLabel("Income Data");
+        JLabel header = new JLabel("Net evolution");
         header.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1;"
                 + "border:0,0,5,0");
