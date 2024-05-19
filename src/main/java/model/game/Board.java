@@ -15,10 +15,10 @@ public class Board {
     public final static int WINNING_CORPORATION_SIZE = 41;
     public final static int MAXIMUM_AMOUNT_OF_BUYING_STOCKS = 3;
 
-    private final Cell[][] grid;
-    private final Map<Corporation, Integer> corporationSizes;
-    private final Map<Corporation, Integer> remainingStocks;
-    private final List<Point> remainingCells;
+    private  Cell[][] grid;
+    private  Map<Corporation, Integer> corporationSizes;
+    private  Map<Corporation, Integer> remainingStocks;
+    private  List<Point> remainingCells;
 
     public Board() {
         this.grid = new Cell[BOARD_HEIGHT][BOARD_WIDTH];
@@ -249,10 +249,9 @@ public class Board {
      * @param op           the operation that maps the cells
      */
     public void mappingDFS(Corporation corporation, Point currentPoint, List<Point> visitedCells,
-            Function<Cell, Void> op) {
+            Function<Point, Void> op) {
         visitedCells.add(currentPoint);
-        Cell currentCell = getCell(currentPoint);
-        op.apply(currentCell);
+        op.apply(currentPoint);
 
         Set<Point> adjacentCells = adjacentCells(currentPoint, (cell) -> true);
 
@@ -309,20 +308,25 @@ public class Board {
      * @param startingPoint the point where the setting will start from
      * @see #mappingDFS(Corporation, Point, List, Function)
      */
-    public void replaceCorporationFrom(Corporation corporation, Point startingPoint) {
+    public Map<Point, Corporation> replaceCorporationFrom(Corporation corporation, Point startingPoint) {
+        Map<Point, Corporation> replacedCells = new HashMap<>();
         Cell currentCell = getCell(startingPoint);
 
         if (!currentCell.isOwned()) {
-            return;
+            return replacedCells;
         }
 
         Corporation currentCorporation = currentCell.getCorporation();
 
         List<Point> visitedCells = new LinkedList<>();
-        mappingDFS(currentCorporation, startingPoint, visitedCells, (Cell cell) -> {
+        mappingDFS(currentCorporation, startingPoint, visitedCells, (Point p) -> {
+            Cell cell = getCell(p);
             replaceCellCorporation(cell, corporation);
+            replacedCells.put(p, corporation);
             return null;
         });
+
+        return replacedCells;
     }
 
     /**
@@ -544,4 +548,66 @@ public class Board {
 
         return false;
     }
+
+    /**
+     * Updates the board according to the given map in argument.
+     * Used in online mode.
+     * 
+     * @param newPlacedCells a map of (Point, Corporation) that specifies the new placed
+     * cells by other players.
+     * @apiNote Corporation == null refeers to the cell being in OCCUPIED state.
+     */
+    public void updateNewPlacedCells(Map<Point, Corporation> newPlacedCells) {
+        for (Point p : newPlacedCells.keySet()) {
+            Corporation c = newPlacedCells.get(p);
+            Cell cell = getCell(p);
+
+            if (c == null) {
+                cell.setAsOccupied();
+            } else {
+                replaceCellCorporation(cell, c);
+            }
+        }
+    }
+
+    public void updateStocks(List<Player> stockOwners) {
+        for (Corporation c : Corporation.values()) {
+            int remainingStocksAmount = INITIAL_STOCKS_PER_COMPANY;
+
+            for (Player p : stockOwners) {
+                remainingStocksAmount -= p.getStocks(c);
+            }
+
+            if (remainingStocksAmount < 0) {
+                remainingStocksAmount = 0;
+            }
+
+            remainingStocks.replace(c, remainingStocksAmount);
+        }
+    }
+
+    @Override 
+    public Object clone() throws CloneNotSupportedException {
+
+        Cell[][] clonedGrid = new Cell[BOARD_HEIGHT][BOARD_WIDTH];
+        for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
+                clonedGrid[i][j] = (Cell) this.grid[i][j].clone();
+            }
+        }
+        
+        Map<Corporation, Integer> clonedCorporationSizes = new HashMap<>(this.corporationSizes);
+        Map<Corporation, Integer> clonedRemainingStocks = new HashMap<>(this.remainingStocks);
+        List<Point> clonedRemainingCells = new ArrayList<>(this.remainingCells);
+
+        
+        Board clonedBoard = new Board();
+        clonedBoard.grid = clonedGrid;
+        clonedBoard.corporationSizes = clonedCorporationSizes;
+        clonedBoard.remainingStocks = clonedRemainingStocks;
+        clonedBoard.remainingCells = clonedRemainingCells;
+
+        return clonedBoard;
+    }
+
 }

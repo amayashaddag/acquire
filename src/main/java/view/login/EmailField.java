@@ -1,11 +1,11 @@
 package view.login;
-
-import com.formdev.flatlaf.extras.components.FlatTextField;
 import view.assets.LoginInterfaceResources;
+import view.game.TextField;
 
-public class EmailField extends FlatTextField {
+@Deprecated
+public class EmailField extends TextField {
     public EmailField() {
         super();
-        this.setPlaceholderText(LoginInterfaceResources.EMAIL_PLACEHOLDER_TEXT);
+        this.setLabelText(LoginInterfaceResources.EMAIL_PLACEHOLDER_TEXT);
     }
 }

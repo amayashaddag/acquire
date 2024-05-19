@@ -1,7 +1,5 @@
 package control;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.LinkedList;
 import java.util.List;
 

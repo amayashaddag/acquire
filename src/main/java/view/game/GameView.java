@@ -1,26 +1,45 @@
 package view.game;
 
-import control.game.GameController;
-import model.game.Corporation;
-import model.game.Player;
-import model.game.Board;
-import model.game.Cell;
-import net.miginfocom.swing.MigLayout;
-import model.tools.Point;
-import view.frame.Form;
-import view.frame.GameFrame;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+
+import com.formdev.flatlaf.ui.FlatScrollBarUI;
+
+import control.game.GameController;
+import model.game.Board;
+import model.game.Cell;
+import model.game.Corporation;
+import model.game.Player;
+import model.tools.Point;
+import net.miginfocom.swing.MigLayout;
 import raven.toast.Notifications;
 import view.assets.GameResources;
+import view.window.Form;
+import view.window.GameFrame;
 
 /**
  * The panel which has the map
@@ -36,11 +55,13 @@ public class GameView extends Form {
     final private JetonsPanel jetonsPanel;
     final private MouseManager mouseListener;
     final private PlayerBoard playerBoard;
+    final private PausePane pausePane;
 
     AffineTransform at;
 
     public GameView(GameController controller, Player player) {
         super();
+
         this.controller = controller;
         this.player = player;
 
@@ -50,6 +71,7 @@ public class GameView extends Form {
         this.jetonsPanel = new JetonsPanel(this);
         this.mouseListener = new MouseManager(this);
         this.playerBoard = new PlayerBoard(this);
+        this.pausePane = new PausePane(this);
     }
 
     public Player getPlayer() {
@@ -59,13 +81,15 @@ public class GameView extends Form {
     public GameController getController() {
         return controller;
     }
-    
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+
+    public void pause() {
+        pausePane.pause();
+    }
+
+    private void paintMap(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
 
-        g2d.drawImage(GameResources.Assets.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
+        g2d.drawImage(GameResources.GImage.BACKGROUND, 0, 0, getWidth(), getHeight(), this);
         g2d.setTransform(mouseListener.getAffineTransform());
 
         Board board = controller.getBoard();
@@ -84,17 +108,34 @@ public class GameView extends Form {
                 y += (cellHeight / 3);
 
                 if (new Point(row, col).equals(jetonsPanel.getSelection()))
-                    g2d.drawImage(GameResources.Assets.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.GImage.SELECTED_CELL, x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOwned())
-                    g2d.drawImage(GameResources.Assets.getCorpImage(currentCell.getCorporation()), x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.GImage.getCorpImage(currentCell.getCorporation()), x - cellWidth, y - cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isOccupied())
-                    g2d.drawImage(GameResources.Assets.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.GImage.OCCUPIED_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
                 else if (currentCell.isEmpty())
-                    g2d.drawImage(GameResources.Assets.EMPTY_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
+                    g2d.drawImage(GameResources.GImage.EMPTY_CELL, x -cellWidth, y -cellHeight, cellWidth, cellHeight*2, this);
             }
         }
 
         g2d.dispose();
+    }
+    
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (isEnabled()) {
+            paintMap(g);
+        } else {
+            BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = image.createGraphics();
+            paintMap(g2d);
+            g2d.dispose();
+            g.drawImage(
+                GameResources.GImage.applyGaussianBlur(image, 2, 1), 
+                0, 0, this);
+        }
+        
     }
 
     /**
@@ -220,14 +261,14 @@ public class GameView extends Form {
             int totalPriceToPay = controller.calculateStocksPrice(panier);
 
             if (c > 3 || c < 0)
-                showErrorNotification(GameNotifications.CANNOT_BUY_MORE_THAN_THREE);
+                GameFrame.showErrorNotification(GameNotifications.CANNOT_BUY_MORE_THAN_THREE);
             else if (player.hasEnoughCash(totalPriceToPay)) {
                 controller.buyChosenStocks(panier, totalPriceToPay, player);
                 synchronized (monitor) {
                     monitor.notify();
                 }
             } else
-                showErrorNotification(GameNotifications.NOT_ENOUGH_CASH);
+                GameFrame.showErrorNotification(GameNotifications.NOT_ENOUGH_CASH);
         });
 
         JPanel btnPanel = new JPanel();
@@ -379,12 +420,14 @@ public class GameView extends Form {
         for (Component comp : jp.getComponents())
             if (comp instanceof Pane) {
                 Map.Entry<Corporation, Integer> entry = ((Pane) comp).getEntry();
-                switch (((Pane) comp).getChoice()) {
-                    case SELL -> toSell.put(entry.getKey(), entry.getValue());
-                    case TRADE -> toTrade.put(entry.getKey(), entry.getValue());
+                Pane.SKT choice = ((Pane) comp).getChoice();
+                if (choice == Pane.SKT.SELL) {
+                    toSell.put(entry.getKey(), entry.getValue());
+                } else if (choice == Pane.SKT.TRADE) {
+                    toTrade.put(entry.getKey(), entry.getValue());
                 }
             }
-
+ 
         controller.sellStocks(toSell, player);
         controller.tradeStocks(toTrade, player, major);
 
@@ -392,6 +435,13 @@ public class GameView extends Form {
         jetonsPanel.setVisible(true);
         setEnabled(true);
         repaint();
+    }
+
+    public void recieveChat(Player p, String message, boolean notify) {
+        if (notify)
+            Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_LEFT, 
+            p.getPseudo() + " : " + message);
+        pausePane.recieveChat(p, message);
     }
 
     @Override
@@ -405,12 +455,13 @@ public class GameView extends Form {
     @Override
     public void repaint() {
         super.repaint();
-
-        if (playerBoard != null && playerBoard.isVisible())
+        if (playerBoard != null) {
             playerBoard.repaint();
-
-        if (jetonsPanel != null && jetonsPanel.isVisible())
+        }
+        
+        if (jetonsPanel != null) {
             jetonsPanel.repaint();
+        }
     }
 
     /**
@@ -418,23 +469,7 @@ public class GameView extends Form {
      */
     public void setOn(GameFrame g) {
         this.setSize(g.getWidth(), g.getHeight());
-        g.getContentPane().add(this);
-    }
-
-    public void showSuccessNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.SUCCESS, Notifications.Location.TOP_RIGHT, msg);
-    }
-
-    public void showErrorNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.ERROR, Notifications.Location.TOP_RIGHT, msg);
-    }
-    
-    public void showInfoNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_RIGHT, msg);
-    }
-
-    public void showWarningNotification(String msg) {
-        Notifications.getInstance().show(Notifications.Type.WARNING, Notifications.Location.TOP_RIGHT, msg);
+        g.setContentPane(this);
     }
 
     /**
@@ -453,4 +488,62 @@ public class GameView extends Form {
     }
 
     public static void showError(Exception e) {showError(e, ()->{});}
+
+    public void endGame() {
+        JScrollPane scroll = new JScrollPane(new EndGame(controller));
+        scroll.getViewport().setOpaque(false);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JScrollBar scrollBar = scroll.getVerticalScrollBar();
+        scrollBar.setBackground(new Color(0,0,0,0));
+        class FSBUI extends FlatScrollBarUI {
+            @Override
+            protected Color getThumbColor(JComponent c, boolean hover, boolean pressed) {
+                return EndGame.colorBtnSBar;
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {}
+        }
+        scrollBar.setUI(new FSBUI());
+
+        pausePane.blurWith(scroll);
+    }
+
+    public void updatePlayerDeck() {
+        jetonsPanel.updatePlayerDeck();
+    }
+
+    public void showSuccessNotification(String msg) {
+        SwingUtilities.invokeLater(() -> {
+            Notifications.getInstance().show(Notifications.Type.SUCCESS, 
+            Notifications.Location.TOP_RIGHT, msg);
+        });
+    }
+
+    public void showErrorNotification(String msg) {
+        SwingUtilities.invokeLater(() -> {
+            Notifications.getInstance().show(Notifications.Type.ERROR, 
+            pausePane.isBlur() ? Notifications.Location.TOP_LEFT : Notifications.Location.TOP_RIGHT, 
+            msg);
+        });
+    }
+    
+    public void showInfoNotification(String msg) {
+        SwingUtilities.invokeLater(() -> {
+            Notifications.getInstance().show(Notifications.Type.INFO, 
+            pausePane.isBlur() ? Notifications.Location.TOP_LEFT : Notifications.Location.TOP_RIGHT, 
+            msg);
+        });
+    }
+
+    public void showWarningNotification(String msg) {
+        SwingUtilities.invokeLater(() -> {
+            Notifications.getInstance().show(Notifications.Type.WARNING, 
+            pausePane.isBlur() ? Notifications.Location.TOP_LEFT : Notifications.Location.TOP_RIGHT, 
+            msg);
+        });
+    }
 }

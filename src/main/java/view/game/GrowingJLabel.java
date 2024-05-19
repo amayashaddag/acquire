@@ -24,7 +24,24 @@ public class GrowingJLabel extends JLabel {
 
     private Timer timer;
     private boolean show;
-    protected final Dimension initialDimension, zoomingDimension;
+    protected Dimension initialDimension, zoomingDimension;
+
+    public Dimension getInitialDimension() {
+        return initialDimension;
+    }
+
+    public void setInitialDimension(Dimension initialDimension) {
+        this.initialDimension = initialDimension;
+    }
+
+    public Dimension getZoomingDimension() {
+        return zoomingDimension;
+    }
+
+    public void setZoomingDimension(Dimension zoomingDimension) {
+        this.zoomingDimension = zoomingDimension;
+    }
+
     public GrowingJLabel(MigLayout mig) {
         this(mig, new Dimension(100, 100), new Dimension(200, 120));
     }

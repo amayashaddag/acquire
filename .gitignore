@@ -6,9 +6,4 @@ out/
 debug/
 *.class
 *.xml
-
-
-*.iml
-.idea/
-.vscode/
-out/
+src/main/ressources/session/game-session.ser

@@ -1,14 +1,32 @@
 package control.game;
 
-import java.util.*;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import javax.swing.Timer;
+
+import control.database.GameDatabaseConnection;
+import control.menu.MenuController;
 import model.game.Board;
 import model.game.Cell;
 import model.game.Corporation;
 import model.game.Player;
+import model.tools.Action;
+import model.tools.Couple;
+import model.tools.PlayerState;
 import model.tools.Point;
 import view.game.GameNotifications;
 import view.game.GameView;
+import view.window.GameFrame;
 
 /**
  * @author Amayas HADDAG
@@ -18,20 +36,303 @@ public class GameController {
     private final Board board;
     private final GameView gameView;
     private final List<Player> currentPlayers;
-    private int playerTurnIndex;
     private final int numberOfPlayers;
-    private boolean gameOver;
+    private final String gameId;
+    private final boolean onlineMode;
+    private final Timer onlineObserver;
+    private final Timer chatObserver;
+    private final Timer botTurnTimer;
+    private final Timer refresher;
+    private final Map<Point, Corporation> newPlacedCells;
+    private final Executor executor;
+    private final List<List<PlayerState>> gameState;
 
-    
+    private long lastNotificationTime;
+    private long lastKeepSellTradeStockTime;
+    private long lastChatMessageTime;
+    private int playerTurnIndex;
+    private boolean gameEnded;
+
+    private Map<Corporation, Integer> registredStocksToKeepSellTrade;
+    private Corporation registredMajorCorporation;
+
     public final static int FOUNDING_STOCK_BONUS = 1;
+    public final static int ONLINE_OBSERVER_DELAY = 2000;
+    public final static int BOT_TURN_OBSERVER_DELAY = 20;
+    public final static int BOT_TURN_DELAY = 500;
+    public final static int GAME_ENDED_STATE = 2, GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
 
-    public GameController(List<Player> currentPlayers, Player currentPlayer) {
+    public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online,
+            int numberOfSimulations) {
         this.board = new Board();
         this.currentPlayers = currentPlayers;
         this.numberOfPlayers = currentPlayers.size();
-        this.playerTurnIndex = 0;
+        this.gameId = gameId;
+        this.newPlacedCells = new HashMap<>();
+        this.gameState = new LinkedList<>();
+
         initPlayersDecks();
+
         this.gameView = new GameView(this, currentPlayer);
+        this.onlineMode = online;
+        this.executor = Executors.newSingleThreadExecutor();
+
+        this.playerTurnIndex = 0;
+
+        this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
+            if (gameEnded) {
+                endGame();
+            }
+
+            try {
+                gameEnded = GameDatabaseConnection.isGameEnded(gameId);
+
+                if (gameEnded) {
+                    return;
+                }
+
+                updateCurrentPlayer();
+                updateNewPlacedCells();
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+
+            executor.execute(() -> {
+                try {
+                    updateStocks();
+                    updateCashNet();
+                    updateLastNotification();
+                    updateKeepSellOrTradeStocks();
+
+                    board.updatePlayerDeck(currentPlayer);
+                    gameView.updatePlayerDeck();
+                } catch (Exception e) {
+                    errorInterrupt(e);
+                }
+            });
+        });
+
+        this.botTurnTimer = online ? null : new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
+            if (gameEnded) {
+                endGame();
+            } else {
+                executor.execute(() -> {
+                    try {
+                        Thread.sleep(BOT_TURN_DELAY);
+
+                        Player p = getCurrentPlayer();
+
+                        if (!p.isBot()) {
+                            return;
+                        }
+
+                        if (p.isEmptyDeck() || board.isGameOver()) {
+                            gameEnded = true;
+                            return;
+                        }
+
+                        BotController botController = new BotController(this);
+                        MonteCarloAlgorithm monteCarlo = new MonteCarloAlgorithm(botController, numberOfSimulations);
+                        Action nextAction = monteCarlo.runMonteCarlo();
+
+                        handleCellPlacing(nextAction, p);
+
+                        GameFrame parent = GameFrame.currentFrame;
+                        parent.requestFocus();
+
+                        gameView.repaint();
+                    } catch (InterruptedException e) {
+
+                    } catch (Exception e) {
+                        errorInterrupt(e);
+                        e.printStackTrace();
+                    }
+                });
+            }
+        });
+
+        this.chatObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionEvent) -> {
+            executor.execute(() -> {
+                updateChat();
+            });
+        });
+
+        this.refresher = new Timer(BOT_TURN_OBSERVER_DELAY, (ActionEvent) -> {
+            gameView.repaint();
+        });
+
+        if (online) {
+            onlineObserver.start();
+            chatObserver.start();
+        } else {
+            botTurnTimer.start();
+        }
+
+        refresher.start();
+    }
+
+    private void updateNewPlacedCells() throws Exception {
+        Map<Point, Corporation> newPlacedCells = GameDatabaseConnection.getNewPlacedCells(gameId, board);
+
+        if (!newPlacedCells.isEmpty()) {
+            board.updateNewPlacedCells(newPlacedCells);
+        }
+    }
+
+    private void updateStocks() throws Exception {
+        for (Player p : currentPlayers) {
+            GameDatabaseConnection.updateStocks(p, gameId);
+        }
+
+        board.updateStocks(currentPlayers);
+    }
+
+    private void updateChat() {
+        try {
+            Player p = gameView.getPlayer();
+            List<Couple<Couple<String, String>, Long>> newChats = GameDatabaseConnection.getNewChats(gameId, p.getUID(),
+                    lastChatMessageTime);
+
+            if (newChats.isEmpty()) {
+                return;
+            }
+
+            lastChatMessageTime = newChats.get(newChats.size() - 1).getValue();
+
+            for (Couple<Couple<String, String>, Long> c : newChats) {
+                Player sender = null;
+                String senderId = c.getKey().getKey();
+                String message = c.getKey().getValue();
+
+                boolean notified = message.contains("@" + gameView.getPlayer().getPseudo())
+                        || message.contains("@everyone");
+
+                for (Player player : currentPlayers) {
+                    if (player.getUID().equals(senderId)) {
+                        sender = player;
+                    }
+                }
+
+                if (sender == null) {
+                    continue;
+                }
+
+                gameView.recieveChat(sender, message, notified);
+            }
+        } catch (Exception e) {
+            errorInterrupt(e);
+        }
+    }
+
+    private void updateCashNet() throws Exception {
+        Map<String, int[]> playersCashNet = GameDatabaseConnection.getPlayersCashNet(gameId);
+
+        for (String uid : playersCashNet.keySet()) {
+            int[] income = playersCashNet.get(uid);
+            int cash = income[0], net = income[1];
+
+            Player p = getPlayerFromUid(uid);
+            p.setCash(cash);
+            p.setNet(net);
+        }
+    }
+
+    private Player getPlayerFromUid(String uid) {
+        for (Player p : currentPlayers) {
+            if (p.getUID().equals(uid)) {
+                return p;
+            }
+        }
+
+        return null;
+    }
+
+    public void incPlayerTurnIndex() {
+        playerTurnIndex++;
+    }
+
+    private synchronized void setCurrentPlayer() throws Exception {
+        Player currentPlayer = currentPlayers.get(playerTurnIndex);
+
+        GameDatabaseConnection.setCurrentPlayer(gameId, currentPlayer.getUID());
+    }
+
+    private synchronized void setCashNet() throws Exception {
+        for (Player p : currentPlayers) {
+            GameDatabaseConnection.setCash(p.getCash(), p, gameId);
+            GameDatabaseConnection.setNet(p.getNet(), p, gameId);
+        }
+    }
+
+    private synchronized void setNewPlacedCells() throws Exception {
+        GameDatabaseConnection.setNewPlacedCells(newPlacedCells, gameId);
+        newPlacedCells.clear();
+    }
+
+    private synchronized void setNewEarnedStocks() throws Exception {
+        for (Player p : currentPlayers) {
+            GameDatabaseConnection.setStocks(p, gameId);
+        }
+    }
+
+    private synchronized void updateCurrentPlayer() throws Exception {
+        String uid = GameDatabaseConnection.getCurrentPlayer(gameId);
+
+        for (int i = 0; i < currentPlayers.size(); i++) {
+            Player p = currentPlayers.get(i);
+
+            if (p.getUID().equals(uid)) {
+                playerTurnIndex = i;
+                return;
+            }
+        }
+    }
+
+    private synchronized void updateLastNotification() throws Exception {
+        Couple<String, Long> notification = GameDatabaseConnection.getLastNotification(gameId);
+
+        if (notification == null) {
+            return;
+        }
+
+        if (lastNotificationTime != notification.getValue()) {
+            gameView.showInfoNotification(notification.getKey());
+            lastNotificationTime = notification.getValue();
+        }
+    }
+
+    private synchronized void updateKeepSellOrTradeStocks() {
+        try {
+            Map<Corporation, Long> stocks = GameDatabaseConnection.getKeepSellOrTradeStocks(gameId,
+                    lastKeepSellTradeStockTime);
+
+            if (stocks.isEmpty()) {
+                return;
+            }
+
+            long time = stocks.entrySet().iterator().next().getValue();
+            Corporation major = GameDatabaseConnection.getMajorCorporation(gameId, time);
+            Set<Corporation> adjacentCorporations = stocks.keySet();
+            Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(gameView.getPlayer(),
+                    adjacentCorporations);
+
+            if (stocksToKeepSellOrTrade.isEmpty()) {
+                return;
+            }
+
+            registredStocksToKeepSellTrade = stocksToKeepSellOrTrade;
+            registredMajorCorporation = major;
+            lastKeepSellTradeStockTime = time;
+
+        } catch (Exception e) {
+            errorInterrupt(e);
+        }
+    }
+
+    private void errorInterrupt(Exception e) {
+        GameFrame.showError(e, () -> {
+            endGame();
+        });
     }
 
     public GameView getGameView() {
@@ -58,6 +359,10 @@ public class GameController {
         return currentPlayers;
     }
 
+    public boolean isOnlineMode() {
+        return onlineMode;
+    }
+
     /**
      * This function is used at the beginning of the game (where it is already
      * supposed that there is enough board cells for everyone) to initialize players
@@ -76,22 +381,28 @@ public class GameController {
     }
 
     private void buyStocks(Player player) {
-        // TODO : Add if statement for available stocks to buy
         Map<Corporation, Integer> possibleBuyingStocks = board.possibleBuyingStocks();
-        if (!possibleBuyingStocks.isEmpty())
+        if (!possibleBuyingStocks.isEmpty()) {
             gameView.chooseStocksToBuy(possibleBuyingStocks);
+        }
     }
 
     /**
-     * @param chosenStocksToBuy Combination of corporations and number of stocks the player wants to buy.
+     * @param chosenStocksToBuy Combination of corporations and number of stocks the
+     *                          player wants to buy.
      * @return Price of the chosen combination of corporations and number of stocks
-     * @apiNote This function should be used in {@link GameView} class to calculate the price of the
-     * combination of number of stocks and corporations the player wants to buy.
-     * Example : chosenStocksToBuy = {Tower = 2, American = 1}, in this case, the player chose to buy
-     * two stocks of Tower corporation and one of American one.
-     * The purpose of this function is to verify whether the player has enough cash to buy the wanted
-     * combination in order to display a notification that tells him to reconsider his choice because of
-     * lack of cash.
+     * @apiNote This function should be used in {@link GameView} class to calculate
+     *          the price of the
+     *          combination of number of stocks and corporations the player wants to
+     *          buy.
+     *          Example : chosenStocksToBuy = {Tower = 2, American = 1}, in this
+     *          case, the player chose to buy
+     *          two stocks of Tower corporation and one of American one.
+     *          The purpose of this function is to verify whether the player has
+     *          enough cash to buy the wanted
+     *          combination in order to display a that tells him to
+     *          reconsider his choice because of
+     *          lack of cash.
      */
     public int calculateStocksPrice(Map<Corporation, Integer> chosenStocksToBuy) {
         int totalValueToBuy = 0;
@@ -106,13 +417,17 @@ public class GameController {
     }
 
     /**
-     * This function takes the final choice that the player wants to buy from remaining stocks
+     * This function takes the final choice that the player wants to buy from
+     * remaining stocks
      * and handles the buying process.
-     * It supposes that the player has enough stocks to buy the stocks in {@link GameView} class.
+     * It supposes that the player has enough stocks to buy the stocks in
+     * {@link GameView} class.
+     * 
      * @param chosenStocks Stocks that the player chose th buy.
-     * @param totalPrice Total price of the chosen stocks.
-     * @apiNote This function should be used in {@link GameView} class after making sure that
-     * the player has enough cash to buy the chosen stocks.
+     * @param totalPrice   Total price of the chosen stocks.
+     * @apiNote This function should be used in {@link GameView} class after making
+     *          sure that
+     *          the player has enough cash to buy the chosen stocks.
      */
     public void buyChosenStocks(Map<Corporation, Integer> chosenStocks, int totalPrice, Player player) {
         player.removeFromCash(totalPrice);
@@ -128,7 +443,9 @@ public class GameController {
     /**
      * This function is used in merging corporations process, it filters all the
      * maximal sizes of corporations.
-     * @param adjacentOwnedCells The owned cells that we should filter corporations for
+     * 
+     * @param adjacentOwnedCells The owned cells that we should filter corporations
+     *                           for
      */
     private Set<Corporation> filterMaximalSizeCorporations(Set<Point> adjacentOwnedCells) {
         int maxCorporationSize = 0;
@@ -157,7 +474,6 @@ public class GameController {
         return maxCorporations;
     }
 
-
     /**
      * This function is called when a merge is possible and processes it.
      * It checks whether there is a unique maximum size company and merges all the
@@ -170,25 +486,38 @@ public class GameController {
      *                     started
      * @see #placeCell(Point, Player)
      */
-    public void mergeCorporations(Set<Point> cellsToMerge, Point cellPosition, Player player) {
+    public void mergeCorporations(Set<Point> cellsToMerge, Action action, Player player) {
         Set<Corporation> maxCorporations = filterMaximalSizeCorporations(cellsToMerge);
-        Set<Corporation> adjacentCorporations = board.adjacentCorporations(cellPosition);
+        Set<Corporation> adjacentCorporations = board.adjacentCorporations(action.getPoint());
 
-        Cell currentCell = board.getCell(cellPosition);
+        Cell currentCell = board.getCell(action.getPoint());
         Corporation chosenCellCorporation;
 
         if (maxCorporations.size() == 1) {
             Iterator<Corporation> iterator = maxCorporations.iterator();
             chosenCellCorporation = iterator.next();
         } else {
-            chosenCellCorporation = gameView.getCorporationChoice(maxCorporations.stream().toList());
+
+            if (player.isHuman()) {
+                chosenCellCorporation = gameView.getCorporationChoice(maxCorporations.stream().toList());
+            } else {
+                chosenCellCorporation = maxCorporations.iterator().next();
+            }
         }
 
         board.replaceCellCorporation(currentCell, chosenCellCorporation);
+        if (onlineMode) {
+            newPlacedCells.put(action.getPoint(), chosenCellCorporation);
+        }
         for (Point adj : cellsToMerge) {
             Cell adjacentCell = board.getCell(adj);
             if (!adjacentCell.isOwned() || !(adjacentCell.getCorporation() == chosenCellCorporation)) {
-                board.replaceCorporationFrom(chosenCellCorporation, adj);
+                Map<Point, Corporation> replaced = board.replaceCorporationFrom(chosenCellCorporation, adj);
+                newPlacedCells.putAll(replaced);
+
+                if (onlineMode) {
+                    newPlacedCells.put(adj, chosenCellCorporation);
+                }
             }
         }
 
@@ -196,16 +525,39 @@ public class GameController {
             gameView.showInfoNotification(
                     GameNotifications.corporationMergingNotification(
                             player.getPseudo(),
-                            chosenCellCorporation
-                    )
-            );
+                            chosenCellCorporation));
         }
 
         adjacentCorporations.remove(chosenCellCorporation);
 
         Map<Corporation, Integer> stocksToKeepSellOrTrade = stocksToKeepSellOrTrade(player, adjacentCorporations);
+
+        if (onlineMode) {
+            try {
+                lastKeepSellTradeStockTime = Instant.now().toEpochMilli();
+                GameDatabaseConnection.setKeepSellOrTradeStocks(adjacentCorporations, gameId,
+                        lastKeepSellTradeStockTime);
+                GameDatabaseConnection.setMajorCorporation(gameId, chosenCellCorporation, lastKeepSellTradeStockTime);
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+        }
+
         if (!stocksToKeepSellOrTrade.isEmpty()) {
-            gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, chosenCellCorporation);
+            if (player.isHuman()) {
+                gameView.chooseSellingKeepingOrTradingStocks(stocksToKeepSellOrTrade, chosenCellCorporation);
+            } else {
+                switch (action.getMergingChoice()) {
+                    case SELL:
+                        sellStocks(stocksToKeepSellOrTrade, player);
+                        break;
+                    case TRADE:
+                        tradeStocks(stocksToKeepSellOrTrade, player, chosenCellCorporation);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 
@@ -224,54 +576,75 @@ public class GameController {
     }
 
     /**
-     * This function handles cell placing in board according to a given position for a given player.
+     * This function handles cell placing in board according to a given position for
+     * a given player.
      * It handles also the choice of the founding corporation.
-     * If it is possible, it also handles the major holder while merging corporations.
-     * @param cellPosition represents where to place a new cell.
+     * If it is possible, it also handles the major holder while merging
+     * corporations.
+     * 
+     * @param cellPosition  represents where to place a new cell.
      * @param currentPlayer represents the player that is about to place the cell.
      */
-    public void placeCell(Point cellPosition, Player currentPlayer) {
-        Cell currentCell = board.getCell(cellPosition.getX(), cellPosition.getY());
+    public void placeCell(Action action, Player currentPlayer) {
+        Cell currentCell = board.getCell(action.getPoint().getX(), action.getPoint().getY());
         Corporation placedCorporation;
 
         currentCell.setAsOccupied();
-        gameView.showSuccessNotification(
-                GameNotifications.cellPlacingNotification(currentPlayer.getPseudo())
-        );
 
-        Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(cellPosition);
-        Set<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(cellPosition);
-        Set<Corporation> adjacentCorporations = board.adjacentCorporations(cellPosition);
+        if (onlineMode) {
+            newPlacedCells.put(action.getPoint(), null);
+        }
+
+        if (currentPlayer.equals(gameView.getPlayer())) {
+            gameView.showSuccessNotification(
+                    GameNotifications.cellPlacingNotification(currentPlayer.getPseudo()));
+        }
+
+        Set<Point> adjacentOwnedCells = board.adjacentOwnedCells(action.getPoint());
+        Set<Point> adjacentOccupiedCells = board.adjacentOccupiedCells(action.getPoint());
+        Set<Corporation> adjacentCorporations = board.adjacentCorporations(action.getPoint());
 
         if (adjacentCorporations.isEmpty()) {
             if (adjacentOccupiedCells.isEmpty()) {
                 return;
             }
 
-            // This part of the function supposes that a cell can be place in the given position
+            // This part of the function supposes that a cell can be place in the given
+            // position
             // Therefore, unplacedCorporations is supposed to never be empty
-            // This initialization should be replaced later with the choice of the player
 
             List<Corporation> unplacedCorporations = board.unplacedCorporations();
-            placedCorporation = gameView.getCorporationChoice(unplacedCorporations);
+
+            if (currentPlayer.isHuman()) {
+                placedCorporation = gameView.getCorporationChoice(unplacedCorporations);
+            } else {
+                placedCorporation = action.getCreatedCorporation();
+            }
+
             currentPlayer.addToEarnedStocks(placedCorporation, FOUNDING_STOCK_BONUS);
 
             board.replaceCellCorporation(currentCell, placedCorporation);
 
+            if (onlineMode) {
+                newPlacedCells.put(action.getPoint(), placedCorporation);
+            }
+
             gameView.showInfoNotification(
                     GameNotifications.corporationFoundingNotification(
                             currentPlayer.getPseudo(),
-                            placedCorporation
-                    )
-            );
+                            placedCorporation));
         } else {
-            mergeCorporations(adjacentOwnedCells, cellPosition, currentPlayer);
+            mergeCorporations(adjacentOwnedCells, action, currentPlayer);
             placedCorporation = currentCell.getCorporation();
         }
 
         for (Point adj : adjacentOccupiedCells) {
             Cell adjacentOccupiedCell = board.getCell(adj);
             board.replaceCellCorporation(adjacentOccupiedCell, placedCorporation);
+
+            if (onlineMode) {
+                newPlacedCells.put(adj, placedCorporation);
+            }
         }
     }
 
@@ -296,9 +669,9 @@ public class GameController {
      * all the owners of the given company.
      * 
      * @param owners All the owners of the given company
-     * @param c Given company
+     * @param c      Given company
      * @return Major owners of a given company
-     * @see #getOwners(Corporation) 
+     * @see #getOwners(Corporation)
      */
     private List<Player> getMajorOwners(List<Player> owners, Corporation c) {
         List<Player> majorOwners = new LinkedList<>();
@@ -306,20 +679,20 @@ public class GameController {
         int maxStocksOwnedByPlayer = -1;
         for (Player p : owners) {
             int currentNumberOfStocks = p.getStocks(c);
-            
+
             if (maxStocksOwnedByPlayer < currentNumberOfStocks) {
                 maxStocksOwnedByPlayer = currentNumberOfStocks;
             }
         }
-        
+
         for (Player p : owners) {
             int currentNumberOfStocks = p.getStocks(c);
-            
+
             if (currentNumberOfStocks == maxStocksOwnedByPlayer) {
                 majorOwners.add(p);
             }
         }
-        
+
         return majorOwners;
     }
 
@@ -334,7 +707,8 @@ public class GameController {
     }
 
     /**
-     * This functions adjusts the net of all the players according to current board state.
+     * This functions adjusts the net of all the players according to current board
+     * state.
      */
     private void adjustNets() {
         for (Corporation c : Corporation.values()) {
@@ -377,7 +751,8 @@ public class GameController {
     }
 
     /**
-     * Resets the players net to the basic value in order to recalculate the new value of players net.
+     * Resets the players net to the basic value in order to recalculate the new
+     * value of players net.
      */
     private void resetNets() {
         for (Player p : currentPlayers) {
@@ -386,37 +761,119 @@ public class GameController {
     }
 
     /**
-     * This function is the function that handles all the process of placing a cell in board.
+     * This function is the function that handles all the process of placing a cell
+     * in board.
      * It adjusts all the associated parameters.
+     * 
      * @param cellPosition represents where to place a new cell.
-     * @param player represents the player that is about to place a new cell.
+     * @param player       represents the player that is about to place a new cell.
      */
-    public synchronized void handleCellPlacing(Point cellPosition, Player player) {
+    public synchronized void handleCellPlacing(Action action, Player player) {
+
+        if (onlineMode) {
+            onlineObserver.stop();
+
+            if (registredStocksToKeepSellTrade != null) {
+                gameView.chooseSellingKeepingOrTradingStocks(registredStocksToKeepSellTrade, registredMajorCorporation);
+                registredStocksToKeepSellTrade = null;
+                registredMajorCorporation = null;
+            }
+        }
+
         resetNets();
-        placeCell(cellPosition, player);
+        placeCell(action, player);
+
         if (board.thereArePlacedCorporations()) {
-            buyStocks(player);
+            if (player.isHuman()) {
+                buyStocks(player);
+            } else {
+                Map<Corporation, Integer> chosenStocksToBuy = action.getBoughtStocks();
+
+                if (!chosenStocksToBuy.isEmpty()) {
+                    int totalPrice = calculateStocksPrice(chosenStocksToBuy);
+                    buyChosenStocks(chosenStocksToBuy, totalPrice, player);
+                }
+            }
         }
         adjustNets();
 
         board.updateDeadCells();
-        board.updatePlayerDeck(player);
-        if (board.isGameOver()) {
-            gameOver = true;
-        }
-        // playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
 
+        if (onlineMode) {
+            board.updatePlayerDeck(player);
+        } else {
+            for (Player p : currentPlayers) {
+                board.updatePlayerDeck(p);
+            }
+        }
+
+        if (board.isGameOver()) {
+            gameEnded = true;
+
+            if (onlineMode) {
+                try {
+                    GameDatabaseConnection.setGameState(gameId, GAME_ENDED_STATE);
+                } catch (Exception e) {
+                    errorInterrupt(e);
+                }
+                endGame();
+            }
+
+            return;
+        }
+
+        List<PlayerState> currentGameState = new LinkedList<>();
+
+        for (Player p : currentPlayers) {
+            PlayerState currentPlayerState = new PlayerState(
+                    p.getPseudo(),
+                    p.getNet(),
+                    p.getCash(),
+                    p.getEarnedStocks());
+            currentGameState.add(currentPlayerState);
+        }
+
+        gameState.add(currentGameState);
+
+        playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
-        gameView.showInfoNotification(GameNotifications.playerTurnNotification(nextPlayer.getPseudo()));
-        // FIXME : Notification should be personal ad not global
+
         gameView.repaint();
+
+        if (onlineMode) {
+            try {
+                String notification = GameNotifications.playerTurnNotification(nextPlayer.getPseudo());
+                GameDatabaseConnection.setLastNotification(gameId, notification);
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+        }
+
+        if (onlineMode) {
+            try {
+                setNewEarnedStocks();
+                setNewPlacedCells();
+                setCashNet();
+                setCurrentPlayer();
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+
+            onlineObserver.start();
+        }
+
+        GameFrame parent = GameFrame.currentFrame;
+        parent.requestFocus();
     }
 
     /**
-     * This function handles the stocks selling, it is called from {@link GameView} class
-     * after the played chose the corporations he wants to sell to apply the process.
+     * This function handles the stocks selling, it is called from {@link GameView}
+     * class
+     * after the played chose the corporations he wants to sell to apply the
+     * process.
      *
-     * @param stocks Represents the map that associates each corporation to the number of stocks
+     * @param stocks Represents the map that associates each corporation to the
+     *               number of stocks
      *               the player wants to sell.
      */
     public void sellStocks(Map<Corporation, Integer> stocks, Player player) {
@@ -428,13 +885,18 @@ public class GameController {
             player.removeFromEarnedStocks(c, amount);
             player.addToCash(totalPriceForCorporation);
 
-            // TODO : Send notification for selling stocks
+            if (player.equals(gameView.getPlayer())) {
+                gameView.showSuccessNotification(
+                        GameNotifications.soldStocksNotification(amount, c, totalPriceForCorporation));
+            }
         }
     }
 
     /**
-     * This functions handles the trading of stocks process after a major corporation acquired player's
-     * owned corporation stocks. It is called from {@link GameView} class after the player chose the amount
+     * This functions handles the trading of stocks process after a major
+     * corporation acquired player's
+     * owned corporation stocks. It is called from {@link GameView} class after the
+     * player chose the amount
      * of stocks they want to trade.
      */
     public void tradeStocks(Map<Corporation, Integer> stocks, Player player, Corporation major) {
@@ -447,7 +909,266 @@ public class GameController {
             player.removeFromEarnedStocks(c, amountToGive);
             player.addToEarnedStocks(major, amountToEarn);
 
-            // TODO : Add notification for trading stocks
+            if (player.equals(gameView.getPlayer())) {
+                gameView.showSuccessNotification(
+                        GameNotifications.tradedStocksNotification(amountToGive, c, amountToEarn, major));
+            }
         }
     }
+
+    private void endGame() {
+        if (onlineMode) {
+            try {
+                String winnerUserId = GameDatabaseConnection.getWinner(gameId);
+                Player p = gameView.getPlayer();
+
+                GameDatabaseConnection.updateAnalytics(p.getUID(), winnerUserId);
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+        }
+
+        stopObservers();
+        gameView.endGame();
+    }
+
+    public void returnToMenu() {
+        GameFrame.recreateCurrentFrame();
+        MenuController menuController = new MenuController();
+        menuController.start();
+    }
+
+    public synchronized void sendChat(String chat, Player p) {
+        if (onlineMode) {
+            try {
+                long currentTime = Instant.now().toEpochMilli();
+                GameDatabaseConnection.sendChat(chat, p.getUID(), p.getPseudo(), gameId, currentTime);
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+        }
+    }
+
+    /**
+     * @return a list of (String, Integer) which represent the pseudo and total cash
+     *         of each player.
+     */
+    public List<Couple<String, Integer>> getCurrentCashes() {
+        List<Couple<String, Integer>> currentCashes = new LinkedList<>();
+
+        for (Player p : currentPlayers) {
+            currentCashes.add(new Couple<String, Integer>(p.getPseudo(), p.getCash()));
+        }
+
+        return currentCashes;
+    }
+
+    /**
+     * @return a list of (String, Integer) which represent the pseudo and total net
+     *         of each player.
+     */
+    public List<Couple<String, Integer>> getCurrentNets() {
+        List<Couple<String, Integer>> currentNets = new LinkedList<>();
+
+        for (Player p : currentPlayers) {
+            currentNets.add(new Couple<String, Integer>(p.getPseudo(), p.getNet()));
+        }
+
+        return currentNets;
+    }
+
+    /**
+     * @return total cash in game.
+     */
+    public int getTotalCash() {
+        int totalCash = 0;
+
+        for (Player p : currentPlayers) {
+            totalCash += p.getCash();
+        }
+
+        return totalCash;
+    }
+
+    /**
+     * @return total net in game.
+     */
+    public int getTotalNet() {
+        int totalNet = 0;
+
+        for (Player p : currentPlayers) {
+            totalNet += p.getCash();
+        }
+
+        return totalNet;
+    }
+
+    private synchronized void stopObservers() {
+        if (onlineMode) {
+            chatObserver.stop();
+            onlineObserver.stop();
+        } else {
+            gameEnded = true;
+            botTurnTimer.stop();
+
+            ((ExecutorService) executor).shutdownNow();
+        }
+
+        refresher.stop();
+    }
+
+    public synchronized void exitGame() {
+        if (onlineMode) {
+            try {
+                Player p = gameView.getPlayer();
+                GameDatabaseConnection.removePlayer(p.getUID(), gameId);
+            } catch (Exception e) {
+                errorInterrupt(e);
+            }
+        }
+
+        stopObservers();
+        returnToMenu();
+    }
+
+    public boolean isBanChat(Player p) {
+        return false;
+        // A implementer
+    }
+
+    public void reportPlayer(Player agresor, Player victim) {
+        // Signaler un joueur pour msg offensant
+        // Lorsque plus d'1/3 de la game signal le joueur on le ban chat
+        // Que penses-tu de l'idée ?
+    }
+
+    public static GameController createOnlineGameController(List<Player> players, Player currentPlayer, String gameId) {
+        return new GameController(players, currentPlayer, gameId, true, 0);
+    }
+
+    public static GameController createOfflineGameController(List<Player> players, Player currentPlayer,
+            int numberOfSimulations) {
+        return new GameController(players, currentPlayer, null, false, numberOfSimulations);
+    }
+
+    public List<List<PlayerState>> getGameState() {
+        return gameState;
+    }
+
+    public Map<Corporation, Double> getMapCorporationsRepartitonData() {
+        Map<Corporation, Double> corporationsRepartition = new HashMap<>();
+        Map<Corporation, Integer> corporationSizes = board.getCorporationSizes();
+        int totalCorporationsSize = 0;
+
+        for (Integer size : corporationSizes.values()) {
+            totalCorporationsSize += size;
+        }
+
+        for (Corporation c : corporationSizes.keySet()) {
+            int corporationSize = corporationSizes.get(c);
+            double percent = ((double) corporationSize / (double) totalCorporationsSize) * 100.0;
+
+            if (percent < 1) {
+                continue;
+            }
+
+            corporationsRepartition.put(c, percent);
+        }
+
+        return corporationsRepartition;
+    }
+
+    public Map<Corporation, Double> getStockCorporationsRepartitionData() {
+        Map<Corporation, Double> stockCorporationsRepartition = new HashMap<>();
+        Map<Corporation, Integer> remainingStocks = board.getRemainingStocks();
+        int totalBoughtStocks = 0;
+
+
+        for (Corporation c : remainingStocks.keySet()) {
+            int boughtStocks = Board.INITIAL_STOCKS_PER_COMPANY - remainingStocks.get(c);
+            totalBoughtStocks += boughtStocks;
+        }
+
+        for (Corporation c : remainingStocks.keySet()) {
+            int boughtStocks = Board.INITIAL_STOCKS_PER_COMPANY - remainingStocks.get(c);
+            double percent = ((double) boughtStocks / (double) totalBoughtStocks) * 100.0;
+
+            if (percent < 1) {
+                continue;
+            }
+            
+            stockCorporationsRepartition.put(c, percent);
+        }
+
+        return stockCorporationsRepartition;
+    }
+
+    public Map<Player, Double> getPlayerCorporationsRepartitionData() {
+        Map<Player, Double> playerCorporporationsRepartition = new HashMap<>();
+        Map<Player, Integer> totalStocksPerPlayer = new HashMap<>();
+        int totalBoughtStocks = 0;
+
+        for (Player p : currentPlayers) {
+            int totalBoughtStocksPerPlayer = 0;
+            Map<Corporation, Integer> earnedStocks = p.getEarnedStocks();
+
+            for (Corporation c : earnedStocks.keySet()) {
+                totalBoughtStocksPerPlayer += earnedStocks.get(c);
+            }
+
+            totalStocksPerPlayer.put(p, totalBoughtStocksPerPlayer);
+            totalBoughtStocks += totalBoughtStocksPerPlayer;
+        }
+
+        for (Player p : totalStocksPerPlayer.keySet()) {
+            double percent = ((double) totalStocksPerPlayer.get(p) / (double) totalBoughtStocks) * 100.0;
+
+            if (percent < 1) {
+                continue;
+            }
+
+            playerCorporporationsRepartition.put(p, percent);
+        }
+
+        return playerCorporporationsRepartition;
+    }
+
+    public Map<Player, Integer> getPlayersCashRepartition() {
+        Map<Player, Integer> playersCashRepartition = new HashMap<>();
+
+        for (Player p : currentPlayers) {
+            playersCashRepartition.put(p, p.getCash());
+        }
+
+        return playersCashRepartition;
+    }
+
+    public Map<Player, Integer> getPlayersNetRepartition() {
+        Map<Player, Integer> playersNetRepartition = new HashMap<>();
+
+        for (Player p : currentPlayers) {
+            playersNetRepartition.put(p, p.getNet());
+        }
+
+        return playersNetRepartition;
+    }
+
+    public List<Map<String, Integer>> getPlayersNetEvolution() {
+
+        List<Map<String, Integer>> netEvolution = new LinkedList<>();
+
+        for (List<PlayerState> turnState : gameState) {
+            Map<String, Integer> turnNetEvolution = new HashMap<>();
+
+            for (PlayerState playerState : turnState) {
+                turnNetEvolution.put(playerState.getPseudo(), playerState.getCurrentNet());
+            }
+
+            netEvolution.add(turnNetEvolution);
+        }
+
+        return netEvolution;
+    }
 }
+
+

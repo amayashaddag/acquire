@@ -10,7 +10,7 @@ import java.awt.*;
  * A pane which show a Tower.
  *
  * @author Arthur Deck
- * @version 1
+ * @version 1 
  */
 public class GlowingItemCorp extends PanelGlowingGradient {
     private final Corporation corp;
@@ -19,8 +19,8 @@ public class GlowingItemCorp extends PanelGlowingGradient {
     public GlowingItemCorp(Corporation corp) {
         super();
         this.corp = corp;
-        this.img = GameResources.Assets.getCorpImage(this.corp);
-        this.color = GameResources.Assets.getCorpColor(corp);
+        this.img = GameResources.GImage.getCorpImage(this.corp);
+        this.color = GameResources.getCorpColor(corp);
 
         setGradientColor1(color.darker());
         setGradientColor2(color.brighter());

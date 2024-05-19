@@ -23,8 +23,8 @@ import javax.swing.*;
 @AutoSetter(typeParam = GameView.class)
 public class PlayerBoard extends javax.swing.JPanel {
     private final GameView g;
-    private final Dimension INITIAL_DIMENSION = new Dimension(80, 80);
-    private final Dimension ZOOM_DIMENSION = new Dimension(140, 100);
+    private final Dimension INITIAL_DIMENSION = new Dimension(100, 80);
+    private final Dimension ZOOM_DIMENSION = new Dimension(180, 100);
     private final MigLayout mig;
 
     public PlayerBoard(GameView g) {
@@ -35,8 +35,8 @@ public class PlayerBoard extends javax.swing.JPanel {
 
         for (Player p : g.getController().getCurrentPlayers()) {
             PlayerItem item = new PlayerItem(p);
-            if (p.equals(g.getController().getCurrentPlayer())) {
-                item = new PlayerItem(p, INITIAL_DIMENSION, new Dimension(200, 120));
+            if (p.equals(g.getPlayer())) {
+                item.setZoomingDimension(new Dimension(200,120));
                 item.setBorder(new ColorableArcableFlatBorder(Color.GREEN));
             }
             else if (p.equals(g.getPlayer()))
@@ -57,6 +57,7 @@ public class PlayerBoard extends javax.swing.JPanel {
     private class PlayerItem extends GrowingJLabel {
         final Player player;
         int arc;
+        int maxCharPsd;
         final ColorableArcableFlatBorder playingBorder;    // The player who is actually his turn
         final ColorableArcableFlatBorder currentPlayerBorder;   // The player who is behind his computer
 
@@ -64,8 +65,9 @@ public class PlayerBoard extends javax.swing.JPanel {
             super(PlayerBoard.this.mig, initial, zoom);
             this.player = p;
             this.arc = 10;
-            this.playingBorder = new ColorableArcableFlatBorder(Color.RED, this.arc);
-            this.currentPlayerBorder = new ColorableArcableFlatBorder(Color.GREEN, this.arc);
+            this.maxCharPsd = (5*(int)initial.getWidth())/100;
+            this.playingBorder = new ColorableArcableFlatBorder(GameResources.getColor("red").darker(), this.arc);
+            this.currentPlayerBorder = new ColorableArcableFlatBorder(GameResources.getColor("green").brighter(), this.arc);
             this.setHorizontalAlignment(SwingConstants.CENTER);
             this.setVerticalAlignment(SwingConstants.CENTER);
         }
@@ -74,13 +76,15 @@ public class PlayerBoard extends javax.swing.JPanel {
             this(p, INITIAL_DIMENSION, ZOOM_DIMENSION);
         }
 
+        @Deprecated
+        @SuppressWarnings("unused")
         private String getPlayersActionsHTMLString(Player p) {
             String res = "";
             HashMap<Corporation, Integer> earnedStocks = p.getEarnedStocks();
 
             for (HashMap.Entry<Corporation, Integer> entry : earnedStocks.entrySet()) {
                 if (entry.getValue() > 0) {
-                    int rgb = GameResources.Assets.getCorpColor(entry.getKey()).getRGB();
+                    int rgb = GameResources.getCorpColor(entry.getKey()).getRGB();
                     int red = (rgb >> 16) & 0xFF;
                     int green = (rgb >> 8) & 0xFF;
                     int blue = rgb & 0xFF;
@@ -98,54 +102,59 @@ public class PlayerBoard extends javax.swing.JPanel {
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), this.arc, this.arc);
 
             if (this.getSize().equals(this.initialDimension)) {
-                // TODO : afficher pp joueur
-                this.setText(player.getPseudo());
+                String psd = player.getPseudo();
+
+                if(psd.length() > maxCharPsd)
+                    psd = psd.substring(0, maxCharPsd+5) +"...";
+
+                this.setText(psd);
             } else if (this.getSize().equals(this.zoomingDimension)) {
-                if (player.equals(PlayerBoard.this.g.getPlayer()))
+                String psd = player.getPseudo();
+                int maxCharPsdZoom = maxCharPsd + 5;
+                if(psd.length() > maxCharPsdZoom)
+                    psd = psd.substring(0, maxCharPsdZoom) +"...";
+
+                if (!PlayerBoard.this.g.getPlayer().equals(this.player))
                     this.setText("""
-                                    <html>
-                                      <table>
-                                      <tr>
-                                        <td><b>Name</td>
-                                        <td>"""+player.getPseudo()+"""
-                                      </td>
-                                      </tr>
-                                      <tr>
-                                        <td><b>Cash</td>
-                                        <td>"""+player.getCash()+"""
-                                      $</td>
-                                      </tr>
-                                      <tr>
-                                         <td><b>Net</td>
-                                         <td>"""+player.getNet()+"""
-                                      $</td>
-                                      </tr>
-                                      <tr>
-                                        <center>
-                                          """+getPlayersActionsHTMLString(player)+"""
-                                        </center>
-                                      </tr>
-                                    </table>
-                                    </html>
-                                    """);
+                                        <html>
+                                        <table>
+                                        <tr>
+                                            <td><b>Name</td>
+                                            <td>"""+psd+"""
+                                        </td>
+                                        </tr>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Net</td>
+                                            <td>"""+player.getNet()+"""
+                                        $</td>
+                                        </tr>
+                                        </table>
+                                        </html>
+                                        """);
                 else
                     this.setText("""
-                                    <html>
-                                      <table>
-                                      <tr>
-                                        <td><b>Name</td>
-                                        <td>"""+player.getPseudo()+"""
-                                      </td>
-                                      </tr>
-                                      </tr>
-                                      <tr>
-                                         <td><b>Net</td>
-                                         <td>"""+player.getNet()+"""
-                                      $</td>
-                                      </tr>
-                                    </table>
-                                    </html>
-                                    """);
+                        <html>
+                        <table>
+                        <tr>
+                            <td><b>Name</td>
+                            <td>"""+psd+"""
+                        </td>
+                        </tr>
+                        </tr>
+                        <tr>
+                            <td><b>Net</td>
+                            <td>"""+player.getNet()+"""
+                        $</td>
+                        </tr>
+                        <tr>
+                            <td><b>Cash</td>
+                            <td>"""+player.getCash()+"""
+                        $</td>
+                        </tr>
+                        </table>
+                        </html>
+                        """);
             } else {
                 this.setText("loading...");
             }

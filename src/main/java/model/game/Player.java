@@ -18,20 +18,22 @@ public class Player {
     private int net;
     private HashMap<Corporation, Integer> earnedStocks;
     private volatile Point[] deck;
-    private PlayerType playerType;
-    private String pseudo;
-    private String uid;
+    private final PlayerType playerType;
+    private final String pseudo;
+    private final String uid;
 
     public static final int INITIAL_CASH = 6000;
+    public static final int INITIAL_NET = INITIAL_CASH;
     private static int botNumber = 0;
     private final static String botPseudoPrefix = "Bot";
 
-    private Player(PlayerType playerType, String pseudo) {
+    private Player(PlayerType playerType, String pseudo, String uid) {
         this.cash = this.net = INITIAL_CASH;
         this.earnedStocks = initEarnedStocks();
         this.deck = new Point[Board.DECK_SIZE];
         this.pseudo = pseudo;
         this.playerType = playerType;
+        this.uid = uid;
     }
 
     public HashMap<Corporation, Integer> initEarnedStocks() {
@@ -78,6 +80,10 @@ public class Player {
         this.net = net;
     }
 
+    public void setCash(int cash) {
+        this.cash = cash;
+    }
+
     /**
      * change player's deck with the deck in argument
      *
@@ -104,6 +110,10 @@ public class Player {
      */
     public void addToCash(int amount) {
         this.cash += amount;
+    }
+
+    public void setStocks(Corporation c, int amount) {
+        earnedStocks.put(c, amount);
     }
 
     public void addToNet(int amount) {
@@ -135,7 +145,8 @@ public class Player {
     }
 
     /**
-     * add to player's corporation gave in argument a number of stocks gave in argument to
+     * add to player's corporation gave in argument a number of stocks gave in
+     * argument to
      *
      * @param1 corporation in which add stocks
      * @param2 number of stocks to add
@@ -146,7 +157,8 @@ public class Player {
     }
 
     /**
-     * remove to player's corporation gave in argument a number of stocks gave in argument to
+     * remove to player's corporation gave in argument a number of stocks gave in
+     * argument to
      *
      * @param1 corporation in which remove stocks
      * @param2 number of stocks to remove
@@ -177,12 +189,13 @@ public class Player {
         return playerType == PlayerType.BOT;
     }
 
-    public static Player createHumanPlayer(String pseudo) {
-        return new Player(PlayerType.HUMAN, pseudo);
+    public static Player createHumanPlayer(String pseudo, String uid) {
+        return new Player(PlayerType.HUMAN, pseudo, uid);
     }
 
     public static Player createBotPlayer() {
-        return new Player(PlayerType.BOT, botPseudoPrefix + (botNumber++));
+        String uid = botPseudoPrefix + (botNumber++);
+        return new Player(PlayerType.BOT, uid, uid);
     }
 
     public int getCash() {
@@ -196,4 +209,32 @@ public class Player {
     public int getStocks(Corporation c) {
         return earnedStocks.get(c);
     }
+
+    public boolean isEmptyDeck() {
+        for (Point p : deck) {
+            if (p != null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Player clonedPlayer = new Player(this.playerType, this.pseudo, null);
+        clonedPlayer.cash = this.cash;
+        clonedPlayer.net = this.net;
+        clonedPlayer.earnedStocks = new HashMap<>(this.earnedStocks);
+
+        clonedPlayer.deck = new Point[this.deck.length];
+        for (int i = 0; i < this.deck.length; i++) {
+            if (this.deck[i] != null) {
+                clonedPlayer.deck[i] = new Point(this.deck[i].getX(), this.deck[i].getY());
+            }
+        }
+
+        return clonedPlayer;
+    }
+
 }

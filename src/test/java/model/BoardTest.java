@@ -1,16 +1,15 @@
 package model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+
+import org.junit.jupiter.api.Test;
 
 import model.game.Board;
 import model.game.Corporation;
-import org.junit.jupiter.api.Test;
-
 import model.tools.Point;
 
 public class BoardTest {
@@ -98,25 +97,6 @@ public class BoardTest {
         assertTrue(b.corporationIsSafe(Corporation.FESTIVAL));
         assertFalse(b.corporationIsSafe(Corporation.IMPERIAL));
         assertFalse(b.corporationIsSafe(Corporation.TOWER));
-    }
-
-    @Test
-    public void adjacentCellsTest() {
-        Board b = new Board();
-
-        Set<Point> adjacentCells1 = b.adjacentCells(new Point(0, 0), (cell) -> true);
-        List<Point> veritableAdjacentCells1 = new LinkedList<>();
-        veritableAdjacentCells1.add(new Point(0, 1));
-        veritableAdjacentCells1.add(new Point(1, 0));
-
-        Set<Point> adjacentCells2 = b.adjacentCells(new Point(2, 2), (cell) -> true);
-        Set<Point> veritableAdjacentCells2 = new HashSet<>();
-        veritableAdjacentCells2.add(new Point(2, 1));
-        veritableAdjacentCells2.add(new Point(1, 2));
-        veritableAdjacentCells2.add(new Point(2, 3));
-        veritableAdjacentCells2.add(new Point(3, 2));
-
-        // TODO : Sets equality should be tested here
     }
 
     @Test

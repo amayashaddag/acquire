@@ -1,15 +1,23 @@
 package view.game;
 
-import model.tools.AutoSetter;
-import model.tools.Point;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import java.awt.event.MouseEvent;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
-import javax.swing.*;
+import model.tools.Action;
+import model.tools.AutoSetter;
+import model.tools.Point;
+import view.window.GameFrame;
 
 /**
  * The JPanel for the jetons
@@ -53,11 +61,10 @@ public class JetonsPanel extends JPanel {
 
     @Override
     public void repaint() {
-        if (!isVisible()) return;
-
         try {
             super.setVisible(g.getController().getCurrentPlayer().equals(g.getPlayer()));
             super.repaint();
+            buttonPanel.repaint();
         } catch (NullPointerException e) {
             // Don't worry it's normal. This arrives at the initialisation of JetonPanel.
             new Thread(() -> {
@@ -66,7 +73,7 @@ public class JetonsPanel extends JPanel {
                     if (isVisible())
                         SwingUtilities.invokeLater(this::repaint);
                 } catch (InterruptedException e2) {
-                    g.showError(e2, this::repaint);
+                    GameFrame.showError(e2, this::repaint);
                 }
             }).start();
         }
@@ -83,6 +90,32 @@ public class JetonsPanel extends JPanel {
             }
     }
 
+    public void updatePlayerDeck() {
+        Point[] playerDeck = g.getPlayer().getDeck();
+        if (playerDeck.length == 0) {
+            buttonPanel.removeAll();
+        } else {
+            ArrayList<JetonButton> l = new ArrayList<>();
+            for (Component c : buttonPanel.getComponents())
+                if (c instanceof JetonButton)
+                    l.add((JetonButton) c);
+
+            int position = 0;
+            for (int i = 0; i < l.size(); i++) {
+                if (playerDeck[i] != null) {
+                    l.get(i).setVisible(true);
+                    l.get(i).setPoint(playerDeck[i]);
+                } else {
+                    l.get(i).setVisible(false);
+                    buttonPanel.remove(l.get(i));
+                    buttonPanel.revalidate();
+                    buttonPanel.add(l.get(i), position);
+                    position = (position == 0) ? buttonPanel.getComponentCount() - 1 : 0;
+                }
+            }
+        }
+    }
+
     private class JetonButton extends JButton {
         Point p;
 
@@ -90,10 +123,11 @@ public class JetonsPanel extends JPanel {
             super();
             this.p = p;
             this.setFocusPainted(false);
-            this.setText(" ");
+            this.setText("-");
             this.addActionListener((e) -> {
                 new Thread(() -> {
-                    g.getController().handleCellPlacing(p, g.getPlayer());
+                    Action action = new Action(p, null, null, null);
+                    g.getController().handleCellPlacing(action, g.getPlayer());
 
                     Point[] playerDeck = g.getPlayer().getDeck();
                     if (playerDeck.length == 0) {
@@ -110,7 +144,6 @@ public class JetonsPanel extends JPanel {
                             if (playerDeck[i] != null) {
                                 l.get(i).setVisible(true);
                                 l.get(i).setPoint(playerDeck[i]);
-                                l.get(i).setText(playerDeck[i].toString());
                             } else {
                                 l.get(i).setVisible(false);
                                 buttonPanel.remove(l.get(i));

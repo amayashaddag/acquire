@@ -1,4 +1,4 @@
-package view.frame;
+package view.window;
 
 import javax.swing.JPanel;
 
@@ -12,7 +12,6 @@ import javax.swing.JPanel;
  * @author Arthur Deck
  * @version 1
  */
-@Deprecated
 public abstract class Form extends JPanel {
     /**
      * 

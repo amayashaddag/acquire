@@ -4,13 +4,16 @@ import model.game.Corporation;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import javax.imageio.ImageIO;
+import javax.swing.JComponent;
 
 /**
- * All images used for game are ir
+ * All ressouces used for in game and some utils methods.
  * 
  * @author Arthur Deck
  * @version 0.1
@@ -36,12 +39,13 @@ public class GameResources {
      * <p>
      * ! Specials characters are not allowed (except
      * '-' and '_')!
+     * @apiNote all about game's images (ressources/utils)
      */
-    public class Assets {
+    public static class GImage {
         static {
             File dir = new File(MAIN_PATH + RESSOURCES_PATH + IMAGES_PATH);
 
-            Class<?> clazz = Assets.class;
+            Class<?> clazz = GImage.class;
             Field[] fields = clazz.getFields();
 
             for (Field field : fields) {
@@ -61,7 +65,7 @@ public class GameResources {
                                 img = ImageIO.read(f);
                                 break;
                             } catch (IOException e) {
-                                // Continue, we are looking for the first AutoLoadProcessor who match with nameImg
+                                // Continue, we are looking for the first image witch match with nameImg
                             }
                         }
 
@@ -98,21 +102,79 @@ public class GameResources {
 
         public static Image getCorpImage(Corporation c) {
             return switch (c) {
-                case IMPERIAL -> GameResources.Assets.CYAN_TOWER_CELL;
-                case FESTIVAL -> GameResources.Assets.YELLOW_TOWER_CELL;
-                case AMERICAN -> GameResources.Assets.RED_TOWER_CELL;
-                case SACKSON -> GameResources.Assets.BLUE_TOWER_CELL;
-                case TOWER -> GameResources.Assets.GREEN_TOWER_CELL;
-                case WORLDWIDE -> GameResources.Assets.ORANGE_TOWER_CELL;
-                case CONTINENTAL -> GameResources.Assets.PURPLE_TOWER_CELL;
+                case IMPERIAL -> GameResources.GImage.CYAN_TOWER_CELL;
+                case FESTIVAL -> GameResources.GImage.YELLOW_TOWER_CELL;
+                case AMERICAN -> GameResources.GImage.RED_TOWER_CELL;
+                case SACKSON -> GameResources.GImage.BLUE_TOWER_CELL;
+                case TOWER -> GameResources.GImage.GREEN_TOWER_CELL;
+                case WORLDWIDE -> GameResources.GImage.ORANGE_TOWER_CELL;
+                case CONTINENTAL -> GameResources.GImage.PURPLE_TOWER_CELL;
             };
         }
 
-        public static Color getCorpColor(Corporation c) {
-            Image img = getCorpImage(c);
-            BufferedImage bfi = GameResources.imageToBufferedImage(img);
-            int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
-            return new Color(clr, true);
+        public static void saveImage(BufferedImage image, String filename) {
+            try {
+                File file = new File(filename + ".png");
+                ImageIO.write(image, "png", file);
+                System.out.println("Image saved as " + file.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public static BufferedImage applyGaussianBlur(BufferedImage srcImage, int radius, int iterations) {
+            int size = radius * 2 + 1;
+            float[] data = new float[size * size];
+            float totalWeight = 0.0f;
+            int center = size / 2;
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    int dx = i - center;
+                    int dy = j - center;
+                    float distance = (float) Math.sqrt(dx * dx + dy * dy);
+                    float gaussian = (float) Math.exp(-(distance * distance) / (2 * radius * radius));
+                    data[i * size + j] = gaussian;
+                    totalWeight += gaussian;
+                }
+            }
+    
+            for (int i = 0; i < data.length; i++) {
+                data[i] /= totalWeight;
+            }
+    
+            Kernel kernel = new Kernel(size, size, data);
+            ConvolveOp op = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+            BufferedImage result = srcImage;
+            for (int i = 0; i < iterations; i++) {
+                result = op.filter(result, null);
+            }
+            return result;
+        }    
+    }
+
+    public static Color getColor(String s) {
+        return MenuResources.getColor(s);
+    }
+
+    public static Color getCorpColor(Corporation c) {
+        Image img = GImage.getCorpImage(c);
+        BufferedImage bfi = GameResources.imageToBufferedImage(img);
+        int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
+        return new Color(clr, true);
+    }
+
+    /**
+     * Usefull for Raven's components.
+     * @param c
+     */
+    public static void setOpaque(Component c,boolean b) {
+        if (c instanceof JComponent) {
+            JComponent jc = ((JComponent)c);
+            jc.setOpaque(b);
+            for (Component c2 : jc.getComponents()) {
+                setOpaque(c2, b);
+            }
         }
     }
 }
