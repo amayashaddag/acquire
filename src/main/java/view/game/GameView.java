@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
@@ -17,11 +19,15 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+
+import com.formdev.flatlaf.ui.FlatScrollBarUI;
 
 import control.game.GameController;
 import model.game.Board;
@@ -489,6 +495,20 @@ public class GameView extends Form {
         scroll.setBorder(BorderFactory.createEmptyBorder());
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JScrollBar scrollBar = scroll.getVerticalScrollBar();
+        scrollBar.setBackground(new Color(0,0,0,0));
+        class FSBUI extends FlatScrollBarUI {
+            @Override
+            protected Color getThumbColor(JComponent c, boolean hover, boolean pressed) {
+                return EndGame.colorBtnSBar;
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {}
+        }
+        scrollBar.setUI(new FSBUI());
+
         pausePane.blurWith(scroll);
     }
 

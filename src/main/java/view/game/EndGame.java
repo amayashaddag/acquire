@@ -32,6 +32,7 @@ import view.assets.GameResources;
  */
 public class EndGame extends JPanel {
     private final GameController controller;
+    public static final Color colorBtnSBar = Color.decode("#f97316");
 
     public EndGame(GameController control) {
         this.controller = control;
@@ -58,7 +59,7 @@ public class EndGame extends JPanel {
         JButton exitButton = new JButton("Exit");
         exitButton.setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
         exitButton.setOpaque(false);
-        exitButton.setBorder(new ColorableArcableFlatBorder(Color.decode("#f97316"), 15));
+        exitButton.setBorder(new ColorableArcableFlatBorder(colorBtnSBar, 15));
         exitButton.addActionListener((e) -> {
             controller.exitGame();
         });
