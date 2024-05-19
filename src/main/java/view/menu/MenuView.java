@@ -255,7 +255,7 @@ public class MenuView extends Form {
             return;
         }
         updatePanelPourcent(this::multiPlayerWork, 
-            0.6, 0.40, 0.30, 0.50);
+            0.55, 0.40, 0.30, 0.50);
     }
 
     private void multiPlayerWork() {
