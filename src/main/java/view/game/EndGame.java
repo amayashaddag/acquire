@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.Stack;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -48,7 +47,10 @@ public class EndGame extends JPanel {
     private void init() {
         setOpaque(false);
         setLayout(new MigLayout("wrap,fill,gap 10", "fill"));
-        UIManager.put( "JPanel.arc", 10 );
+        UIManager.put( "Panel.arc", 10 );
+        UIManager.put( "Button.arc", 10 );
+        UIManager.put( "Panel.opaque", false );
+        UIManager.put( "Label.opaque", false );
 
         createPieChart();
         createLineChart();
@@ -62,10 +64,11 @@ public class EndGame extends JPanel {
         add(exitButton, "x 47%, y 97%");
     }
 
-    private void createPieChart() { 
+    private void createPieChart() {
         pieChart1 = new PieChart();
         Map<Corporation, Double> map1 = controller.getMapCorporationsRepartitonData();    
         JLabel header1 = new JLabel("Map's corporations repartition");
+        header1.setOpaque(false);
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart1.setHeader(header1);
@@ -197,7 +200,7 @@ public class EndGame extends JPanel {
             lineChart.setLegendRenderer(new ChartLegendRenderer() {
                 @Override
                 public Component getLegendComponent(Object legend, int index) {
-                    if (index % 5 == 0) {   // FIXME: 5
+                    if (index % 5 == 0) {
                         return super.getLegendComponent(legend, index);
                     } else {
                         return null;
