@@ -6,7 +6,7 @@ VIEW=view/*/*
 
 JAVA_TEST=src/test/java
 OUT=build
-MAIN=app.launcher.NetworkDebug
+MAIN=app.launcher.App
 LIB=lib
 
 
@@ -16,16 +16,13 @@ clean :
 	@echo "✅ Cleaned successfully..."
 compile :
 	@echo "⏳ Compiling project..."
-	@javac -cp "$(LIB)/*" -d $(OUT) $(JAVA_MAIN)/$(APP) $(JAVA_MAIN)/$(CONTROL) $(JAVA_MAIN)/$(MODEL) $(JAVA_MAIN)/$(VIEW) $(JAVA_TEST)/*/*
+	@javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -processor model.processor.AutoSetterProcessor -d $(OUT) $(JAVA_MAIN)/$(MAIN)
 	@echo "✅ Compiled successfully"
 run :
 	@echo "⏳ Running project..."
 	@java -cp "$(OUT):$(LIB)/*" $(MAIN)
 
-test :
-	@java -cp "$(LIB)/*:$(OUT)" org.junit.platform.console.ConsoleLauncher --scan-class-path
-
-all : clean compile test run
+all : clean compile run
 
 
 # For debugging, please do not modify
