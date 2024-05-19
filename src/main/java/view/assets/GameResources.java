@@ -111,13 +111,6 @@ public class GameResources {
             };
         }
 
-        public static Color getCorpColor(Corporation c) {
-            Image img = getCorpImage(c);
-            BufferedImage bfi = GameResources.imageToBufferedImage(img);
-            int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
-            return new Color(clr, true);
-        }
-
         public static void saveImage(BufferedImage image, String filename) {
             try {
                 File file = new File(filename + ".png");
@@ -161,5 +154,12 @@ public class GameResources {
 
     public static Color getColor(String s) {
         return MenuResources.getColor(s);
+    }
+
+    public static Color getCorpColor(Corporation c) {
+        Image img = GImage.getCorpImage(c);
+        BufferedImage bfi = GameResources.imageToBufferedImage(img);
+        int clr = bfi.getRGB(img.getWidth(null)/2,img.getHeight(null)* 3/4);
+        return new Color(clr, true);
     }
 }

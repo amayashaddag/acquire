@@ -95,7 +95,7 @@ public class MenuResources {
         else if (s.equals("purple"))
             corp = Corporation.CONTINENTAL;
         else return null;
-        return view.assets.GameResources.GImage.getCorpColor(corp);
+        return view.assets.GameResources.getCorpColor(corp);
     }
 
     public static final String JOINED_GAME_MESSAGE = "You successfully joined a game.";

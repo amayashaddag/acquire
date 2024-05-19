@@ -20,7 +20,7 @@ public class GlowingItemCorp extends PanelGlowingGradient {
         super();
         this.corp = corp;
         this.img = GameResources.GImage.getCorpImage(this.corp);
-        this.color = GameResources.GImage.getCorpColor(corp);
+        this.color = GameResources.getCorpColor(corp);
 
         setGradientColor1(color.darker());
         setGradientColor2(color.brighter());

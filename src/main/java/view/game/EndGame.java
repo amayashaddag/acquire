@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.Random;
+import java.util.Stack;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -16,6 +17,7 @@ import javax.swing.UIManager;
 import com.formdev.flatlaf.FlatClientProperties;
 
 import control.game.GameController;
+import model.game.Corporation;
 import net.miginfocom.swing.MigLayout;
 import raven.chart.ChartLegendRenderer;
 import raven.chart.bar.HorizontalBarChart;
@@ -23,6 +25,7 @@ import raven.chart.data.category.DefaultCategoryDataset;
 import raven.chart.data.pie.DefaultPieDataset;
 import raven.chart.line.LineChart;
 import raven.chart.pie.PieChart;
+import view.assets.GameResources;
 
 /**
  * @author Arthur Deck
@@ -61,14 +64,15 @@ public class EndGame extends JPanel {
 
     private void createPieChart() { 
         pieChart1 = new PieChart();
+        Map<Corporation, Double> map1 = null;    // FIXME : ivicici
         JLabel header1 = new JLabel("Map's corporations repartition");
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart1.setHeader(header1);
-        pieChart1.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"), Color.decode("#c084fc"));
+        pieChart1.getChartColor().addColor(createPieColor(map1));
         pieChart1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
-        pieChart1.setDataset(createPieData(controller.getMapCorporationsRepartitonData()));
+        pieChart1.setDataset(createPieData(map1));
         add(pieChart1, "split 3,height 290");
 
         pieChart2 = new PieChart();
@@ -76,7 +80,6 @@ public class EndGame extends JPanel {
         header2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart2.setHeader(header2);
-        pieChart2.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"), Color.decode("#c084fc"));
         pieChart2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
         pieChart2.setDataset(createPieData(null));  // FIXME : control...
@@ -87,7 +90,6 @@ public class EndGame extends JPanel {
         header3.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart3.setHeader(header3);
-        pieChart3.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"), Color.decode("#c084fc"));
         pieChart3.setChartType(PieChart.ChartType.DONUT_CHART);
         pieChart3.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
@@ -148,11 +150,19 @@ public class EndGame extends JPanel {
         return dataset;
     }
 
-    private DefaultPieDataset<String> createPieData(Map<String, Double> map) {
+    private DefaultPieDataset<String> createPieData(Map<Corporation, Double> map) {
         DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-        for (Map.Entry<String, Double> e : map.entrySet()) 
-            dataset.addValue(e.getKey(), e.getValue());
+        for (Map.Entry<Corporation, Double> e : map.entrySet()) 
+            dataset.addValue(e.getKey().toString(), e.getValue());
         return dataset;
+    }
+
+    private Color[] createPieColor(Map<Corporation, Double> map) {
+        // Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"), Color.decode("#c084fc")
+        Stack<Color> st = new Stack<>();
+        for (Corporation corp : map.keySet())
+            st.add(GameResources.getCorpColor(corp));
+        return (Color[]) st.toArray();
     }
 
     private void createLineChartData() {
