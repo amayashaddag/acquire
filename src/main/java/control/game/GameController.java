@@ -1156,6 +1156,23 @@ public class GameController {
 
         return playersNetRepartition;
     }
+
+    public List<Map<String, Integer>> getPlayersNetEvolution() {
+
+        List<Map<String, Integer>> netEvolution = new LinkedList<>();
+
+        for (List<PlayerState> turnState : gameState) {
+            Map<String, Integer> turnNetEvolution = new HashMap<>();
+
+            for (PlayerState playerState : turnState) {
+                turnNetEvolution.put(playerState.getPseudo(), playerState.getCurrentNet());
+            }
+
+            netEvolution.add(turnNetEvolution);
+        }
+
+        return netEvolution;
+    }
 }
 
 
