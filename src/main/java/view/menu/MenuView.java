@@ -93,6 +93,7 @@ public class MenuView extends Form {
         };
         panel.setBackground(mainLeftColor);
         panel.setBorder(new ColorableArcableFlatBorder(mainLeftColor.darker(),15));
+        panel.setVisible(false);
 
         menu3d.setFont(Fonts.BOLD_PARAGRAPH_FONT);
         menu3d.addMenuItem("SINGLE PLAYER", this::singlePlayer);
@@ -101,13 +102,13 @@ public class MenuView extends Form {
         menu3d.addMenuItem("RANKING", this::ranking);
         menu3d.addMenuItem("SPECTATOR", this::spectator);
         menu3d.addMenuItem("EXIT", this::exit);
-        menu3d.addMenuItem("test login", this::displayLoginViewTest);
         menu3d.addGlobalEvent(controller::abortMutiGame);
         panel.setVisible(false);
         panel.setOpaque(false);
 
         add(menu3d, "x 10%, y 40%, w 25%, h 50%");
         add(panel);
+        revalidate();
         repaint();
 
         if (controller.isConnected()) 
@@ -196,7 +197,7 @@ public class MenuView extends Form {
         medBtn.setBackground(MenuResources.getColor("orange"));
         medBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
         JButton hardBtn = new JButton("Hard");
-        hardBtn.setBackground(MenuResources.getColor("red"));
+        hardBtn.setBackground(MenuResources.getColor("red").darker());
         hardBtn.addActionListener((e) -> f.accept(controller::startSingleGameEasy));
 
         panel.add(ezBtn, "x 13%, y 5%, gapy 2%,"+btnContraints);
@@ -440,7 +441,7 @@ public class MenuView extends Form {
             return;
         }
         updatePanelPourcent(this::profileWork, 
-            0.6, 0.4, 0.2, 0.3);
+            0.55, 0.47, 0.2, 0.3);
     }
 
     private void profileWork() {
@@ -485,12 +486,9 @@ public class MenuView extends Form {
         }).start();
     }
 
-    private void displayLoginViewTest() {   // FIXME : pour les test
-        displayLoginView(null);
-    }
-
     private void displayLoginView(Runnable r) {  
         updatePanelPourcent(() -> {
+            panel.setLayout(new MigLayout("align x, fill, insets 0"));
             mig.setComponentConstraints(panel, "x 55%, y 40%, w 30%, h 40%");
             panel.revalidate();
             PrettyLoginView lv = new PrettyLoginView(controller, mainLeftColor.darker(), r);
@@ -517,7 +515,9 @@ public class MenuView extends Form {
 
             @Override
             public void end() {
+                mig.setComponentConstraints(panel, "x "+getWidth()+100+",y " + y);
                 panel.setVisible(false);
+                revalidate();
             }
         });
         animator.setAcceleration(0.2f);
