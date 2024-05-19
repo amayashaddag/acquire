@@ -85,10 +85,15 @@ public class GameController {
         this.currentNumberOfTurns = 0;
 
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
-            try {
-                boolean result = updateGameState();
 
-                if (result) {
+            if (gameEnded) {
+                endGame();
+            }
+
+            try {
+                gameEnded = GameDatabaseConnection.isGameEnded(gameId);
+
+                if (gameEnded) {
                     return;
                 }
 
@@ -178,17 +183,6 @@ public class GameController {
         }
 
         refresher.start();
-    }
-
-    private boolean updateGameState() throws Exception {
-        boolean gameEnded = GameDatabaseConnection.isGameEnded(gameId);
-
-        if (gameEnded) {
-            endGame();
-            return true;
-        }
-
-        return false;
     }
 
     private void updateNewPlacedCells() throws Exception {
@@ -940,8 +934,6 @@ public class GameController {
                 Player p = gameView.getPlayer();
 
                 GameDatabaseConnection.updateAnalytics(p.getUID(), winnerUserId);
-                GameDatabaseConnection.removePlayer(p.getUID(), gameId);
-
             } catch (Exception e) {
                 errorInterrupt(e);
             }
@@ -949,7 +941,11 @@ public class GameController {
 
         // TODO : Afficher l'écran de fin de jeu avec toutes les infos
         
-        exitGame();
+        stopObservers();
+
+        GameFrame.recreateCurrentFrame();
+        MenuController menuController = new MenuController();
+        menuController.start();
     }
 
     public synchronized void sendChat(String chat, Player p) {
