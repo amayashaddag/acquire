@@ -88,7 +88,7 @@ public class GameDatabaseConnection {
                 AuthController.ANALYTICS_TABLE);
     }
 
-    public static void addPlayer(String gameId, PlayerCredentials c) throws Exception {
+    public static synchronized void addPlayer(String gameId, PlayerCredentials c) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(PLAYER_TABLE_NAME)
                 .whereEqualTo(UID_FIELD, c.uid()).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -114,7 +114,7 @@ public class GameDatabaseConnection {
         initStocks(gameId, c);
     }
 
-    private static void initStocks(String gameId, PlayerCredentials credentials) throws Exception {
+    private static synchronized void initStocks(String gameId, PlayerCredentials credentials) throws Exception {
         for (Corporation c : Corporation.values()) {
             DocumentReference doc = database.collection(STOCKS_TABLE_NAME).document();
             Map<String, Object> stocks = new HashMap<>();
@@ -128,7 +128,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static void removePlayer(String uid, String gameId) throws Exception {
+    public static synchronized void removePlayer(String uid, String gameId) throws Exception {
 
         deleteUserStocks(uid);
 
@@ -142,7 +142,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    private static void deleteUserStocks(String uid) throws Exception {
+    private static synchronized void deleteUserStocks(String uid) throws Exception {
         CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
         ApiFuture<QuerySnapshot> reader = collection.whereEqualTo(UID_FIELD, uid).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -153,7 +153,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static PreGameAnalytics createGame(PlayerCredentials creator, int maxPlayers) throws Exception {
+    public static synchronized PreGameAnalytics createGame(PlayerCredentials creator, int maxPlayers) throws Exception {
         DocumentReference doc = database.collection(GAME_TABLE_NAME).document();
         String gameId = doc.getId();
         HashMap<String, Object> newGame = new HashMap<>();
@@ -167,16 +167,16 @@ public class GameDatabaseConnection {
         return new PreGameAnalytics(creator.pseudo(), gameId, 1, maxPlayers);
     }
 
-    public static void setCash(int newCash, Player player, String gameId) throws Exception {
+    public static synchronized void setCash(int newCash, Player player, String gameId) throws Exception {
         set(newCash, player, gameId, PLAYER_CASH_FIELD);
 
     }
 
-    public static void setNet(int newNet, Player player, String gameId) throws Exception {
+    public static synchronized void setNet(int newNet, Player player, String gameId) throws Exception {
         set(newNet, player, gameId, PLAYER_NET_FIELD);
     }
 
-    private static void set(int newNet, Player player, String gameId, @Nonnull String playerNetField)
+    private static synchronized void set(int newNet, Player player, String gameId, @Nonnull String playerNetField)
             throws InterruptedException, java.util.concurrent.ExecutionException {
         CollectionReference collection = database.collection(PLAYER_TABLE_NAME);
         ApiFuture<QuerySnapshot> future = collection
@@ -188,7 +188,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static Map<Point, Corporation> getNewPlacedCells(String gameId, Board currentBoard) throws Exception {
+    public static synchronized Map<Point, Corporation> getNewPlacedCells(String gameId, Board currentBoard) throws Exception {
         Map<Point, Corporation> newPlacedCells = new HashMap<>();
         ApiFuture<QuerySnapshot> future = database.collection(PLACED_CELLS_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
@@ -219,7 +219,7 @@ public class GameDatabaseConnection {
         return newPlacedCells;
     }
 
-    public static void setStocks(Player player, String gameId) throws Exception {
+    public static synchronized void setStocks(Player player, String gameId) throws Exception {
 
         CollectionReference collection = database.collection(STOCKS_TABLE_NAME);
         String uid = player.getUID();
@@ -245,7 +245,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static String getCurrentPlayer(String gameId) throws Exception {
+    public static synchronized String getCurrentPlayer(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> future = database.collection(CURRENT_PLAYER_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .get();
@@ -265,7 +265,7 @@ public class GameDatabaseConnection {
         return uid;
     }
 
-    public static void setCurrentPlayer(String gameId, String uid) throws Exception {
+    public static synchronized void setCurrentPlayer(String gameId, String uid) throws Exception {
         ApiFuture<QuerySnapshot> future = database.collection(CURRENT_PLAYER_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
@@ -277,7 +277,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    private static void createNewCurrentPlayer(String gameId, String uid) throws Exception {
+    private static synchronized void createNewCurrentPlayer(String gameId, String uid) throws Exception {
         DocumentReference doc = database.collection(CURRENT_PLAYER_TABLE).document();
         Map<String, Object> newCurrentPlayer = new HashMap<>();
         newCurrentPlayer.put(GAME_ID_FIELD, gameId);
@@ -286,7 +286,7 @@ public class GameDatabaseConnection {
         future.get();
     }
 
-    public static void setNewPlacedCells(Map<Point, Corporation> newPlacedCells, String gameId)
+    public static synchronized void setNewPlacedCells(Map<Point, Corporation> newPlacedCells, String gameId)
             throws Exception {
         ApiFuture<WriteResult> future;
         for (Map.Entry<Point, Corporation> cell : newPlacedCells.entrySet()) {
@@ -320,7 +320,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static Map<String, int[]> getPlayersCashNet(String gameId) throws Exception {
+    public static synchronized Map<String, int[]> getPlayersCashNet(String gameId) throws Exception {
         Map<String, int[]> playersCashNet = new HashMap<>();
         ApiFuture<QuerySnapshot> future = database.collection(PLAYER_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
@@ -343,7 +343,7 @@ public class GameDatabaseConnection {
         return playersCashNet;
     }
 
-    public static boolean isGameEnded(String gameId) throws Exception {
+    public static synchronized boolean isGameEnded(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> future = database.collection(GAME_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = future.get().getDocuments();
@@ -355,7 +355,7 @@ public class GameDatabaseConnection {
         return false;
     }
 
-    public static boolean isGameStarted(String gameId) throws Exception {
+    public static synchronized boolean isGameStarted(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .whereEqualTo(GAME_STATE_FIELD, GameController.GAME_NOT_STARTED_STATE)
@@ -369,7 +369,7 @@ public class GameDatabaseConnection {
         return false;
     }
 
-    public static boolean isGameFull(String gameId) throws Exception {
+    public static synchronized boolean isGameFull(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .whereEqualTo(GAME_STATE_FIELD, GameController.GAME_NOT_STARTED_STATE)
@@ -399,7 +399,7 @@ public class GameDatabaseConnection {
         return false;
     }
 
-    public static void setGameState(@Nonnull String gameId, int gameState) throws Exception {
+    public static synchronized void setGameState(@Nonnull String gameId, int gameState) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -413,7 +413,7 @@ public class GameDatabaseConnection {
 
     }
 
-    public static void removeGame(String gameId) throws Exception {
+    public static synchronized void removeGame(String gameId) throws Exception {
         for (String table : ALL_TABLES) {
             if (table == null) {
                 continue;
@@ -432,7 +432,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static void updateAnalytics(String gameId, String winnerUserId) throws Exception {
+    public static synchronized void updateAnalytics(String gameId, String winnerUserId) throws Exception {
         ApiFuture<QuerySnapshot> gamePlayersReader = database.collection(PLAYER_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> gamePlayers = gamePlayersReader.get().getDocuments();
@@ -482,7 +482,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static void clear() throws Exception {
+    public static synchronized void clear() throws Exception {
         for (String table : ALL_TABLES) {
             if (table == null) {
                 continue;
@@ -501,7 +501,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static Couple<String, Long> getLastNotification(String gameId) throws Exception {
+    public static synchronized Couple<String, Long> getLastNotification(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(NOTIFICATIONS_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -521,7 +521,7 @@ public class GameDatabaseConnection {
         return new Couple<>(notificationMessage, notificationTime);
     }
 
-    public static void setLastNotification(String gameId, String notificationMessage) throws Exception {
+    public static synchronized void setLastNotification(String gameId, String notificationMessage) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(NOTIFICATIONS_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -546,7 +546,7 @@ public class GameDatabaseConnection {
         writer.get();
     }
 
-    public static List<PreGameAnalytics> getAvailableGames() throws Exception {
+    public static synchronized List<PreGameAnalytics> getAvailableGames() throws Exception {
         List<PreGameAnalytics> availableGames = new LinkedList<>();
         ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
                 .whereEqualTo(GAME_STATE_FIELD, GameController.GAME_NOT_STARTED_STATE).get();
@@ -577,7 +577,7 @@ public class GameDatabaseConnection {
         return availableGames;
     }
 
-    public static PlayerAnalytics getPlayerAnalytics(String userId) throws Exception {
+    public static synchronized PlayerAnalytics getPlayerAnalytics(String userId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(ANALYTICS_TABLE)
                 .whereEqualTo(UID_FIELD, userId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -606,7 +606,7 @@ public class GameDatabaseConnection {
                 playedGames.intValue() - wonGames.intValue());
     }
 
-    public static List<PlayerAnalytics> getRanking() throws Exception {
+    public static synchronized List<PlayerAnalytics> getRanking() throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(ANALYTICS_TABLE).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
         List<PlayerAnalytics> players = new LinkedList<>();
@@ -644,7 +644,7 @@ public class GameDatabaseConnection {
         return players;
     }
 
-    public static void updateStocks(Player p, String gameId) throws Exception {
+    public static synchronized void updateStocks(Player p, String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(STOCKS_TABLE_NAME)
                 .whereEqualTo(UID_FIELD, p.getUID())
                 .whereEqualTo(GAME_ID_FIELD, gameId)
@@ -665,7 +665,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static void startGame(String gameId) throws Exception {
+    public static synchronized void startGame(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(GAME_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -681,7 +681,7 @@ public class GameDatabaseConnection {
         writer.get();
     }
 
-    public static List<Player> getAllPlayers(String gameId) throws Exception {
+    public static synchronized List<Player> getAllPlayers(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(PLAYER_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -702,7 +702,7 @@ public class GameDatabaseConnection {
         return allPlayers;
     }
 
-    public static Map<Corporation, Long> getKeepSellOrTradeStocks(String gameId, long lastTime) throws Exception {
+    public static synchronized Map<Corporation, Long> getKeepSellOrTradeStocks(String gameId, long lastTime) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(KEEP_SELL_TRADE_STOCKS_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .get();
@@ -738,7 +738,7 @@ public class GameDatabaseConnection {
         return stocks;
     }
 
-    public static void setKeepSellOrTradeStocks(Set<Corporation> stocks, String gameId, long time) throws Exception {
+    public static synchronized void setKeepSellOrTradeStocks(Set<Corporation> stocks, String gameId, long time) throws Exception {
         for (Corporation c : stocks) {
             Map<String, Object> stockFields = new HashMap<>();
             stockFields.put(GAME_ID_FIELD, gameId);
@@ -765,7 +765,7 @@ public class GameDatabaseConnection {
         }
     }
 
-    public static Corporation getMajorCorporation(String gameId, long time) throws Exception {
+    public static synchronized Corporation getMajorCorporation(String gameId, long time) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATION_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .get();
@@ -782,7 +782,7 @@ public class GameDatabaseConnection {
         return major;
     }
 
-    public static void setMajorCorporation(String gameId, Corporation major, long time) throws Exception {
+    public static synchronized void setMajorCorporation(String gameId, Corporation major, long time) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(MAJOR_CORPORATION_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -805,7 +805,7 @@ public class GameDatabaseConnection {
         writer.get();
     }
 
-    public static void sendChat(String chat, String uid, String pseudo, String gameId, long time) throws Exception {
+    public static synchronized void sendChat(String chat, String uid, String pseudo, String gameId, long time) throws Exception {
         DocumentReference doc = database.collection(CHAT_TABLE).document();
         Map<String, Object> messageFields = new HashMap<>();
 
@@ -818,7 +818,7 @@ public class GameDatabaseConnection {
         writer.get();
     }
 
-    public static List<Couple<Couple<String, String>, Long>> getNewChats(String gameId, String uid,
+    public static synchronized List<Couple<Couple<String, String>, Long>> getNewChats(String gameId, String uid,
             long lastTime) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(CHAT_TABLE)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
@@ -867,7 +867,7 @@ public class GameDatabaseConnection {
         return newMessages;
     }
 
-    public static String getWinner(String gameId) throws Exception {
+    public static synchronized String getWinner(String gameId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(PLAYER_TABLE_NAME)
                 .whereEqualTo(GAME_ID_FIELD, gameId)
                 .get();

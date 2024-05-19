@@ -34,7 +34,7 @@ public class AuthController {
     private final static String ALPHA_NUMERIC_AND_SYMBOLS_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}$";
     private final static int MAX_PASSWORD_LENGTH = 20;
 
-    public static boolean alreadyRegisteredUser(String email) throws Exception {
+    public static synchronized boolean alreadyRegisteredUser(String email) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(REGISTERED_USERS_TABLE)
                 .whereEqualTo(EMAIL_FIELD, email).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -46,7 +46,7 @@ public class AuthController {
         return true;
     }
 
-    public static String signUpWithEmailAndPassword(@Nonnull String email, @Nonnull String pseudo,
+    public static synchronized String signUpWithEmailAndPassword(@Nonnull String email, @Nonnull String pseudo,
             @Nonnull String password) throws Exception {
         if (alreadyRegisteredUser(email)) {
             throw new AlreadyRegisteredUserException();
@@ -77,7 +77,7 @@ public class AuthController {
         return userId;
     }
 
-    private static boolean isStrongPassword(String password) throws Exception {
+    private static synchronized boolean isStrongPassword(String password) throws Exception {
 
         if (!password.matches(ALPHA_NUMERIC_AND_SYMBOLS_REGEX)) {
             return false;
@@ -86,7 +86,7 @@ public class AuthController {
         return true;
     }
 
-    public static String loginWithEmailAndPassword(String email, String password) throws Exception {
+    public static synchronized String loginWithEmailAndPassword(String email, String password) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(REGISTERED_USERS_TABLE)
                 .whereEqualTo(EMAIL_FIELD, email).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -110,7 +110,7 @@ public class AuthController {
         return userId;
     }
 
-    public static void addToAnalytics(String userId) throws Exception {
+    public static synchronized void addToAnalytics(String userId) throws Exception {
         if (alreadyExistingAnalytics(userId)) {
             throw new Exception();
         }
@@ -127,7 +127,7 @@ public class AuthController {
         writer.get();
     }
 
-    private static boolean alreadyExistingAnalytics(String userId) throws Exception {
+    private static synchronized boolean alreadyExistingAnalytics(String userId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(ANALYTICS_TABLE)
                 .whereEqualTo(USER_ID_FIELD, userId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
@@ -135,7 +135,7 @@ public class AuthController {
         return !docs.isEmpty();
     }
 
-    public static PlayerCredentials getPlayerCredentials(String userId) throws Exception {
+    public static synchronized PlayerCredentials getPlayerCredentials(String userId) throws Exception {
         ApiFuture<QuerySnapshot> reader = database.collection(REGISTERED_USERS_TABLE)
                 .whereEqualTo(USER_ID_FIELD, userId).get();
         List<QueryDocumentSnapshot> docs = reader.get().getDocuments();
