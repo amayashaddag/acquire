@@ -10,26 +10,25 @@ MAIN=app.launcher.App
 LIB=lib
 
 
+# For debugging, please do not modify
+PROCESS:=model/processor
+
+processor:
+	@javac -implicit:class -cp "$(JAVA_MAIN):$(LIB)/*" -d $(OUT) $(JAVA_MAIN)/$(PROCESS)/*
+
 clean :
 	@echo "⏳ Cleaning binary files..."
 	@rm -rf $(OUT)/*
 	@echo "✅ Cleaned successfully..."
-compile :
+compile : processor
 	@echo "⏳ Compiling project..."
-	@javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -processor model.processor.AutoSetterProcessor -d $(OUT) $(JAVA_MAIN)/$(MAIN)
+	@javac -implicit:class -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -processor model.processor.AutoSetterProcessor -d $(OUT) src/main/java/app/launcher/App.java
 	@echo "✅ Compiled successfully"
 run :
 	@echo "⏳ Running project..."
 	@java -cp "$(OUT):$(LIB)/*" $(MAIN)
 
 all : clean compile run
-
-
-# For debugging, please do not modify
-PROCESS:=model/processor
-
-processor:
-	@javac -cp "$(JAVA_MAIN):$(LIB)/*" -d $(OUT) $(JAVA_MAIN)/$(PROCESS)/*
 
 debug-compile: clean processor
 	@javac -cp "$(JAVA_MAIN):$(LIB)/*:$(OUT)" -processor model.processor.AutoSetterProcessor -d $(OUT) src/main/java/app/launcher/Debug.java

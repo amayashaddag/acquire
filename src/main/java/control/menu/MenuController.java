@@ -84,7 +84,7 @@ public class MenuController {
 
     public void start() {
         view = new MenuView(this);
-        view.show();
+        view.showMenu();
         view.repaint();
         view.revalidate();
 

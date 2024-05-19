@@ -612,8 +612,7 @@ public class MenuView extends Form {
         );
     }
 
-    @Override
-    public void show() {
+    public void showMenu() {
         GameFrame.setForm(this);
     }
 
