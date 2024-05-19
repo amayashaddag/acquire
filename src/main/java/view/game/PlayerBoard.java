@@ -35,8 +35,8 @@ public class PlayerBoard extends javax.swing.JPanel {
 
         for (Player p : g.getController().getCurrentPlayers()) {
             PlayerItem item = new PlayerItem(p);
-            if (p.equals(g.getController().getCurrentPlayer())) {
-                item = new PlayerItem(p, INITIAL_DIMENSION, new Dimension(200,120));
+            if (p.equals(g.getPlayer())) {
+                item.setZoomingDimension(new Dimension(200,120));
                 item.setBorder(new ColorableArcableFlatBorder(Color.GREEN));
             }
             else if (p.equals(g.getPlayer()))

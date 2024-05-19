@@ -482,7 +482,7 @@ public class GameView extends Form {
     public static void showError(Exception e) {showError(e, ()->{});}
 
     public void endGame() {
-        GameFrame.currentFrame.dispose();
+        pausePane.blurWith(new EndGame());
     }
 
     public void updatePlayerDeck() {
