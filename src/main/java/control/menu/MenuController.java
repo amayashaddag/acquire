@@ -52,6 +52,8 @@ public class MenuController {
         this.onlineObserver = new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
             try {
 
+                view.updateMultiPlayer();
+
                 view.repaint();
                 view.revalidate();
 
