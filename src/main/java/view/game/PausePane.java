@@ -95,7 +95,7 @@ public class PausePane extends BlurPane {
             HBC() {
                 super();
                 super.valuesFormat = new DecimalFormat();
-                setHeader(new JLabel("\t Actions"));
+                setHeader(new JLabel("\t Stocks"));
             }
         }
 

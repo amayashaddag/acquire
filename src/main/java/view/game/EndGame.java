@@ -98,7 +98,7 @@ public class EndGame extends JPanel {
         pieChart3 = new PieChart();
         opaque(pieChart3);
         Map<Player, Double> map3 = controller.getPlayerCorporationsRepartitionData();
-        JLabel header3 = new JLabel("Actions");
+        JLabel header3 = new JLabel("Stocks");
         header3.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart3.setHeader(header3);
