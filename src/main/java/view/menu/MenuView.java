@@ -35,6 +35,7 @@ import net.miginfocom.swing.MigLayout;
 import raven.chart.bar.HorizontalBarChart;
 import raven.chart.data.pie.DefaultPieDataset;
 import view.assets.Fonts;
+import view.assets.GameResources;
 import view.assets.MenuResources;
 import view.game.ColorableArcableFlatBorder;
 import view.login.PrettyLoginView;
@@ -374,27 +375,28 @@ public class MenuView extends Form {
             return;
         }
         updatePanelPourcent(this::rankingWork,
-            0.55, 0.45, 0.30, 0.30);
+            0.50, 0.45, 0.40, 0.40);
     }
 
     private void rankingWork() {
         JTable table = new JTable();
+        table.setBackground(mainLeftColor);
         JScrollPane scroll = new JScrollPane(table);
         scroll.setBorder(BorderFactory.createEmptyBorder());
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.getVerticalScrollBar().setBackground(mainLeftColor);
 
         table.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {},
-                new String[] { "No", "Name", "Best Score", "Region" }) {
-            boolean[] canEdit = new boolean[] { false, false, false, false, false };
+                new String[] { "No", "Name", "Best Score" }) {
+            boolean[] canEdit = new boolean[] { false, false, false};
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit[columnIndex];
             }
         });
         if (table.getColumnModel().getColumnCount() > 0) {
-            table.getColumnModel().getColumn(0).setPreferredWidth(10);
+            table.getColumnModel().getColumn(0).setPreferredWidth(15);
             table.getColumnModel().getColumn(1).setPreferredWidth(150);
             table.getColumnModel().getColumn(2).setPreferredWidth(150);
         }
@@ -419,6 +421,7 @@ public class MenuView extends Form {
                 + "hoverBackground:null;"
                 + "pressedBackground:null;"
                 + "separatorColor:$TableHeader.background");
+        table.getTableHeader().setBackground(mainLeftColor);
         DefaultTableModel model = (DefaultTableModel) table.getModel();
 
         int i = 0;
@@ -435,12 +438,11 @@ public class MenuView extends Form {
 
         for (PlayerAnalytics pa : playerRanking) {
             i++;
-            model.addRow(new Object[] { i, pa.pseudo(), pa.bestScore(), null });
+            model.addRow(new Object[] { i, pa.pseudo(), pa.bestScore() });
         }
 
-        panel.add(table);
         panel.add(scroll);
-        scroll.setOpaque(false);
+        scroll.getViewport().setOpaque(false);
         table.setOpaque(false);
         panel.setOpaque(false);
     }
@@ -459,7 +461,7 @@ public class MenuView extends Form {
             HBC() {
                 super();
                 super.valuesFormat = new DecimalFormat();
-                setBackground(mainLeftColor);
+                GameResources.setOpaque(this, false);
             }
         }
 

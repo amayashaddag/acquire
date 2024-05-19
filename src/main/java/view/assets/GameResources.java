@@ -168,12 +168,12 @@ public class GameResources {
      * Usefull for Raven's components.
      * @param c
      */
-    public static void setOpaque(Component c) {
+    public static void setOpaque(Component c,boolean b) {
         if (c instanceof JComponent) {
             JComponent jc = ((JComponent)c);
-            jc.setOpaque(false);
+            jc.setOpaque(b);
             for (Component c2 : jc.getComponents()) {
-                setOpaque(c2);
+                setOpaque(c2, b);
             }
         }
     }

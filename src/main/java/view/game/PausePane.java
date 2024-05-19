@@ -97,7 +97,7 @@ public class PausePane extends BlurPane {
         }
 
         barChart1 = new HBC();
-        GameResources.setOpaque(barChart1);
+        GameResources.setOpaque(barChart1, false);
         barChart1.setBarColor(mainColor);
         barChart1.setDataset(createData());
         JPanel panel1 = new JPanel(new BorderLayout());
