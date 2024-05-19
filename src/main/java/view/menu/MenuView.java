@@ -358,7 +358,7 @@ public class MenuView extends Form {
     }
 
     public void updateMultiPlayer() {
-        if (panel.isVisible()) {
+        if (panel.isVisible() && controller.isConnected()) {
             int index = menu3d.getPressedIndex();
             if (index != -1 && menu3d.getItems().get(index).getText().equals("MULTI PLAYER")) {
                 panel.removeAll();
