@@ -3,10 +3,9 @@ package view.game;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.swing.JButton;
@@ -171,10 +170,14 @@ public class EndGame extends JPanel {
 
     private Color[] createPieColor(Map<Corporation, Double> map) {
         // Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"), Color.decode("#c084fc")
-        Stack<Color> st = new Stack<>();
-        for (Corporation corp : map.keySet())
-            st.add(GameResources.getCorpColor(corp));
-        return (Color[]) st.toArray();
+        Set<Corporation> set = map.keySet();
+        Color[] st = new Color[set.size()];
+        int i = 0;
+        for (Corporation corp : set) {
+            st[i] = GameResources.getCorpColor(corp);
+            i++;
+        }
+        return st;
     }
 
     private void createLineChartData() {
