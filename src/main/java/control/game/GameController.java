@@ -51,7 +51,6 @@ public class GameController {
     private long lastKeepSellTradeStockTime;
     private long lastChatMessageTime;
     private int playerTurnIndex;
-    private int currentNumberOfTurns;
     private boolean gameEnded;
 
     private Map<Corporation, Integer> registredStocksToKeepSellTrade;
@@ -62,9 +61,6 @@ public class GameController {
     public final static int BOT_TURN_OBSERVER_DELAY = 20;
     public final static int BOT_TURN_DELAY = 500;
     public final static int GAME_ENDED_STATE = 1, GAME_IN_PROGRESS_STATE = 1, GAME_NOT_STARTED_STATE = 0;
-
-    private final static int NUMBER_OF_TURNS_FOR_LIMITED_GAMES = 3;
-    private final static boolean LIMITED_GAME_FOR_DEBUG = true;
 
     public GameController(List<Player> currentPlayers, Player currentPlayer, String gameId, boolean online,
             int numberOfSimulations) {
@@ -82,7 +78,6 @@ public class GameController {
         this.executor = Executors.newSingleThreadExecutor();
 
         this.playerTurnIndex = 0;
-        this.currentNumberOfTurns = 0;
 
         this.onlineObserver = !online ? null : new Timer(ONLINE_OBSERVER_DELAY, (ActionListener) -> {
 
@@ -142,14 +137,6 @@ public class GameController {
                         Action nextAction = monteCarlo.runMonteCarlo();
 
                         handleCellPlacing(nextAction, p);
-
-                        if (LIMITED_GAME_FOR_DEBUG) {
-                            currentNumberOfTurns ++;
-
-                            if (currentNumberOfTurns > NUMBER_OF_TURNS_FOR_LIMITED_GAMES) {
-                                gameEnded = true;
-                            }
-                        }
 
                         GameFrame parent = GameFrame.currentFrame;
                         parent.requestFocus();
@@ -848,8 +835,6 @@ public class GameController {
         }
 
         gameState.add(currentGameState);
-
-        
 
         playerTurnIndex = (playerTurnIndex + 1) % numberOfPlayers;
         Player nextPlayer = currentPlayers.get(playerTurnIndex);
