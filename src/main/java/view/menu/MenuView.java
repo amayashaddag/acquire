@@ -228,7 +228,7 @@ public class MenuView extends Form {
         spinnerPane1.setBackground(mainLeftColor.darker());
         spinner1.setBackground(mainLeftColor);
 
-        JSpinner spinner2 = new JSpinner(new SpinnerNumberModel(100, 1, 1000000, 10));
+        JSpinner spinner2 = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 5));
         spinner2.addChangeListener((e) -> f.accept(spinner1, (i)-> numberOfSimulation=i));
         JPanel spinnerPane2 = new JPanel();
         spinnerPane2.add(new JLabel("Simulation's deep : "));

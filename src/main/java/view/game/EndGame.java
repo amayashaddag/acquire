@@ -7,11 +7,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import com.formdev.flatlaf.FlatClientProperties;
 
+import control.game.GameController;
 import net.miginfocom.swing.MigLayout;
 import raven.chart.ChartLegendRenderer;
 import raven.chart.bar.HorizontalBarChart;
@@ -24,8 +27,11 @@ import raven.chart.pie.PieChart;
  * @author Arthur Deck
  */
 public class EndGame extends JPanel {
+    private final GameController controller;
 
-    public EndGame() {
+    public EndGame(GameController control) {
+        this.controller = control;
+
         init();
         lineChart.startAnimation();
         pieChart1.startAnimation();
@@ -36,22 +42,32 @@ public class EndGame extends JPanel {
     }
 
     private void init() {
+        setOpaque(false);
         setLayout(new MigLayout("wrap,fill,gap 10", "fill"));
+        UIManager.put( "JPanel.arc", 10 );
+
         createPieChart();
         createLineChart();
         createBarChart();
+
+        JButton exitButton = new JButton("Exit");
+        exitButton.setFont(view.assets.Fonts.REGULAR_PARAGRAPH_FONT);
+        exitButton.addActionListener((e) -> {
+            controller.exitGame();
+        });
+        add(exitButton, "x 47%, y 97%");
     }
 
     private void createPieChart() { 
         pieChart1 = new PieChart();
-        JLabel header1 = new JLabel("Cash");
+        JLabel header1 = new JLabel("Corporation's repartition");
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart1.setHeader(header1);
         pieChart1.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"), Color.decode("#c084fc"));
         pieChart1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
-        pieChart1.setDataset(createPieData());
+        pieChart1.setDataset(createPieData1());
         add(pieChart1, "split 3,height 290");
 
         pieChart2 = new PieChart();
@@ -131,10 +147,21 @@ public class EndGame extends JPanel {
         return dataset;
     }
 
+    private DefaultPieDataset<String> createPieData1() {
+        DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+        dataset.addValue("it 1", 40);
+        dataset.addValue("it 2", 20);
+        dataset.addValue("it 3", 20);
+        dataset.addValue("it 4", 20);
+        return dataset;
+    }
+
     private DefaultPieDataset<String> createPieData() {
         DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-        dataset.addValue("Bags", 40);
-        dataset.addValue("Jewelry", 60);
+        dataset.addValue("it 1", 40);
+        dataset.addValue("it 2", 20);
+        dataset.addValue("it 3", 20);
+        dataset.addValue("it 4", 20);
         return dataset;
     }
 
