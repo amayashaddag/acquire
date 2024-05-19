@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.Random;
 
 import javax.swing.JButton;
@@ -60,25 +61,25 @@ public class EndGame extends JPanel {
 
     private void createPieChart() { 
         pieChart1 = new PieChart();
-        JLabel header1 = new JLabel("Corporation's repartition");
+        JLabel header1 = new JLabel("Map's corporations repartition");
         header1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart1.setHeader(header1);
         pieChart1.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"), Color.decode("#c084fc"));
         pieChart1.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
-        pieChart1.setDataset(createPieData1());
+        pieChart1.setDataset(createPieData(controller.getMapCorporationsRepartitonData()));
         add(pieChart1, "split 3,height 290");
 
         pieChart2 = new PieChart();
-        JLabel header2 = new JLabel("Net");
+        JLabel header2 = new JLabel("Stock corporations repartition");
         header2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:+1");
         pieChart2.setHeader(header2);
         pieChart2.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"), Color.decode("#c084fc"));
         pieChart2.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
-        pieChart2.setDataset(createPieData());
+        pieChart2.setDataset(createPieData(null));  // FIXME : control...
         add(pieChart2, "height 290");
 
         pieChart3 = new PieChart();
@@ -90,7 +91,7 @@ public class EndGame extends JPanel {
         pieChart3.setChartType(PieChart.ChartType.DONUT_CHART);
         pieChart3.putClientProperty(FlatClientProperties.STYLE, ""
                 + "border:5,5,5,5,$Component.borderColor,,20");
-        pieChart3.setDataset(createPieData());
+        pieChart3.setDataset(createPieData(null));  // FIXME : ...
         add(pieChart3, "height 290");
     }
 
@@ -147,21 +148,10 @@ public class EndGame extends JPanel {
         return dataset;
     }
 
-    private DefaultPieDataset<String> createPieData1() {
+    private DefaultPieDataset<String> createPieData(Map<String, Double> map) {
         DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-        dataset.addValue("it 1", 40);
-        dataset.addValue("it 2", 20);
-        dataset.addValue("it 3", 20);
-        dataset.addValue("it 4", 20);
-        return dataset;
-    }
-
-    private DefaultPieDataset<String> createPieData() {
-        DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-        dataset.addValue("it 1", 40);
-        dataset.addValue("it 2", 20);
-        dataset.addValue("it 3", 20);
-        dataset.addValue("it 4", 20);
+        for (Map.Entry<String, Double> e : map.entrySet()) 
+            dataset.addValue(e.getKey(), e.getValue());
         return dataset;
     }
 

@@ -1071,7 +1071,7 @@ public class GameController {
         return gameState;
     }
 
-    public Map<String, Double> getCorporationsRepartitonData() {
+    public Map<String, Double> getMapCorporationsRepartitonData() {
         Map<Corporation, Integer> corporationSizes = board.getCorporationSizes();
         int mapSize = Board.BOARD_WIDTH * Board.BOARD_HEIGHT;
 
