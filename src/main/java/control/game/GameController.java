@@ -1071,10 +1071,30 @@ public class GameController {
         return gameState;
     }
 
-    public Map<String, Double> getMapCorporationsRepartitonData() {
+    public Map<Corporation, Double> getMapCorporationsRepartitonData() {
+        Map<Corporation, Double> corporationsRepartition = new HashMap<>();
         Map<Corporation, Integer> corporationSizes = board.getCorporationSizes();
-        int mapSize = Board.BOARD_WIDTH * Board.BOARD_HEIGHT;
+        int totalCorporationsSize = 0;
 
+        for (Integer size : corporationSizes.values()) {
+            totalCorporationsSize += size;
+        }
+
+        for (Corporation c : corporationSizes.keySet()) {
+            int corporationSize = corporationSizes.get(c);
+            double percent = ((double) corporationSize / (double) totalCorporationsSize) * 100.0;
+
+            corporationsRepartition.put(c, percent);
+        }
+
+        return corporationsRepartition;
+    }
+
+    public Map<Corporation, Double> getStockCorporationRepartitionData() {
+        return null;
+    }
+
+    public Map<Player, Double> getPlayerCorporationRepartitionData() {
         return null;
     }
 }
